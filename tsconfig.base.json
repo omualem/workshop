@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@rental/config": [
+        "packages/config/src/index.ts"
+      ],
+      "@rental/config/*": [
+        "packages/config/src/*"
+      ],
+      "@rental/scoring": [
+        "packages/scoring/src/index.ts"
+      ],
+      "@rental/scoring/*": [
+        "packages/scoring/src/*"
+      ],
+      "@rental/types": [
+        "packages/types/src/index.ts"
+      ],
+      "@rental/types/*": [
+        "packages/types/src/*"
+      ],
+      "@rental/ui": [
+        "packages/ui/src/index.ts"
+      ],
+      "@rental/ui/*": [
+        "packages/ui/src/*"
+      ],
+      "@rental/utils": [
+        "packages/utils/src/index.ts"
+      ],
+      "@rental/utils/*": [
+        "packages/utils/src/*"
+      ]
+    }
+  }
+}

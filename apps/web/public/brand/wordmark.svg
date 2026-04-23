@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="88" viewBox="0 0 320 88">
+  <rect x="0" y="22" width="44" height="44" rx="12" fill="#0f172a"></rect>
+  <text x="22" y="52" text-anchor="middle" font-family="Rubik, Segoe UI, Arial, sans-serif" font-weight="700" font-size="18" fill="#ffffff">RM</text>
+  <text x="58" y="48" font-family="Rubik, Segoe UI, Arial, sans-serif" font-weight="600" font-size="22" fill="#0f172a">RentMatch</text>
+  <text x="58" y="66" font-family="Rubik, Segoe UI, Arial, sans-serif" font-weight="400" font-size="12" fill="#64748b">Hebrew-first rental marketplace</text>
+</svg>

@@ -1,0 +1,14 @@
+node_modules
+.next
+dist
+coverage
+.turbo
+.env
+.env.local
+apps/api/.env
+apps/web/.env.local
+apps/api/prisma/dev.db
+apps/api/prisma/dev.db-journal
+apps/api/generated
+*.log
+.claude

@@ -1,0 +1,551 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Local development uses SQLite for zero-setup onboarding.
+// If production returns to PostgreSQL later, this schema keeps the same domain model
+// but avoids connector-specific native types so it stays portable across both engines.
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  GUEST
+  RENTER
+  LENDER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING_VERIFICATION
+  SUSPENDED
+  DELETED
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum VerificationLevel {
+  BASIC
+  VERIFIED
+  TRUSTED
+}
+
+enum CategoryStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ListingCondition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  HEAVY_USE
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  BLOCKED
+  ARCHIVED
+}
+
+enum AvailabilityBlockStatus {
+  AVAILABLE
+  BLOCKED
+  BOOKED
+  MAINTENANCE
+}
+
+enum PricingRuleType {
+  DURATION_DISCOUNT
+  FIXED_OVERRIDE
+  WEEKEND_ADJUSTMENT
+  SEASONAL_ADJUSTMENT
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REJECTED
+  DISPUTED
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+  NOT_REQUIRED
+}
+
+enum PickupMethod {
+  PICKUP
+  DELIVERY
+  HYBRID
+}
+
+enum BundleSearchStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+}
+
+enum NotificationType {
+  BOOKING
+  BUNDLE_RESULT
+  REVIEW
+  ADMIN
+}
+
+model User {
+  id                   String                @id @default(uuid())
+  role                 UserRole              @default(RENTER)
+  fullName             String
+  email                String                @unique
+  phone                String
+  passwordHash         String
+  status               UserStatus            @default(PENDING_VERIFICATION)
+  locale               String                @default("he")
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  renterProfile        RenterProfile?
+  lenderProfile        LenderProfile?
+  refreshSessions      RefreshSession[]
+  bookings             Booking[]             @relation("RenterBookings")
+  reviewsWritten       Review[]              @relation("ReviewsWritten")
+  reviewsReceived      Review[]              @relation("ReviewsReceived")
+  auditLogs            AuditLog[]            @relation("AuditActor")
+  savedSearches        SavedSearch[]
+  favorites            Favorite[]
+  notifications        Notification[]
+  openedDisputes       Dispute[]             @relation("OpenedDisputes")
+  assignedDisputes     Dispute[]             @relation("AssignedDisputes")
+  rankingConfigs       RankingConfig[]       @relation("RankingConfigUpdatedBy")
+}
+
+model RefreshSession {
+  id          String   @id @default(uuid())
+  userId      String
+  tokenHash   String
+  userAgent   String?
+  ipAddress   String?
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RenterProfile {
+  userId                String             @id
+  defaultLocationLat    Decimal?
+  defaultLocationLng    Decimal?
+  defaultAddressText    String?
+  preferences           Json?
+  verificationStatus    VerificationStatus @default(UNVERIFIED)
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bundleSearchRequests  BundleSearchRequest[]
+}
+
+model LenderProfile {
+  userId                     String            @id
+  displayName                String
+  bio                        String?
+  averageRating              Decimal           @default(0)
+  completedTransactionsCount Int               @default(0)
+  cancellationRate           Decimal           @default(0)
+  lateReturnRate             Decimal           @default(0)
+  complaintRate              Decimal           @default(0)
+  verificationLevel          VerificationLevel @default(BASIC)
+  responseTimeScore          Decimal           @default(5)
+  isFeatured                 Boolean           @default(false)
+  pickupAreaGeo              Json?
+  reliabilityScoreCached     Decimal           @default(0)
+  createdAt                  DateTime          @default(now())
+  updatedAt                  DateTime          @updatedAt
+  user                       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listings                   Listing[]
+  deliveryWindows            DeliveryWindow[]
+  bookingItems               BookingItem[]
+  bundleCandidateItems       BundleCandidateItem[]
+}
+
+model Category {
+  id                String           @id @default(uuid())
+  parentId          String?
+  slug              String           @unique
+  nameHe            String
+  nameEn            String
+  attributesSchema  Json?
+  status            CategoryStatus   @default(ACTIVE)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  parent            Category?        @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children          Category[]       @relation("CategoryHierarchy")
+  listings          Listing[]
+}
+
+model Listing {
+  id                   String                  @id @default(uuid())
+  lenderId             String
+  categoryId           String
+  titleHe              String
+  titleEn              String
+  descriptionHe        String
+  descriptionEn        String
+  condition            ListingCondition
+  status               ListingStatus          @default(DRAFT)
+  basePriceDaily       Decimal
+  depositAmount        Decimal
+  qualityScoreCached   Decimal                @default(0)
+  pickupLat            Decimal
+  pickupLng            Decimal
+  pickupAddressText    String
+  deliverySupported    Boolean                @default(false)
+  inventoryCount       Int                    @default(1)
+  minRentalDays        Int                    @default(1)
+  maxRentalDays        Int                    @default(30)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  lender               LenderProfile          @relation(fields: [lenderId], references: [userId], onDelete: Cascade)
+  category             Category               @relation(fields: [categoryId], references: [id])
+  media                ListingMedia[]
+  attributeValues      ListingAttributeValue[]
+  availabilityBlocks   ListingAvailabilityBlock[]
+  pricingRules         PricingRule[]
+  bookingItems         BookingItem[]
+  reviews              Review[]
+  favorites            Favorite[]
+  bundleCandidateItems BundleCandidateItem[]
+
+  @@index([categoryId, status])
+  @@index([lenderId, status])
+}
+
+model ListingMedia {
+  id         String   @id @default(uuid())
+  listingId  String
+  url        String
+  sortOrder  Int      @default(0)
+  altText    String
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId, sortOrder])
+}
+
+model ListingAttributeValue {
+  id             String   @id @default(uuid())
+  listingId      String
+  attributeKey   String
+  attributeValue Json
+  listing        Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@unique([listingId, attributeKey])
+}
+
+model ListingAvailabilityBlock {
+  id         String                  @id @default(uuid())
+  listingId  String
+  startDate  DateTime
+  endDate    DateTime
+  status     AvailabilityBlockStatus
+  quantity   Int                     @default(1)
+  reason     String?
+  listing    Listing                 @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId, startDate, endDate])
+}
+
+model PricingRule {
+  id                 String          @id @default(uuid())
+  listingId          String
+  ruleType           PricingRuleType
+  minDays            Int?
+  maxDays            Int?
+  percentDiscount    Decimal?
+  fixedOverride      Decimal?
+  weekendAdjustment  Decimal?
+  seasonalAdjustment Decimal?
+  startsAt           DateTime?
+  endsAt             DateTime?
+  metadata           Json?
+  listing            Listing         @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+}
+
+model Booking {
+  id                        String         @id @default(uuid())
+  renterId                  String
+  bundleCandidateId         String?
+  status                    BookingStatus  @default(PENDING)
+  startDate                 DateTime
+  endDate                   DateTime
+  totalPrice                Decimal
+  totalDeposit              Decimal
+  logisticsScoreSnapshot    Decimal        @default(0)
+  reliabilityScoreSnapshot  Decimal        @default(0)
+  paymentStatus             PaymentStatus  @default(PENDING)
+  paymentReference          String?
+  createdAt                 DateTime       @default(now())
+  updatedAt                 DateTime       @updatedAt
+  renter                    User           @relation("RenterBookings", fields: [renterId], references: [id], onDelete: Cascade)
+  bundleCandidate           BundleCandidate? @relation(fields: [bundleCandidateId], references: [id])
+  items                     BookingItem[]
+  review                    Review?
+  disputes                  Dispute[]
+
+  @@index([renterId, status])
+  @@index([startDate, endDate])
+}
+
+model BookingItem {
+  id            String        @id @default(uuid())
+  bookingId     String
+  listingId     String
+  lenderId      String
+  quantity      Int           @default(1)
+  itemPrice     Decimal
+  depositAmount Decimal
+  pickupMethod  PickupMethod
+  pickupWindow  Json?
+  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  listing       Listing       @relation(fields: [listingId], references: [id])
+  lender        LenderProfile @relation(fields: [lenderId], references: [userId])
+
+  @@index([bookingId])
+  @@index([listingId])
+}
+
+model Review {
+  id             String   @id @default(uuid())
+  bookingId      String   @unique
+  reviewerId     String
+  revieweeUserId String
+  listingId      String?
+  rating         Int
+  text           String
+  tags           Json?
+  createdAt      DateTime @default(now())
+  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  reviewer       User     @relation("ReviewsWritten", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewee       User     @relation("ReviewsReceived", fields: [revieweeUserId], references: [id], onDelete: Cascade)
+  listing        Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+
+  @@index([revieweeUserId])
+  @@index([listingId])
+}
+
+model BundleSearchRequest {
+  id                  String             @id @default(uuid())
+  renterId            String?
+  searchSessionId     String
+  dateRangeStart      DateTime
+  dateRangeEnd        DateTime
+  requestedItems      Json
+  renterLocationLat   Decimal
+  renterLocationLng   Decimal
+  renterAddressText   String
+  weightPreferences   Json
+  resultsSnapshot     Json?
+  debugSnapshot       Json?
+  maxBudget           Decimal?
+  maxPickupPoints     Int?
+  sameLenderPreferred Boolean           @default(false)
+  deliveryPreferred   Boolean           @default(false)
+  exactDatesOnly      Boolean           @default(true)
+  status              BundleSearchStatus @default(PROCESSING)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  renter              RenterProfile?    @relation(fields: [renterId], references: [userId], onDelete: SetNull)
+  candidates          BundleCandidate[]
+
+  @@index([renterId, createdAt])
+}
+
+model BundleCandidate {
+  id                    String               @id @default(uuid())
+  searchRequestId       String
+  scoreTotal            Decimal
+  priceScore            Decimal
+  reliabilityScore      Decimal
+  logisticsScore        Decimal
+  availabilityScore     Decimal
+  productQualityScore   Decimal
+  stabilityScore        Decimal
+  explanation           Json
+  debugData             Json?
+  totalPrice            Decimal
+  totalDistanceKm       Decimal
+  pickupPointsCount     Int
+  lendersCount          Int
+  exactAvailabilityFit  Boolean              @default(true)
+  rankIndex             Int
+  label                 String?
+  createdAt             DateTime             @default(now())
+  searchRequest         BundleSearchRequest  @relation(fields: [searchRequestId], references: [id], onDelete: Cascade)
+  items                 BundleCandidateItem[]
+  bookings              Booking[]
+
+  @@index([searchRequestId, rankIndex])
+}
+
+model BundleCandidateItem {
+  id                 String          @id @default(uuid())
+  bundleCandidateId  String
+  requestedSlotKey   String
+  listingId          String
+  lenderId           String
+  quantity           Int             @default(1)
+  contributionScores Json
+  bundleCandidate    BundleCandidate @relation(fields: [bundleCandidateId], references: [id], onDelete: Cascade)
+  listing            Listing         @relation(fields: [listingId], references: [id])
+  lender             LenderProfile   @relation(fields: [lenderId], references: [userId])
+
+  @@index([bundleCandidateId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String
+  before      Json?
+  after       Json?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  actor       User?    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt])
+}
+
+model SavedSearch {
+  id            String   @id @default(uuid())
+  renterId      String
+  name          String
+  searchPayload Json
+  createdAt     DateTime @default(now())
+  renter        User     @relation(fields: [renterId], references: [id], onDelete: Cascade)
+
+  @@index([renterId, createdAt])
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  renterId   String
+  listingId  String
+  createdAt  DateTime @default(now())
+  renter     User     @relation(fields: [renterId], references: [id], onDelete: Cascade)
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([renterId, listingId])
+}
+
+model Dispute {
+  id                String        @id @default(uuid())
+  bookingId         String
+  openedByUserId    String
+  assignedAdminId   String?
+  status            DisputeStatus @default(OPEN)
+  reason            String
+  resolutionNote    String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  booking           Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  openedBy          User          @relation("OpenedDisputes", fields: [openedByUserId], references: [id], onDelete: Cascade)
+  assignedAdmin     User?         @relation("AssignedDisputes", fields: [assignedAdminId], references: [id], onDelete: SetNull)
+}
+
+model Notification {
+  id          String              @id @default(uuid())
+  userId      String
+  channel     NotificationChannel @default(IN_APP)
+  type        NotificationType
+  titleHe     String
+  titleEn     String
+  bodyHe      String
+  bodyEn      String
+  readAt      DateTime?
+  createdAt   DateTime            @default(now())
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model FeatureFlag {
+  key         String   @id
+  description String?
+  enabled     Boolean  @default(false)
+  payload     Json?
+  updatedAt   DateTime @updatedAt
+}
+
+model RankingConfig {
+  id                     String   @id @default(uuid())
+  presetKey              String   @unique
+  displayNameHe          String
+  weights                Json
+  lowScoreThreshold      Decimal  @default(5.2)
+  stdDevAlpha            Decimal  @default(0.35)
+  lowScoreBeta           Decimal  @default(0.60)
+  bottleneckGamma        Decimal  @default(0.28)
+  updatedByUserId        String?
+  updatedAt              DateTime @updatedAt
+  updatedBy              User?    @relation("RankingConfigUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+}
+
+model DeliveryWindow {
+  id             String        @id @default(uuid())
+  lenderId       String
+  title          String
+  dayOfWeek      Int
+  startTime      String
+  endTime        String
+  zoneName       String
+  feeBase        Decimal       @default(0)
+  isActive       Boolean       @default(true)
+  lender         LenderProfile @relation(fields: [lenderId], references: [userId], onDelete: Cascade)
+
+  @@index([lenderId, dayOfWeek])
+}
+
+model PaymentIntentPlaceholder {
+  id                String   @id @default(uuid())
+  bookingId         String   @unique
+  provider          String
+  providerReference String?
+  status            String
+  amount            Decimal
+  currency          String   @default("ILS")
+  metadata          Json?
+  createdAt         DateTime @default(now())
+}
