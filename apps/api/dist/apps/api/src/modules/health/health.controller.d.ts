@@ -1,0 +1,13 @@
+import { PrismaService } from "../../prisma/prisma.service";
+import { RedisService } from "../../shared/redis/redis.service";
+export declare class HealthController {
+    private readonly prisma;
+    private readonly redisService;
+    constructor(prisma: PrismaService, redisService: RedisService);
+    check(): Promise<{
+        status: string;
+        database: string;
+        redis: string;
+        timestamp: string;
+    }>;
+}

@@ -43,12 +43,12 @@ Run these once after cloning the repo.
 npm install
 ```
 
-**2. Create environment files and seed the database**
+**2. Set up the database**
 ```
 npm run setup:local
 ```
 
-This creates the `.env` files, applies the database migration, and fills the local SQLite database with demo data. It takes about a minute the first time.
+This applies the database migration and fills the local SQLite database with demo data. It takes about a minute the first time.
 
 ---
 
