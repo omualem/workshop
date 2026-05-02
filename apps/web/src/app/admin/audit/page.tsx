@@ -1,22 +1,46 @@
 import { Card } from "@rental/ui";
 import { DashboardShell } from "../../../components/dashboard-shell";
+import { adminNavItems } from "../../../components/admin/admin-nav";
+import { api } from "../../../lib/api";
 
-const navItems = [
-  { href: "/admin/dashboard", label: "סקירה" },
-  { href: "/admin/users", label: "משתמשים" },
-  { href: "/admin/listings", label: "Moderation" },
-  { href: "/admin/bookings", label: "Bookings" },
-  { href: "/admin/disputes", label: "Disputes" },
-  { href: "/admin/reviews", label: "ביקורות" },
-  { href: "/admin/categories", label: "קטגוריות" },
-  { href: "/admin/ranking", label: "Ranking Config" },
-  { href: "/admin/audit", label: "Audit Logs" },
-];
+export const dynamic = "force-dynamic";
 
-export default function AdminAuditPage() {
+export default async function AdminAuditPage() {
+  const logs = await api.adminAuditLogs();
+
   return (
-    <DashboardShell title="Audit Logs" subtitle="Audit trail של פעולות רגישות." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">כל שינוי רגיש מצד lender/admin נרשם עם before/after ו-request correlation.</Card>
+    <DashboardShell
+      title="יומן פעולות"
+      subtitle="Audit trail של פעולות אמיתיות שנרשמו במסד הנתונים."
+      navItems={adminNavItems}
+      activeHref="/admin/audit"
+    >
+      <Card className="overflow-x-auto">
+        {logs.length === 0 ? (
+          <p className="text-sm text-slate-600">אין עדיין פעולות ביומן</p>
+        ) : (
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>פעולה</th>
+                <th>ישות</th>
+                <th>משתמש</th>
+                <th>תאריך</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logs.map((log: any) => (
+                <tr key={log.id}>
+                  <td>{log.action}</td>
+                  <td>{log.entityType}</td>
+                  <td>{log.actor?.fullName ?? "מערכת"}</td>
+                  <td>{new Date(log.createdAt).toLocaleString("he-IL")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Card>
     </DashboardShell>
   );
 }

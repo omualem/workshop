@@ -8,7 +8,7 @@ export default async function HomePage() {
   const listings = result.items;
 
   return (
-    <SiteShell>
+    <SiteShell activeHref="/">
       <section className="surface-section py-16">
         <div className="max-w-2xl space-y-6">
           <span className="inline-flex rounded-full bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-800">

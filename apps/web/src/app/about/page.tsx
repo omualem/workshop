@@ -3,7 +3,7 @@ import { SiteShell } from "../../components/site-shell";
 
 export default function AboutPage() {
   return (
-    <SiteShell>
+    <SiteShell activeHref="/about">
       <section className="mx-auto max-w-5xl px-6 py-14">
         <div className="mb-10">
           <h1 className="text-4xl font-semibold text-slate-950">איך מנוע הדירוג עובד</h1>

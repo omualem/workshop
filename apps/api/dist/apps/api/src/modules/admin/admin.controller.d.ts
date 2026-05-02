@@ -6,16 +6,17 @@ export declare class AdminController {
     bundleSearchDebug(id: string): Promise<{
         candidates: ({
             items: {
-                quantity: number;
                 id: string;
-                bundleCandidateId: string;
-                requestedSlotKey: string;
                 listingId: string;
                 lenderId: string;
+                quantity: number;
+                bundleCandidateId: string;
+                requestedSlotKey: string;
                 contributionScores: import("@prisma/client/runtime/library").JsonValue;
             }[];
         } & {
             id: string;
+            totalPrice: import("@prisma/client/runtime/library").Decimal;
             createdAt: Date;
             rankIndex: number;
             searchRequestId: string;
@@ -28,7 +29,6 @@ export declare class AdminController {
             stabilityScore: import("@prisma/client/runtime/library").Decimal;
             explanation: import("@prisma/client/runtime/library").JsonValue;
             debugData: import("@prisma/client/runtime/library").JsonValue | null;
-            totalPrice: import("@prisma/client/runtime/library").Decimal;
             totalDistanceKm: import("@prisma/client/runtime/library").Decimal;
             pickupPointsCount: number;
             lendersCount: number;
@@ -36,33 +36,33 @@ export declare class AdminController {
             label: string | null;
         })[];
     } & {
-        status: import(".prisma/client").$Enums.BundleSearchStatus;
-        requestedItems: import("@prisma/client/runtime/library").JsonValue;
-        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
-        maxPickupPoints: number | null;
-        sameLenderPreferred: boolean;
-        deliveryPreferred: boolean;
-        exactDatesOnly: boolean;
         id: string;
         renterId: string | null;
+        status: import(".prisma/client").$Enums.BundleSearchStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        maxPickupPoints: number | null;
         searchSessionId: string;
         dateRangeStart: Date;
         dateRangeEnd: Date;
+        requestedItems: import("@prisma/client/runtime/library").JsonValue;
         renterLocationLat: import("@prisma/client/runtime/library").Decimal;
         renterLocationLng: import("@prisma/client/runtime/library").Decimal;
         renterAddressText: string;
         weightPreferences: import("@prisma/client/runtime/library").JsonValue;
         resultsSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
         debugSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
+        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
+        sameLenderPreferred: boolean;
+        deliveryPreferred: boolean;
+        exactDatesOnly: boolean;
     }>;
     updateRankingConfig(user: {
         sub: string;
     }, dto: UpdateRankingConfigDto): Promise<{
-        weights: import("@prisma/client/runtime/library").JsonValue;
         id: string;
         updatedAt: Date;
+        weights: import("@prisma/client/runtime/library").JsonValue;
         presetKey: string;
         displayNameHe: string;
         lowScoreThreshold: import("@prisma/client/runtime/library").Decimal;
@@ -81,13 +81,13 @@ export declare class AdminController {
     } & {
         id: string;
         createdAt: Date;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        actorUserId: string | null;
         action: string;
         entityType: string;
         entityId: string;
         before: import("@prisma/client/runtime/library").JsonValue | null;
         after: import("@prisma/client/runtime/library").JsonValue | null;
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-        actorUserId: string | null;
     })[]>;
     overview(): Promise<{
         users: number;
@@ -99,8 +99,8 @@ export declare class AdminController {
     }>;
     catalogOptions(): Promise<{
         categories: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
             nameHe: string;
@@ -114,6 +114,7 @@ export declare class AdminController {
         } & {
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -126,7 +127,173 @@ export declare class AdminController {
             isFeatured: boolean;
             pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
-            userId: string;
         })[];
     }>;
+    users(): Promise<{
+        id: string;
+        fullName: string;
+        email: string;
+        phone: string;
+        role: import(".prisma/client").$Enums.UserRole;
+        status: import(".prisma/client").$Enums.UserStatus;
+        locale: string;
+        createdAt: Date;
+        hasRenterProfile: boolean;
+        hasLenderProfile: boolean;
+        lenderDisplayName: string | null;
+    }[]>;
+    moderationQueue(): Promise<({
+        lender: {
+            userId: string;
+            displayName: string;
+        };
+        category: {
+            id: string;
+            slug: string;
+            nameHe: string;
+        };
+    } & {
+        id: string;
+        lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        status: import(".prisma/client").$Enums.ListingStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        categoryId: string;
+        titleHe: string;
+        titleEn: string;
+        descriptionHe: string;
+        descriptionEn: string;
+        suitableFor: string | null;
+        mainUses: string | null;
+        condition: import(".prisma/client").$Enums.ListingCondition;
+        basePriceDaily: import("@prisma/client/runtime/library").Decimal;
+        qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
+        pickupLat: import("@prisma/client/runtime/library").Decimal;
+        pickupLng: import("@prisma/client/runtime/library").Decimal;
+        pickupAddressText: string;
+        city: string | null;
+        pickupInstructions: string | null;
+        deliverySupported: boolean;
+        includedItems: import("@prisma/client/runtime/library").JsonValue | null;
+        cancellationPolicy: string | null;
+        returnTerms: string | null;
+        requiresOperator: boolean;
+        setupRequired: boolean;
+        inventoryCount: number;
+        minRentalDays: number;
+        maxRentalDays: number;
+    })[]>;
+    bookings(): Promise<({
+        renter: {
+            id: string;
+            fullName: string;
+            email: string;
+        };
+        items: ({
+            listing: {
+                id: string;
+                titleHe: string;
+            };
+            lender: {
+                userId: string;
+                displayName: string;
+            };
+        } & {
+            id: string;
+            bookingId: string;
+            listingId: string;
+            lenderId: string;
+            quantity: number;
+            itemPrice: import("@prisma/client/runtime/library").Decimal;
+            depositAmount: import("@prisma/client/runtime/library").Decimal;
+            pickupMethod: import(".prisma/client").$Enums.PickupMethod;
+            pickupWindow: import("@prisma/client/runtime/library").JsonValue | null;
+        })[];
+    } & {
+        id: string;
+        renterId: string;
+        bundleCandidateId: string | null;
+        status: import(".prisma/client").$Enums.BookingStatus;
+        startDate: Date;
+        endDate: Date;
+        totalPrice: import("@prisma/client/runtime/library").Decimal;
+        totalDeposit: import("@prisma/client/runtime/library").Decimal;
+        logisticsScoreSnapshot: import("@prisma/client/runtime/library").Decimal;
+        reliabilityScoreSnapshot: import("@prisma/client/runtime/library").Decimal;
+        paymentStatus: import(".prisma/client").$Enums.PaymentStatus;
+        paymentReference: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
+    disputes(): Promise<({
+        booking: {
+            id: string;
+            status: import(".prisma/client").$Enums.BookingStatus;
+        };
+        openedBy: {
+            id: string;
+            fullName: string;
+            email: string;
+        };
+        assignedAdmin: {
+            id: string;
+            fullName: string;
+            email: string;
+        } | null;
+    } & {
+        id: string;
+        bookingId: string;
+        status: import(".prisma/client").$Enums.DisputeStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        reason: string;
+        openedByUserId: string;
+        assignedAdminId: string | null;
+        resolutionNote: string | null;
+    })[]>;
+    reviews(): Promise<({
+        listing: {
+            id: string;
+            titleHe: string;
+        } | null;
+        reviewer: {
+            id: string;
+            fullName: string;
+            email: string;
+        };
+        reviewee: {
+            id: string;
+            fullName: string;
+            email: string;
+        };
+    } & {
+        id: string;
+        bookingId: string;
+        listingId: string | null;
+        createdAt: Date;
+        reviewerId: string;
+        revieweeUserId: string;
+        rating: number;
+        text: string;
+        tags: import("@prisma/client/runtime/library").JsonValue | null;
+    })[]>;
+    rankingConfig(): Promise<({
+        updatedBy: {
+            id: string;
+            fullName: string;
+            email: string;
+        } | null;
+    } & {
+        id: string;
+        updatedAt: Date;
+        weights: import("@prisma/client/runtime/library").JsonValue;
+        presetKey: string;
+        displayNameHe: string;
+        lowScoreThreshold: import("@prisma/client/runtime/library").Decimal;
+        stdDevAlpha: import("@prisma/client/runtime/library").Decimal;
+        lowScoreBeta: import("@prisma/client/runtime/library").Decimal;
+        bottleneckGamma: import("@prisma/client/runtime/library").Decimal;
+        updatedByUserId: string | null;
+    })[]>;
 }

@@ -3,7 +3,7 @@ import { SiteShell } from "../../../components/site-shell";
 
 export default function ForgotPasswordPage() {
   return (
-    <SiteShell>
+    <SiteShell activeHref="/">
       <section className="surface-section py-14">
         <Card className="mx-auto max-w-md space-y-5 p-6 md:p-8">
           <div>

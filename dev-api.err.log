@@ -1,0 +1,1908 @@
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: Cannot find module './beam-search.service'
+Require stack:
+- C:\Projects\workshop\apps\api\src\modules\bundle-optimizer\bundle-optimizer.module.ts
+- C:\Projects\workshop\apps\api\src\app.module.ts
+- C:\Projects\workshop\apps\api\src\main.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue (C:\Projects\workshop\node_modules\@cspotcode\source-map-support\source-map-support.js:811:30)
+    at Function.Module._resolveFilename (C:\Projects\workshop\node_modules\tsconfig-paths\src\register.ts:115:36)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)
+    at require (node:internal/modules/helpers:147:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Projects\\workshop\\apps\\api\\src\\modules\\bundle-optimizer\\bundle-optimizer.module.ts',
+    'C:\\Projects\\workshop\\apps\\api\\src\\app.module.ts',
+    'C:\\Projects\\workshop\\apps\\api\\src\\main.ts'
+  ]
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: Cannot find module './bundle-optimizer.service'
+Require stack:
+- C:\Projects\workshop\apps\api\src\modules\bundle-optimizer\bundle-optimizer.controller.ts
+- C:\Projects\workshop\apps\api\src\modules\bundle-optimizer\bundle-optimizer.module.ts
+- C:\Projects\workshop\apps\api\src\app.module.ts
+- C:\Projects\workshop\apps\api\src\main.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue (C:\Projects\workshop\node_modules\@cspotcode\source-map-support\source-map-support.js:811:30)
+    at Function.Module._resolveFilename (C:\Projects\workshop\node_modules\tsconfig-paths\src\register.ts:115:36)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)
+    at require (node:internal/modules/helpers:147:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Projects\\workshop\\apps\\api\\src\\modules\\bundle-optimizer\\bundle-optimizer.controller.ts',
+    'C:\\Projects\\workshop\\apps\\api\\src\\modules\\bundle-optimizer\\bundle-optimizer.module.ts',
+    'C:\\Projects\\workshop\\apps\\api\\src\\app.module.ts',
+    'C:\\Projects\\workshop\\apps\\api\\src\\main.ts'
+  ]
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+C:\Projects\workshop\apps\api\src\modules\bundle-optimizer\candidate-filter.service.ts:107
+                const distanceKm = (0, utils_1.haversineDistanceKm)({ lat: req.userLocation.lat, lng: req.userLocation.lng }, {
+                      ^
+
+SyntaxError: Identifier 'distanceKm' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1638:18)
+    at Module._compile (node:internal/modules/cjs/loader:1680:20)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)
+C:\Projects\workshop\apps\api\src\modules\bundle-optimizer\candidate-filter.service.ts:114
+                const distanceKm = (0, utils_1.haversineDistanceKm)({ lat: req.userLocation.lat, lng: req.userLocation.lng }, {
+                      ^
+
+SyntaxError: Identifier 'distanceKm' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1638:18)
+    at Module._compile (node:internal/modules/cjs/loader:1680:20)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)
+C:\Projects\workshop\apps\api\src\modules\bundle-optimizer\candidate-filter.service.ts:119
+                const distanceKm = (0, utils_1.haversineDistanceKm)({ lat: req.userLocation.lat, lng: req.userLocation.lng }, {
+                      ^
+
+SyntaxError: Identifier 'distanceKm' has already been declared
+    at wrapSafe (node:internal/modules/cjs/loader:1638:18)
+    at Module._compile (node:internal/modules/cjs/loader:1680:20)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: Cannot find module './bundle-optimizer.service'
+Require stack:
+- C:\Projects\workshop\apps\api\src\modules\bundle-optimizer\bundle-optimizer.controller.ts
+- C:\Projects\workshop\apps\api\src\modules\bundle-optimizer\bundle-optimizer.module.ts
+- C:\Projects\workshop\apps\api\src\app.module.ts
+- C:\Projects\workshop\apps\api\src\main.ts
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue (C:\Projects\workshop\node_modules\@cspotcode\source-map-support\source-map-support.js:811:30)
+    at Function.Module._resolveFilename (C:\Projects\workshop\node_modules\tsconfig-paths\src\register.ts:115:36)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.require (node:internal/modules/cjs/loader:1463:12)
+    at require (node:internal/modules/helpers:147:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Projects\\workshop\\apps\\api\\src\\modules\\bundle-optimizer\\bundle-optimizer.controller.ts',
+    'C:\\Projects\\workshop\\apps\\api\\src\\modules\\bundle-optimizer\\bundle-optimizer.module.ts',
+    'C:\\Projects\\workshop\\apps\\api\\src\\app.module.ts',
+    'C:\\Projects\\workshop\\apps\\api\\src\\main.ts'
+  ]
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+(node:28096) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 exit listeners added to [Bus]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(160,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(166,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+C:\Projects\workshop\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/modules/addresses/addresses.service.ts(260,10): error TS1005: ',' expected.
+
+    at createTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\workshop\node_modules\ts-node\src\index.ts:863:19)
+    at C:\Projects\workshop\node_modules\ts-node\src\index.ts:1379:34
+    at Object.compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1458:13)
+    at Module.m._compile (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1839:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\workshop\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14) {
+  diagnosticCodes: [ 1005 ]
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Projects\workshop\node_modules\@nestjs\platform-express\adapters\express-adapter.js:115:32)
+    at C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Projects\workshop\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Projects\workshop\apps\api\src\main.ts:34:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4000
+}

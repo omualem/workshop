@@ -2,11 +2,13 @@ import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { AddressesModule } from "./modules/addresses/addresses.module";
 import { AuditModule } from "./modules/audit/audit.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { AvailabilityModule } from "./modules/availability/availability.module";
 import { BookingsModule } from "./modules/bookings/bookings.module";
 import { BundleSearchModule } from "./modules/bundle-search/bundle-search.module";
+import { BundleOptimizerModule } from "./modules/bundle-optimizer/bundle-optimizer.module";
 import { CategoriesModule } from "./modules/categories/categories.module";
 import { HealthModule } from "./modules/health/health.module";
 import { ListingsModule } from "./modules/listings/listings.module";
@@ -41,6 +43,7 @@ import { RedisModule } from "./shared/redis/redis.module";
     UsersModule,
     RentersModule,
     LendersModule,
+    AddressesModule,
     CategoriesModule,
     ListingsModule,
     AvailabilityModule,
@@ -49,6 +52,7 @@ import { RedisModule } from "./shared/redis/redis.module";
     ReviewsModule,
     NotificationsModule,
     BundleSearchModule,
+    BundleOptimizerModule,
     AuditModule,
     AdminModule,
     HealthModule,

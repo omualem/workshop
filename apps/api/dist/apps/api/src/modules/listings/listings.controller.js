@@ -37,6 +37,10 @@ let ListingsController = class ListingsController {
     findAll(query) {
         return this.listingsService.findAll(query);
     }
+    search(q, limit) {
+        const parsedLimit = limit ? parseInt(limit, 10) : 10;
+        return this.listingsService.searchActive(q, parsedLimit);
+    }
     findOne(id) {
         return this.listingsService.findOne(id);
     }
@@ -80,6 +84,15 @@ __decorate([
     __metadata("design:paramtypes", [listing_query_dto_1.ListingQueryDto]),
     __metadata("design:returntype", void 0)
 ], ListingsController.prototype, "findAll", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)("listings/search"),
+    __param(0, (0, common_1.Query)("q")),
+    __param(1, (0, common_1.Query)("limit")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], ListingsController.prototype, "search", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)("listings/:id"),

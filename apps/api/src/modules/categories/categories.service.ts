@@ -18,10 +18,13 @@ export class CategoriesService {
 
   findAll() {
     return this.prisma.category.findMany({
-      where: { status: "ACTIVE" },
-      orderBy: [{ parentId: "asc" }, { nameHe: "asc" }],
+      where: { status: "ACTIVE", parentId: null },
+      orderBy: { nameHe: "asc" },
       include: {
-        children: true,
+        children: {
+          where: { status: "ACTIVE" },
+          orderBy: { nameHe: "asc" },
+        },
       },
     });
   }
@@ -72,7 +75,9 @@ export class CategoriesService {
         slug: dto.slug,
         nameHe: dto.nameHe,
         nameEn: dto.nameEn,
-        attributesSchema: dto.attributesSchema as Prisma.InputJsonValue | undefined,
+        attributesSchema: dto.attributesSchema as
+          | Prisma.InputJsonValue
+          | undefined,
         status: dto.status ?? "ACTIVE",
       },
       include: {
@@ -118,7 +123,9 @@ export class CategoriesService {
         slug: dto.slug,
         nameHe: dto.nameHe,
         nameEn: dto.nameEn,
-        attributesSchema: dto.attributesSchema as Prisma.InputJsonValue | undefined,
+        attributesSchema: dto.attributesSchema as
+          | Prisma.InputJsonValue
+          | undefined,
         status: dto.status,
       },
       include: {

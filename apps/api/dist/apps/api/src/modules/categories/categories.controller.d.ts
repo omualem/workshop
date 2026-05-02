@@ -6,8 +6,8 @@ export declare class CategoriesController {
     constructor(categoriesService: CategoriesService);
     findAll(): import(".prisma/client").Prisma.PrismaPromise<({
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -17,8 +17,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;
@@ -32,8 +32,8 @@ export declare class CategoriesController {
             listings: number;
         };
         parent: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -43,8 +43,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         } | null;
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -54,8 +54,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;
@@ -68,8 +68,8 @@ export declare class CategoriesController {
         sub: string;
     }): Promise<{
         parent: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -79,8 +79,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         } | null;
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -90,8 +90,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;
@@ -104,8 +104,8 @@ export declare class CategoriesController {
         sub: string;
     }): Promise<{
         parent: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -115,8 +115,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         } | null;
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -126,8 +126,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;
@@ -138,8 +138,8 @@ export declare class CategoriesController {
     }>;
     findOne(id: string): Promise<{
         parent: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -149,8 +149,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         } | null;
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -160,8 +160,8 @@ export declare class CategoriesController {
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;

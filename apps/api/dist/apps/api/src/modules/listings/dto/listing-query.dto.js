@@ -16,6 +16,12 @@ class ListingQueryDto {
     search;
     lenderId;
     deliverySupported;
+    minPrice;
+    maxPrice;
+    startDate;
+    endDate;
+    page;
+    pageSize;
 }
 exports.ListingQueryDto = ListingQueryDto;
 __decorate([
@@ -38,4 +44,34 @@ __decorate([
     (0, class_validator_1.IsBooleanString)(),
     __metadata("design:type", String)
 ], ListingQueryDto.prototype, "deliverySupported", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumberString)(),
+    __metadata("design:type", String)
+], ListingQueryDto.prototype, "minPrice", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumberString)(),
+    __metadata("design:type", String)
+], ListingQueryDto.prototype, "maxPrice", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ListingQueryDto.prototype, "startDate", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ListingQueryDto.prototype, "endDate", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumberString)(),
+    __metadata("design:type", String)
+], ListingQueryDto.prototype, "page", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumberString)(),
+    __metadata("design:type", String)
+], ListingQueryDto.prototype, "pageSize", void 0);
 //# sourceMappingURL=listing-query.dto.js.map

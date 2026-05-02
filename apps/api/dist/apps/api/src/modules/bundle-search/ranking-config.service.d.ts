@@ -12,11 +12,11 @@ export declare class RankingConfigService {
         quality: number;
     }>;
     updatePreset(presetKey: string, displayNameHe: string, weights: RankingWeights, actorUserId?: string): Promise<{
-        weights: import("@prisma/client/runtime/library").JsonValue;
         id: string;
         updatedAt: Date;
         presetKey: string;
         displayNameHe: string;
+        weights: import("@prisma/client/runtime/library").JsonValue;
         lowScoreThreshold: import("@prisma/client/runtime/library").Decimal;
         stdDevAlpha: import("@prisma/client/runtime/library").Decimal;
         lowScoreBeta: import("@prisma/client/runtime/library").Decimal;

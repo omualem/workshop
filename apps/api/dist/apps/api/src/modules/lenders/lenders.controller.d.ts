@@ -7,8 +7,8 @@ export declare class LendersController {
         sub: string;
     }): Promise<{
         user: {
-            status: import(".prisma/client").$Enums.UserStatus;
             id: string;
+            status: import(".prisma/client").$Enums.UserStatus;
             fullName: string;
             email: string;
             phone: string;
@@ -16,6 +16,7 @@ export declare class LendersController {
     } & {
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         displayName: string;
         bio: string | null;
         averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -28,13 +29,13 @@ export declare class LendersController {
         isFeatured: boolean;
         pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
         reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
-        userId: string;
     }>;
     update(user: {
         sub: string;
     }, dto: UpdateLenderProfileDto): Promise<{
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         displayName: string;
         bio: string | null;
         averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -47,6 +48,5 @@ export declare class LendersController {
         isFeatured: boolean;
         pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
         reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
-        userId: string;
     }>;
 }

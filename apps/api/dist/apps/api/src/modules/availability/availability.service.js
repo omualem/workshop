@@ -51,6 +51,31 @@ let AvailabilityService = class AvailabilityService {
         });
         return blocks.reduce((sum, block) => sum + block.quantity, 0);
     }
+    async getAvailabilityReason(listingId, startDate, endDate) {
+        const block = await this.prisma.listingAvailabilityBlock.findFirst({
+            where: {
+                listingId,
+                startDate: { lt: endDate },
+                endDate: { gt: startDate },
+                status: {
+                    in: ["BLOCKED", "BOOKED", "MAINTENANCE"],
+                },
+            },
+            orderBy: { startDate: "asc" },
+            select: { status: true },
+        });
+        if (block?.status === "BOOKED") {
+            return "booked";
+        }
+        if (block?.status === "MAINTENANCE") {
+            return "maintenance";
+        }
+        if (block?.status === "BLOCKED") {
+            return "blocked";
+        }
+        const bookedQuantity = await this.getBookedQuantity(listingId, startDate, endDate);
+        return bookedQuantity > 0 ? "booked" : "blocked";
+    }
     async isListingAvailable(listingId, quantity, startDate, endDate, inventoryCount) {
         const listing = inventoryCount !== undefined
             ? { inventoryCount }
@@ -65,7 +90,7 @@ let AvailabilityService = class AvailabilityService {
             this.getBookedQuantity(listingId, startDate, endDate),
             this.getBlockedQuantity(listingId, startDate, endDate),
         ]);
-        return bookedQuantity + blockedQuantity + quantity <= listing.inventoryCount;
+        return (bookedQuantity + blockedQuantity + quantity <= listing.inventoryCount);
     }
     async availabilityFragilityScore(listingId, startDate, endDate) {
         const listing = await this.prisma.listing.findUnique({

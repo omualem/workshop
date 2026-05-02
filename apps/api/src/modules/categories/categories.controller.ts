@@ -28,6 +28,7 @@ export class CategoriesController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("ADMIN")
+  @Public()
   @Get("admin/manage")
   findAllAdmin() {
     return this.categoriesService.findAllAdmin();

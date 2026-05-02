@@ -11,6 +11,8 @@
     "db:generate": "npm run prisma:generate -w apps/api",
     "db:migrate": "npm run prisma:migrate -w apps/api",
     "db:seed": "npm run prisma:seed -w apps/api",
+    "db:import:addresses": "npm run db:import:addresses -w apps/api",
+    "db:seed:optimizer-demo": "npm run db:seed:optimizer-demo -w apps/api",
     "db:reset": "node scripts/reset-local-db.mjs && npm run setup:local",
     "dev:web": "npm run dev -w apps/web",
     "dev:api": "npm run start:dev -w apps/api",

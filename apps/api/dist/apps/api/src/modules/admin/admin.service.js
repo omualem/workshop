@@ -46,8 +46,8 @@ let AdminService = class AdminService {
     async overview() {
         const [users, lenders, renters, listings, bundleSearches, disputes] = await Promise.all([
             this.prisma.user.count(),
-            this.prisma.user.count({ where: { role: "LENDER" } }),
-            this.prisma.user.count({ where: { role: "RENTER" } }),
+            this.prisma.lenderProfile.count(),
+            this.prisma.renterProfile.count(),
             this.prisma.listing.count(),
             this.prisma.bundleSearchRequest.count(),
             this.prisma.dispute.count(),
@@ -87,6 +87,104 @@ let AdminService = class AdminService {
             }),
         ]);
         return { categories, lenders };
+    }
+    async users() {
+        const users = await this.prisma.user.findMany({
+            orderBy: [{ role: "asc" }, { email: "asc" }],
+            include: {
+                renterProfile: true,
+                lenderProfile: true,
+            },
+        });
+        return users.map((user) => ({
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            status: user.status,
+            locale: user.locale,
+            createdAt: user.createdAt,
+            hasRenterProfile: Boolean(user.renterProfile),
+            hasLenderProfile: Boolean(user.lenderProfile),
+            lenderDisplayName: user.lenderProfile?.displayName ?? null,
+        }));
+    }
+    async moderationQueue() {
+        return this.prisma.listing.findMany({
+            where: { status: "PENDING_REVIEW" },
+            orderBy: { updatedAt: "asc" },
+            include: {
+                category: {
+                    select: { id: true, nameHe: true, slug: true },
+                },
+                lender: {
+                    select: { userId: true, displayName: true },
+                },
+            },
+        });
+    }
+    async bookings() {
+        return this.prisma.booking.findMany({
+            orderBy: { createdAt: "desc" },
+            include: {
+                renter: {
+                    select: { id: true, fullName: true, email: true },
+                },
+                items: {
+                    include: {
+                        listing: {
+                            select: { id: true, titleHe: true },
+                        },
+                        lender: {
+                            select: { userId: true, displayName: true },
+                        },
+                    },
+                },
+            },
+        });
+    }
+    async disputes() {
+        return this.prisma.dispute.findMany({
+            orderBy: { createdAt: "desc" },
+            include: {
+                openedBy: {
+                    select: { id: true, fullName: true, email: true },
+                },
+                assignedAdmin: {
+                    select: { id: true, fullName: true, email: true },
+                },
+                booking: {
+                    select: { id: true, status: true },
+                },
+            },
+        });
+    }
+    async reviews() {
+        return this.prisma.review.findMany({
+            orderBy: { createdAt: "desc" },
+            include: {
+                reviewer: {
+                    select: { id: true, fullName: true, email: true },
+                },
+                reviewee: {
+                    select: { id: true, fullName: true, email: true },
+                },
+                listing: {
+                    select: { id: true, titleHe: true },
+                },
+            },
+        });
+    }
+    async rankingConfig() {
+        return this.prisma.rankingConfig.findMany({
+            orderBy: { presetKey: "asc" },
+            include: {
+                updatedBy: {
+                    select: { id: true, fullName: true, email: true },
+                },
+            },
+        });
     }
 };
 exports.AdminService = AdminService;

@@ -25,12 +25,21 @@ let ListingsService = class ListingsService {
         this.availabilityService = availabilityService;
     }
     async findAll(query) {
+        const page = Math.max(1, parseInt(query.page ?? "1", 10));
+        const pageSize = Math.min(50, Math.max(1, parseInt(query.pageSize ?? "12", 10)));
+        const priceGte = query.minPrice !== undefined ? parseFloat(query.minPrice) : undefined;
+        const priceLte = query.maxPrice !== undefined ? parseFloat(query.maxPrice) : undefined;
         const listings = await this.prisma.listing.findMany({
             where: {
                 status: "ACTIVE",
-                categoryId: query.categoryId,
-                lenderId: query.lenderId,
-                deliverySupported: query.deliverySupported !== undefined ? query.deliverySupported === "true" : undefined,
+                categoryId: query.categoryId ?? undefined,
+                lenderId: query.lenderId ?? undefined,
+                deliverySupported: query.deliverySupported !== undefined
+                    ? query.deliverySupported === "true"
+                    : undefined,
+                basePriceDaily: priceGte !== undefined || priceLte !== undefined
+                    ? { gte: priceGte, lte: priceLte }
+                    : undefined,
                 OR: query.search
                     ? [
                         { titleHe: { contains: query.search } },
@@ -50,16 +59,81 @@ let ListingsService = class ListingsService {
                 media: {
                     orderBy: { sortOrder: "asc" },
                 },
+                attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
             },
             orderBy: [{ qualityScoreCached: "desc" }, { createdAt: "desc" }],
         });
-        return listings.map((listing) => (0, prisma_utils_1.normalizeDecimalObject)(listing));
+        let filtered = listings;
+        if (query.startDate && query.endDate) {
+            const start = new Date(query.startDate);
+            const end = new Date(query.endDate);
+            const availableFlags = await Promise.all(listings.map((listing) => this.availabilityService.isListingAvailable(listing.id, 1, start, end, listing.inventoryCount)));
+            filtered = listings.filter((_, i) => availableFlags[i]);
+        }
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        const skip = (page - 1) * pageSize;
+        const items = filtered
+            .slice(skip, skip + pageSize)
+            .map((listing) => (0, prisma_utils_1.normalizeDecimalObject)(listing));
+        return { items, total, page, pageSize, totalPages };
+    }
+    async searchActive(q, limit) {
+        const safeLimit = Math.min(50, Math.max(1, Number.isFinite(limit) ? limit : 10));
+        const term = (q ?? "").trim();
+        const items = await this.prisma.listing.findMany({
+            where: {
+                status: "ACTIVE",
+                ...(term
+                    ? {
+                        OR: [
+                            { titleHe: { contains: term } },
+                            { titleEn: { contains: term } },
+                        ],
+                    }
+                    : {}),
+            },
+            include: {
+                category: true,
+                lender: { include: { user: true } },
+                media: { orderBy: { sortOrder: "asc" }, take: 1 },
+            },
+            orderBy: [{ qualityScoreCached: "desc" }, { createdAt: "desc" }],
+            take: safeLimit,
+        });
+        return items.map((listing) => {
+            const normalized = (0, prisma_utils_1.normalizeDecimalObject)(listing);
+            return {
+                id: normalized.id,
+                titleHe: normalized.titleHe,
+                titleEn: normalized.titleEn,
+                categoryId: normalized.categoryId,
+                category: normalized.category
+                    ? { id: normalized.category.id, nameHe: normalized.category.nameHe }
+                    : null,
+                basePriceDaily: normalized.basePriceDaily,
+                condition: normalized.condition,
+                city: null,
+                lenderName: normalized.lender?.displayName ?? normalized.lender?.user?.fullName ?? null,
+                thumbnail: normalized.media?.[0]?.url ?? null,
+            };
+        });
     }
     async findOne(id) {
+        if (id === "mock" && this.isLocalDevelopment()) {
+            return this.mockListingDetail();
+        }
         const listing = await this.prisma.listing.findUnique({
             where: { id },
             include: {
-                category: true,
+                category: {
+                    include: {
+                        parent: true,
+                    },
+                },
                 lender: {
                     include: {
                         user: true,
@@ -68,6 +142,9 @@ let ListingsService = class ListingsService {
                 },
                 media: { orderBy: { sortOrder: "asc" } },
                 attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
                 pricingRules: true,
                 reviews: {
                     include: {
@@ -83,16 +160,19 @@ let ListingsService = class ListingsService {
         if (!listing) {
             throw new common_1.NotFoundException("Listing not found");
         }
-        return (0, prisma_utils_1.normalizeDecimalObject)({
-            ...listing,
-            completenessHints: this.computeListingCompletenessHints(listing),
-        });
+        return this.toListingDetailResponse(listing);
     }
     async create(lenderId, dto) {
         const listing = await this.prisma.listing.create({
             data: this.buildListingWriteData(dto, lenderId, "PENDING_REVIEW"),
             include: {
                 attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
+                media: {
+                    orderBy: { sortOrder: "asc" },
+                },
             },
         });
         await this.auditService.log({
@@ -108,9 +188,15 @@ let ListingsService = class ListingsService {
         const existing = await this.requireLenderOwnedListing(lenderId, id);
         const updated = await this.prisma.listing.update({
             where: { id },
-            data: this.buildListingUpdateData(dto),
+            data: this.buildListingUpdateData(dto, existing),
             include: {
                 attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
+                media: {
+                    orderBy: { sortOrder: "asc" },
+                },
             },
         });
         await this.auditService.log({
@@ -175,6 +261,9 @@ let ListingsService = class ListingsService {
         return listings.map((listing) => (0, prisma_utils_1.normalizeDecimalObject)(listing));
     }
     async publicAvailability(id, startDate, endDate) {
+        if (id === "mock" && this.isLocalDevelopment()) {
+            return this.availabilityResponseForDates(startDate, endDate, true);
+        }
         const listing = await this.prisma.listing.findUnique({
             where: { id },
             select: { inventoryCount: true },
@@ -182,8 +271,18 @@ let ListingsService = class ListingsService {
         if (!listing) {
             throw new common_1.NotFoundException("Listing not found");
         }
-        const available = await this.availabilityService.isListingAvailable(id, 1, new Date(startDate), new Date(endDate), listing.inventoryCount);
-        return { available };
+        const parsed = this.parseAvailabilityDates(startDate, endDate);
+        if (!parsed) {
+            return { available: false, reason: "invalid_date_range" };
+        }
+        const available = await this.availabilityService.isListingAvailable(id, 1, parsed.start, parsed.end, listing.inventoryCount);
+        if (available) {
+            return { available: true, reason: null };
+        }
+        return {
+            available: false,
+            reason: await this.availabilityService.getAvailabilityReason(id, parsed.start, parsed.end),
+        };
     }
     async adminFindAll(query) {
         const listings = await this.prisma.listing.findMany({
@@ -210,6 +309,10 @@ let ListingsService = class ListingsService {
                 media: {
                     orderBy: { sortOrder: "asc" },
                 },
+                attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
             },
             orderBy: [{ updatedAt: "desc" }],
         });
@@ -224,6 +327,13 @@ let ListingsService = class ListingsService {
                     include: {
                         user: true,
                     },
+                },
+                media: {
+                    orderBy: { sortOrder: "asc" },
+                },
+                attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
                 },
             },
         });
@@ -241,6 +351,12 @@ let ListingsService = class ListingsService {
             where: { id },
             include: {
                 attributeValues: true,
+                media: {
+                    orderBy: { sortOrder: "asc" },
+                },
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
             },
         });
         if (!existing) {
@@ -248,13 +364,20 @@ let ListingsService = class ListingsService {
         }
         const updated = await this.prisma.listing.update({
             where: { id },
-            data: this.buildListingUpdateData(dto),
+            data: this.buildListingUpdateData(dto, existing),
             include: {
                 category: true,
                 lender: {
                     include: {
                         user: true,
                     },
+                },
+                media: {
+                    orderBy: { sortOrder: "asc" },
+                },
+                attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
                 },
             },
         });
@@ -269,22 +392,33 @@ let ListingsService = class ListingsService {
         return (0, prisma_utils_1.normalizeDecimalObject)(updated);
     }
     buildListingWriteData(dto, lenderId, status) {
+        this.assertRentalDayBounds(dto.minRentalDays, dto.maxRentalDays);
+        const location = this.resolvePickupLocation(dto);
         return {
-            lenderId,
-            categoryId: dto.categoryId,
+            lender: { connect: { userId: lenderId } },
+            category: { connect: { id: dto.categoryId } },
             titleHe: dto.titleHe,
             titleEn: dto.titleEn,
             descriptionHe: dto.descriptionHe,
             descriptionEn: dto.descriptionEn,
+            suitableFor: dto.suitableFor,
+            mainUses: dto.mainUses,
             condition: dto.condition,
             status,
             basePriceDaily: dto.basePriceDaily,
             depositAmount: dto.depositAmount,
             qualityScoreCached: 0,
-            pickupLat: dto.pickupLat,
-            pickupLng: dto.pickupLng,
-            pickupAddressText: dto.pickupAddressText,
+            pickupLat: location.pickupLat,
+            pickupLng: location.pickupLng,
+            pickupAddressText: location.pickupAddressText,
+            city: location.city,
+            pickupInstructions: dto.pickupInstructions,
             deliverySupported: dto.deliverySupported,
+            includedItems: dto.includedItems,
+            cancellationPolicy: dto.cancellationPolicy,
+            returnTerms: dto.returnTerms,
+            requiresOperator: dto.requiresOperator ?? false,
+            setupRequired: dto.setupRequired ?? false,
             inventoryCount: dto.inventoryCount,
             minRentalDays: dto.minRentalDays,
             maxRentalDays: dto.maxRentalDays,
@@ -296,24 +430,59 @@ let ListingsService = class ListingsService {
                     })),
                 }
                 : undefined,
+            media: "imageUrls" in dto && dto.imageUrls?.length
+                ? {
+                    create: dto.imageUrls.map((url, index) => ({
+                        url,
+                        sortOrder: index,
+                        altText: dto.titleHe,
+                    })),
+                }
+                : undefined,
+            availabilityBlocks: dto.availabilityBlocks?.length
+                ? {
+                    create: dto.availabilityBlocks.map((block) => ({
+                        startDate: new Date(block.startDate),
+                        endDate: new Date(block.endDate),
+                        status: block.status ?? "BLOCKED",
+                        quantity: block.quantity ?? 1,
+                        reason: block.reason,
+                    })),
+                }
+                : undefined,
         };
     }
-    buildListingUpdateData(dto) {
+    buildListingUpdateData(dto, existing) {
+        this.assertRentalDayBounds(dto.minRentalDays ?? existing?.minRentalDays, dto.maxRentalDays ?? existing?.maxRentalDays);
+        const location = this.resolvePickupLocation(dto, existing);
         return {
-            lenderId: "lenderId" in dto ? dto.lenderId : undefined,
-            categoryId: dto.categoryId,
+            lender: "lenderId" in dto && dto.lenderId
+                ? { connect: { userId: dto.lenderId } }
+                : undefined,
+            category: dto.categoryId
+                ? { connect: { id: dto.categoryId } }
+                : undefined,
             titleHe: dto.titleHe,
             titleEn: dto.titleEn,
             descriptionHe: dto.descriptionHe,
             descriptionEn: dto.descriptionEn,
+            suitableFor: dto.suitableFor,
+            mainUses: dto.mainUses,
             condition: dto.condition,
             status: "status" in dto ? dto.status : undefined,
             basePriceDaily: dto.basePriceDaily,
             depositAmount: dto.depositAmount,
-            pickupLat: dto.pickupLat,
-            pickupLng: dto.pickupLng,
-            pickupAddressText: dto.pickupAddressText,
+            pickupLat: location?.pickupLat,
+            pickupLng: location?.pickupLng,
+            pickupAddressText: location?.pickupAddressText,
+            city: location?.city,
+            pickupInstructions: dto.pickupInstructions,
             deliverySupported: dto.deliverySupported,
+            includedItems: dto.includedItems,
+            cancellationPolicy: dto.cancellationPolicy,
+            returnTerms: dto.returnTerms,
+            requiresOperator: dto.requiresOperator,
+            setupRequired: dto.setupRequired,
             inventoryCount: dto.inventoryCount,
             minRentalDays: dto.minRentalDays,
             maxRentalDays: dto.maxRentalDays,
@@ -326,7 +495,107 @@ let ListingsService = class ListingsService {
                     })),
                 }
                 : undefined,
+            media: "imageUrls" in dto && Array.isArray(dto.imageUrls)
+                ? {
+                    deleteMany: {},
+                    create: dto.imageUrls.map((url, index) => ({
+                        url,
+                        sortOrder: index,
+                        altText: dto.titleHe ?? "תמונת פריט",
+                    })),
+                }
+                : undefined,
+            availabilityBlocks: dto.availabilityBlocks
+                ? {
+                    deleteMany: {},
+                    create: dto.availabilityBlocks.map((block) => ({
+                        startDate: new Date(block.startDate),
+                        endDate: new Date(block.endDate),
+                        status: block.status ?? "BLOCKED",
+                        quantity: block.quantity ?? 1,
+                        reason: block.reason,
+                    })),
+                }
+                : undefined,
         };
+    }
+    assertRentalDayBounds(minDays, maxDays) {
+        if (minDays !== undefined && minDays < 1) {
+            throw new common_1.BadRequestException("minRentalDays must be at least 1");
+        }
+        if (maxDays !== undefined && maxDays < 1) {
+            throw new common_1.BadRequestException("maxRentalDays must be at least 1");
+        }
+        if (minDays !== undefined &&
+            maxDays !== undefined &&
+            maxDays < minDays) {
+            throw new common_1.BadRequestException("maxRentalDays must be greater than or equal to minRentalDays");
+        }
+    }
+    resolvePickupLocation(dto, existing) {
+        const hasLocationInput = dto.pickupLat !== undefined ||
+            dto.pickupLng !== undefined ||
+            dto.pickupAddressText !== undefined ||
+            dto.city !== undefined;
+        if (!hasLocationInput && existing) {
+            return undefined;
+        }
+        const city = dto.city?.trim() || existing?.city || "";
+        const rawAddress = dto.pickupAddressText?.trim() || existing?.pickupAddressText || "";
+        const lat = dto.pickupLat !== undefined && Number.isFinite(dto.pickupLat)
+            ? dto.pickupLat
+            : undefined;
+        const lng = dto.pickupLng !== undefined && Number.isFinite(dto.pickupLng)
+            ? dto.pickupLng
+            : undefined;
+        if (!city && !rawAddress && (lat === undefined || lng === undefined)) {
+            throw new common_1.BadRequestException("pickup location is required");
+        }
+        const pickupAddressText = rawAddress || city || "איסוף עצמי";
+        if (lat !== undefined && lng !== undefined) {
+            return {
+                pickupLat: lat,
+                pickupLng: lng,
+                pickupAddressText,
+                city: city || existing?.city || null,
+            };
+        }
+        const fallback = this.fallbackCoordinatesForCity(city || pickupAddressText, existing
+            ? {
+                lat: (0, prisma_utils_1.decimalToNumber)(existing.pickupLat) ?? 32.0853,
+                lng: (0, prisma_utils_1.decimalToNumber)(existing.pickupLng) ?? 34.7818,
+            }
+            : undefined);
+        return {
+            pickupLat: fallback.lat,
+            pickupLng: fallback.lng,
+            pickupAddressText,
+            city: city || existing?.city || null,
+        };
+    }
+    fallbackCoordinatesForCity(rawValue, fallback) {
+        const normalized = rawValue.toLowerCase().replace(/[\s-]/g, "");
+        const cityMap = {
+            "תלאביב": { lat: 32.0853, lng: 34.7818 },
+            "תלאביביפו": { lat: 32.0853, lng: 34.7818 },
+            "ירושלים": { lat: 31.7683, lng: 35.2137 },
+            "jerusalem": { lat: 31.7683, lng: 35.2137 },
+            "חיפה": { lat: 32.794, lng: 34.9896 },
+            "haifa": { lat: 32.794, lng: 34.9896 },
+            "בארשבע": { lat: 31.252, lng: 34.7915 },
+            "beersheva": { lat: 31.252, lng: 34.7915 },
+            "ראשוןלציון": { lat: 31.973, lng: 34.7925 },
+            "פתחתקווה": { lat: 32.084, lng: 34.8878 },
+            "נתניה": { lat: 32.3215, lng: 34.8532 },
+            "אשדוד": { lat: 31.8014, lng: 34.6435 },
+        };
+        if (cityMap[normalized]) {
+            return cityMap[normalized];
+        }
+        if (fallback) {
+            return fallback;
+        }
+        return { lat: 32.0853, lng: 34.7818 };
     }
     async requireLenderOwnedListing(lenderId, listingId) {
         const listing = await this.prisma.listing.findUnique({
@@ -341,18 +610,314 @@ let ListingsService = class ListingsService {
         }
         return listing;
     }
-    computeListingCompletenessHints(listing) {
-        const hints = [];
-        if (listing.media.length < 3) {
-            hints.push("הוספת תמונות נוספות תשפר את הדירוג");
+    toListingDetailResponse(listing) {
+        const normalized = (0, prisma_utils_1.normalizeDecimalObject)(listing);
+        const ratingValues = listing.reviews.map((review) => review.rating);
+        const averageReviewRating = ratingValues.length > 0
+            ? Math.round((ratingValues.reduce((sum, rating) => sum + rating, 0) /
+                ratingValues.length) *
+                10) / 10
+            : null;
+        return {
+            ...normalized,
+            categoryBreadcrumb: this.categoryBreadcrumb(listing.category),
+            attributes: this.attributesForResponse(listing.category.attributesSchema, listing.attributeValues),
+            includedItems: this.arrayFromJson(listing.includedItems),
+            rentalTerms: {
+                deposit: Number(listing.depositAmount),
+                cancellationPolicy: listing.cancellationPolicy,
+                returnTerms: listing.returnTerms,
+                requiresOperator: listing.requiresOperator,
+                setupRequired: listing.setupRequired,
+            },
+            location: {
+                city: listing.city,
+                area: listing.city,
+                pickupSummary: listing.pickupInstructions ?? listing.pickupAddressText,
+                pickupAddressText: listing.pickupAddressText,
+                lat: normalized.pickupLat,
+                lng: normalized.pickupLng,
+                deliverySupported: listing.deliverySupported,
+            },
+            availabilityBlocks: normalized.availabilityBlocks ?? [],
+            lenderSummary: {
+                id: listing.lender.userId,
+                displayName: listing.lender.displayName,
+                rating: Number(listing.lender.averageRating),
+                reliability: Number(listing.lender.reliabilityScoreCached) >= 8 ||
+                    listing.lender.verificationLevel !== "BASIC"
+                    ? "אמינות גבוהה"
+                    : "אמינות בבדיקה",
+                responseScore: Math.round(Number(listing.lender.responseTimeScore) * 20),
+                completedTransactions: listing.lender.completedTransactionsCount,
+            },
+            reviewSummary: {
+                averageRating: averageReviewRating,
+                count: listing.reviews.length,
+            },
+            recentReviews: normalized.reviews,
+        };
+    }
+    attributesForResponse(attributesSchema, values) {
+        const fields = this.attributeSchemaFields(attributesSchema);
+        const fieldByKey = new Map(fields.map((field) => [field.key, field]));
+        return values.map((value) => {
+            const field = fieldByKey.get(value.attributeKey);
+            return {
+                key: value.attributeKey,
+                labelHe: field?.labelHe ?? value.attributeKey,
+                labelEn: field?.labelEn ?? value.attributeKey,
+                type: field?.type ?? typeof value.attributeValue,
+                value: value.attributeValue,
+            };
+        });
+    }
+    attributeSchemaFields(attributesSchema) {
+        if (!attributesSchema ||
+            typeof attributesSchema !== "object" ||
+            Array.isArray(attributesSchema)) {
+            return [];
         }
-        if (listing.descriptionHe.length < 80 || listing.descriptionEn.length < 80) {
-            hints.push("תיאור מפורט יותר יחזק את ציון האיכות");
+        const fields = attributesSchema.fields;
+        if (!Array.isArray(fields)) {
+            return [];
         }
-        if (listing.attributeValues.length < 3) {
-            hints.push("מומלץ למלא מאפיינים טכניים נוספים");
+        return fields.filter(this.isAttributeField);
+    }
+    isAttributeField(field) {
+        return (typeof field === "object" &&
+            field !== null &&
+            typeof field.key === "string" &&
+            typeof field.labelHe === "string" &&
+            typeof field.labelEn === "string" &&
+            typeof field.type === "string");
+    }
+    categoryBreadcrumb(category) {
+        return [
+            ...(category.parent
+                ? [
+                    {
+                        id: category.parent.id,
+                        slug: category.parent.slug,
+                        nameHe: category.parent.nameHe,
+                        nameEn: category.parent.nameEn,
+                    },
+                ]
+                : []),
+            {
+                id: category.id,
+                slug: category.slug,
+                nameHe: category.nameHe,
+                nameEn: category.nameEn,
+            },
+        ];
+    }
+    arrayFromJson(value) {
+        return Array.isArray(value)
+            ? value.filter((item) => typeof item === "string")
+            : [];
+    }
+    parseAvailabilityDates(startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (!startDate ||
+            !endDate ||
+            Number.isNaN(start.getTime()) ||
+            Number.isNaN(end.getTime()) ||
+            start >= end) {
+            return null;
         }
-        return hints;
+        return { start, end };
+    }
+    availabilityResponseForDates(startDate, endDate, available) {
+        const parsed = this.parseAvailabilityDates(startDate, endDate);
+        if (!parsed) {
+            return { available: false, reason: "invalid_date_range" };
+        }
+        return { available, reason: available ? null : "blocked" };
+    }
+    isLocalDevelopment() {
+        return process.env.NODE_ENV !== "production";
+    }
+    mockListingDetail() {
+        return {
+            id: "mock",
+            titleHe: "רמקול מוגבר JBL לאירועים",
+            titleEn: "JBL Powered Event Speaker",
+            descriptionHe: "רמקול מוגבר איכותי שמתאים לאירועים קטנים ובינוניים, הרצאות, מסיבות וימי הולדת.",
+            descriptionEn: "A quality powered speaker for small and mid-size events, talks, parties and birthdays.",
+            suitableFor: "אירועים פרטיים, הרצאות, מסיבות קטנות, ימי הולדת",
+            mainUses: "השמעת מוזיקה, הגברה לדיבור, קריוקי בסיסי",
+            category: {
+                id: "mock-speakers",
+                slug: "speakers",
+                nameHe: "רמקולים",
+                nameEn: "Speakers",
+                attributesSchema: {
+                    fields: [
+                        {
+                            key: "powerWatts",
+                            type: "string",
+                            labelHe: "הספק",
+                            labelEn: "Power",
+                        },
+                        {
+                            key: "bluetooth",
+                            type: "boolean",
+                            labelHe: "Bluetooth",
+                            labelEn: "Bluetooth",
+                        },
+                        {
+                            key: "batteryPowered",
+                            type: "boolean",
+                            labelHe: "מופעל סוללה",
+                            labelEn: "Battery Powered",
+                        },
+                        {
+                            key: "inputPorts",
+                            type: "string",
+                            labelHe: "כניסות",
+                            labelEn: "Input Ports",
+                        },
+                    ],
+                },
+                parent: {
+                    id: "mock-sound",
+                    slug: "sound",
+                    nameHe: "סאונד",
+                    nameEn: "Sound",
+                },
+            },
+            categoryBreadcrumb: [
+                { id: "mock-sound", slug: "sound", nameHe: "סאונד", nameEn: "Sound" },
+                {
+                    id: "mock-speakers",
+                    slug: "speakers",
+                    nameHe: "רמקולים",
+                    nameEn: "Speakers",
+                },
+            ],
+            media: [
+                {
+                    id: "mock-image-1",
+                    url: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=1400&q=80",
+                    sortOrder: 0,
+                    altText: "רמקול מוגבר JBL לאירועים",
+                },
+                {
+                    id: "mock-image-2",
+                    url: "https://images.unsplash.com/photo-1520170350707-b2da59970118?auto=format&fit=crop&w=900&q=80",
+                    sortOrder: 1,
+                    altText: "ציוד סאונד לאירוע",
+                },
+            ],
+            basePriceDaily: 180,
+            depositAmount: 500,
+            minRentalDays: 1,
+            maxRentalDays: 7,
+            condition: "LIKE_NEW",
+            deliverySupported: true,
+            pickupAddressText: "צפון תל אביב",
+            city: "תל אביב",
+            pickupInstructions: "איסוף מצפון תל אביב, אפשרות משלוח בתיאום מראש",
+            location: {
+                city: "תל אביב",
+                area: "תל אביב",
+                pickupSummary: "איסוף מצפון תל אביב, אפשרות משלוח בתיאום מראש",
+                pickupAddressText: "צפון תל אביב",
+                deliverySupported: true,
+            },
+            attributes: [
+                {
+                    key: "powerWatts",
+                    labelHe: "הספק",
+                    labelEn: "Power",
+                    type: "string",
+                    value: "1000W",
+                },
+                {
+                    key: "bluetooth",
+                    labelHe: "Bluetooth",
+                    labelEn: "Bluetooth",
+                    type: "boolean",
+                    value: true,
+                },
+                {
+                    key: "batteryPowered",
+                    labelHe: "מופעל סוללה",
+                    labelEn: "Battery Powered",
+                    type: "boolean",
+                    value: false,
+                },
+                {
+                    key: "inputPorts",
+                    labelHe: "כניסות",
+                    labelEn: "Input Ports",
+                    type: "string",
+                    value: "XLR, AUX, USB",
+                },
+            ],
+            attributeValues: [
+                { attributeKey: "powerWatts", attributeValue: "1000W" },
+                { attributeKey: "bluetooth", attributeValue: true },
+                { attributeKey: "batteryPowered", attributeValue: false },
+                { attributeKey: "inputPorts", attributeValue: "XLR, AUX, USB" },
+            ],
+            rentalTerms: {
+                deposit: 500,
+                cancellationPolicy: "ביטול עד 24 שעות לפני מועד ההשכרה ללא חיוב",
+                returnTerms: "יש להחזיר את המוצר במצב תקין ובאריזה המקורית אם קיימת",
+                requiresOperator: false,
+                setupRequired: false,
+            },
+            includedItems: ["רמקול מוגבר JBL", "סטנד לרמקול", "כבל חשמל", "כבל AUX"],
+            lenderSummary: {
+                id: "mock-lender",
+                displayName: "EventPro Rentals",
+                rating: 4.8,
+                reliability: "אמינות גבוהה",
+                responseScore: 96,
+                completedTransactions: 124,
+            },
+            lender: {
+                userId: "mock-lender",
+                displayName: "EventPro Rentals",
+                averageRating: 4.8,
+                completedTransactionsCount: 124,
+                responseTimeScore: 4.8,
+                reliabilityScoreCached: 9.2,
+                verificationLevel: "VERIFIED",
+                user: { fullName: "EventPro Rentals", email: "mock@example.local" },
+            },
+            reviewSummary: {
+                averageRating: 4.8,
+                count: 3,
+            },
+            recentReviews: [
+                {
+                    id: "mock-review-1",
+                    rating: 5,
+                    text: "הרמקול היה חזק וברור, והאיסוף היה מהיר ומסודר.",
+                    createdAt: "2026-04-12T10:00:00.000Z",
+                    reviewer: { fullName: "דנה כהן" },
+                },
+                {
+                    id: "mock-review-2",
+                    rating: 5,
+                    text: "התאים מצוין להרצאה של 60 משתתפים. קיבלנו גם כבלים וסטנד.",
+                    createdAt: "2026-04-04T10:00:00.000Z",
+                    reviewer: { fullName: "יואב לוי" },
+                },
+                {
+                    id: "mock-review-3",
+                    rating: 4,
+                    text: "שירות טוב ומוצר במצב מעולה. המשלוח דרש תיאום מראש.",
+                    createdAt: "2026-03-27T10:00:00.000Z",
+                    reviewer: { fullName: "מיכל אברהם" },
+                },
+            ],
+            reviews: [],
+        };
     }
 };
 exports.ListingsService = ListingsService;

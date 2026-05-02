@@ -1,19 +1,24 @@
 import type { BundleSearchInput } from "@rental/types";
 import type { LoginInput, RegisterInput } from "@rental/types";
 import {
-  demoAdminCatalogOptions,
-  demoAdminCategories,
-  demoAdminListings,
   demoBundleResults,
   demoCategories,
   demoListing,
   demoListings,
-  demoOverview,
 } from "./demo-data";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+const configuredApiUrl =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+const API_URL =
+  typeof window === "undefined"
+    ? configuredApiUrl.replace("localhost", "127.0.0.1")
+    : configuredApiUrl;
 
-async function fetchJson<T>(path: string, init?: RequestInit, fallback?: T): Promise<T> {
+async function fetchJson<T>(
+  path: string,
+  init?: RequestInit,
+  fallback?: T,
+): Promise<T> {
   try {
     const response = await fetch(`${API_URL}${path}`, {
       ...init,
@@ -48,9 +53,24 @@ export type PaginatedListings = {
   totalPages: number;
 };
 
+export type AddressCityOption = {
+  id: string;
+  settlementCode: number;
+  nameHe: string;
+};
+
+export type AddressStreetOption = {
+  id: string;
+  streetCode: number;
+  nameHe: string;
+};
+
 const demoListingsFallback = (query?: ListingsQuery): PaginatedListings => {
   const page = Math.max(1, parseInt(query?.page ?? "1", 10));
-  const pageSize = Math.min(50, Math.max(1, parseInt(query?.pageSize ?? "12", 10)));
+  const pageSize = Math.min(
+    50,
+    Math.max(1, parseInt(query?.pageSize ?? "12", 10)),
+  );
   const start = (page - 1) * pageSize;
   return {
     items: demoListings.slice(start, start + pageSize),
@@ -74,6 +94,10 @@ export const api = {
     }),
   categories: () => fetchJson("/categories", undefined, demoCategories),
   listing: (id: string) => fetchJson(`/listings/${id}`, undefined, demoListing),
+  listingAvailability: (id: string, startDate: string, endDate: string) =>
+    fetchJson<{ available: boolean; reason: string | null }>(
+      `/listings/${id}/availability?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`,
+    ),
   listings: (query?: ListingsQuery): Promise<PaginatedListings> => {
     const params = new URLSearchParams();
     if (query) {
@@ -88,35 +112,29 @@ export const api = {
       demoListingsFallback(query),
     );
   },
-  bundleResults: (id: string) => fetchJson(`/bundle-search/${id}/results`, undefined, demoBundleResults),
-  adminOverview: () => fetchJson("/admin/overview", undefined, demoOverview),
-  adminCatalogOptions: () => fetchJson("/admin/catalog/options", undefined, demoAdminCatalogOptions),
-  adminCategories: () => fetchJson("/categories/admin/manage", undefined, demoAdminCategories),
+  bundleResults: (id: string) =>
+    fetchJson(`/bundle-search/${id}/results`, undefined, demoBundleResults),
+  adminOverview: () => fetchJson("/admin/overview"),
+  adminUsers: () => fetchJson<any[]>("/admin/users"),
+  adminModeration: () => fetchJson<any[]>("/admin/moderation"),
+  adminBookings: () => fetchJson<any[]>("/admin/bookings"),
+  adminDisputes: () => fetchJson<any[]>("/admin/disputes"),
+  adminReviews: () => fetchJson<any[]>("/admin/reviews"),
+  adminAuditLogs: () => fetchJson<any[]>("/admin/audit-logs"),
+  adminRankingConfig: () => fetchJson<any[]>("/admin/ranking-config"),
+  adminCatalogOptions: () =>
+    fetchJson<{ categories: any[]; lenders: any[] }>("/admin/catalog/options"),
+  adminCategories: () => fetchJson<any[]>("/categories/admin/manage"),
   createAdminCategory: (input: Record<string, unknown>) =>
-    fetchJson(
-      "/categories/admin/manage",
-      {
-        method: "POST",
-        body: JSON.stringify(input),
-      },
-      {
-        id: `demo-category-${Date.now()}`,
-        ...input,
-        _count: { listings: 0 },
-      },
-    ),
+    fetchJson<any>("/categories/admin/manage", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
   updateAdminCategory: (id: string, input: Record<string, unknown>) =>
-    fetchJson(
-      `/categories/admin/manage/${id}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify(input),
-      },
-      {
-        id,
-        ...input,
-      },
-    ),
+    fetchJson<any>(`/categories/admin/manage/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
   adminListings: (query?: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
     if (query) {
@@ -126,35 +144,104 @@ export const api = {
         }
       }
     }
-    return fetchJson(`/admin/listings${params.toString() ? `?${params.toString()}` : ""}`, undefined, demoAdminListings);
+    return fetchJson<any[]>(
+      `/admin/listings${params.toString() ? `?${params.toString()}` : ""}`,
+    );
   },
   createAdminListing: (input: Record<string, unknown>) =>
+    fetchJson<any>("/admin/listings", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  updateAdminListing: (id: string, input: Record<string, unknown>) =>
+    fetchJson<any>(`/admin/listings/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
+  createBundleSearch: (input: BundleSearchInput) =>
     fetchJson(
-      "/admin/listings",
+      "/bundle-search",
       {
         method: "POST",
         body: JSON.stringify(input),
       },
-      {
-        id: `demo-listing-${Date.now()}`,
-        ...input,
-      },
+      demoBundleResults,
     ),
-  updateAdminListing: (id: string, input: Record<string, unknown>) =>
-    fetchJson(
-      `/admin/listings/${id}`,
+  optimizeBundle: (input: unknown) =>
+    fetchJson<any>(
+      "/bundle-optimizer/search",
       {
-        method: "PATCH",
+        method: "POST",
         body: JSON.stringify(input),
       },
-      {
-        id,
-        ...input,
-      },
     ),
-  createBundleSearch: (input: BundleSearchInput) =>
-    fetchJson("/bundle-search", {
+  addressCities: (q = "", limit = 20) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    params.set("limit", String(limit));
+    return fetchJson<{ success: boolean; data: AddressCityOption[] }>(
+      `/addresses/cities?${params.toString()}`,
+    ).then((response) => response.data);
+  },
+  addressStreets: ({
+    cityId,
+    settlementCode,
+    q = "",
+    limit = 20,
+  }: {
+    cityId?: string;
+    settlementCode?: number;
+    q?: string;
+    limit?: number;
+  }) => {
+    const params = new URLSearchParams();
+    if (cityId) params.set("cityId", cityId);
+    if (settlementCode !== undefined) {
+      params.set("settlementCode", String(settlementCode));
+    }
+    if (q) params.set("q", q);
+    params.set("limit", String(limit));
+    return fetchJson<{ success: boolean; data: AddressStreetOption[] }>(
+      `/addresses/streets?${params.toString()}`,
+    ).then((response) => response.data);
+  },
+  geocodeAddress: (input: {
+    cityId: string;
+    streetId: string;
+    addressNumber: number;
+  }) =>
+    fetchJson<{
+      success: boolean;
+      data: {
+        addressText: string;
+        lat: number;
+        lng: number;
+        provider: string;
+        cached: boolean;
+      };
+    }>("/addresses/geocode", {
       method: "POST",
       body: JSON.stringify(input),
-    }, demoBundleResults),
+    }),
+  // Autocomplete for the "specific listing" slot mode in the bundle builder.
+  // No demo fallback — when the DB is empty, the UI shows a Hebrew empty state.
+  searchListings: (q: string, limit = 10) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    params.set("limit", String(limit));
+    return fetchJson<
+      Array<{
+        id: string;
+        titleHe: string;
+        titleEn: string;
+        categoryId: string;
+        category: { id: string; nameHe: string } | null;
+        basePriceDaily: number | string;
+        condition: string;
+        city: string | null;
+        lenderName: string | null;
+        thumbnail: string | null;
+      }>
+    >(`/listings/search?${params.toString()}`, undefined, []);
+  },
 };

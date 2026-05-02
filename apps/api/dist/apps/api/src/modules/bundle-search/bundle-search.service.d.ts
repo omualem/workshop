@@ -15,26 +15,26 @@ export declare class BundleSearchService {
     constructor(prisma: PrismaService, redisService: RedisService, rankingConfigService: RankingConfigService, generationService: BundleGenerationService, scoringService: BundleScoringService, explanationService: BundleExplanationService);
     create(input: BundleSearchInput, renterId?: string): Promise<any>;
     getSearch(id: string): Promise<{
-        status: import(".prisma/client").$Enums.BundleSearchStatus;
-        requestedItems: import("@prisma/client/runtime/library").JsonValue;
-        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
-        maxPickupPoints: number | null;
-        sameLenderPreferred: boolean;
-        deliveryPreferred: boolean;
-        exactDatesOnly: boolean;
         id: string;
         renterId: string | null;
+        status: import(".prisma/client").$Enums.BundleSearchStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        maxPickupPoints: number | null;
         searchSessionId: string;
         dateRangeStart: Date;
         dateRangeEnd: Date;
+        requestedItems: import("@prisma/client/runtime/library").JsonValue;
         renterLocationLat: import("@prisma/client/runtime/library").Decimal;
         renterLocationLng: import("@prisma/client/runtime/library").Decimal;
         renterAddressText: string;
         weightPreferences: import("@prisma/client/runtime/library").JsonValue;
         resultsSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
         debugSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
+        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
+        sameLenderPreferred: boolean;
+        deliveryPreferred: boolean;
+        exactDatesOnly: boolean;
     }>;
     getResults(id: string): Promise<{
         searchId: string;
@@ -89,16 +89,17 @@ export declare class BundleSearchService {
     debugSearch(id: string): Promise<{
         candidates: ({
             items: {
-                quantity: number;
                 id: string;
-                bundleCandidateId: string;
-                requestedSlotKey: string;
                 listingId: string;
                 lenderId: string;
+                quantity: number;
+                bundleCandidateId: string;
+                requestedSlotKey: string;
                 contributionScores: import("@prisma/client/runtime/library").JsonValue;
             }[];
         } & {
             id: string;
+            totalPrice: import("@prisma/client/runtime/library").Decimal;
             createdAt: Date;
             rankIndex: number;
             searchRequestId: string;
@@ -111,7 +112,6 @@ export declare class BundleSearchService {
             stabilityScore: import("@prisma/client/runtime/library").Decimal;
             explanation: import("@prisma/client/runtime/library").JsonValue;
             debugData: import("@prisma/client/runtime/library").JsonValue | null;
-            totalPrice: import("@prisma/client/runtime/library").Decimal;
             totalDistanceKm: import("@prisma/client/runtime/library").Decimal;
             pickupPointsCount: number;
             lendersCount: number;
@@ -119,26 +119,26 @@ export declare class BundleSearchService {
             label: string | null;
         })[];
     } & {
-        status: import(".prisma/client").$Enums.BundleSearchStatus;
-        requestedItems: import("@prisma/client/runtime/library").JsonValue;
-        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
-        maxPickupPoints: number | null;
-        sameLenderPreferred: boolean;
-        deliveryPreferred: boolean;
-        exactDatesOnly: boolean;
         id: string;
         renterId: string | null;
+        status: import(".prisma/client").$Enums.BundleSearchStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        maxPickupPoints: number | null;
         searchSessionId: string;
         dateRangeStart: Date;
         dateRangeEnd: Date;
+        requestedItems: import("@prisma/client/runtime/library").JsonValue;
         renterLocationLat: import("@prisma/client/runtime/library").Decimal;
         renterLocationLng: import("@prisma/client/runtime/library").Decimal;
         renterAddressText: string;
         weightPreferences: import("@prisma/client/runtime/library").JsonValue;
         resultsSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
         debugSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
-        createdAt: Date;
-        updatedAt: Date;
+        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
+        sameLenderPreferred: boolean;
+        deliveryPreferred: boolean;
+        exactDatesOnly: boolean;
     }>;
     private buildCacheKey;
     private selectCuratedBundles;

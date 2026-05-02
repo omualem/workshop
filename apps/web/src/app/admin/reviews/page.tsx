@@ -1,22 +1,46 @@
 import { Card } from "@rental/ui";
 import { DashboardShell } from "../../../components/dashboard-shell";
+import { adminNavItems } from "../../../components/admin/admin-nav";
+import { api } from "../../../lib/api";
 
-const navItems = [
-  { href: "/admin/dashboard", label: "סקירה" },
-  { href: "/admin/users", label: "משתמשים" },
-  { href: "/admin/listings", label: "Moderation" },
-  { href: "/admin/bookings", label: "Bookings" },
-  { href: "/admin/disputes", label: "Disputes" },
-  { href: "/admin/reviews", label: "ביקורות" },
-  { href: "/admin/categories", label: "קטגוריות" },
-  { href: "/admin/ranking", label: "Ranking Config" },
-  { href: "/admin/audit", label: "Audit Logs" },
-];
+export const dynamic = "force-dynamic";
 
-export default function AdminReviewsPage() {
+export default async function AdminReviewsPage() {
+  const reviews = await api.adminReviews();
+
   return (
-    <DashboardShell title="ביקורות" subtitle="Moderation של user-generated reviews." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">מסך moderation לביקורות עם סטטוסים, flags ו-context של booking.</Card>
+    <DashboardShell
+      title="ביקורות"
+      subtitle="ביקורות אמיתיות שהוזנו למערכת."
+      navItems={adminNavItems}
+      activeHref="/admin/reviews"
+    >
+      <Card className="overflow-x-auto">
+        {reviews.length === 0 ? (
+          <p className="text-sm text-slate-600">אין עדיין ביקורות</p>
+        ) : (
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>כותב</th>
+                <th>מקבל ביקורת</th>
+                <th>דירוג</th>
+                <th>טקסט</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reviews.map((review: any) => (
+                <tr key={review.id}>
+                  <td>{review.reviewer?.fullName ?? "לא צוין"}</td>
+                  <td>{review.reviewee?.fullName ?? "לא צוין"}</td>
+                  <td>{review.rating}/5</td>
+                  <td>{review.text}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Card>
     </DashboardShell>
   );
 }

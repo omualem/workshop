@@ -5,17 +5,10 @@ export declare class UsersController {
     getMe(user: {
         sub: string;
     }): Promise<{
-        renterProfile: {
-            defaultLocationLat: import("@prisma/client/runtime/library").Decimal | null;
-            defaultLocationLng: import("@prisma/client/runtime/library").Decimal | null;
-            defaultAddressText: string | null;
-            preferences: import("@prisma/client/runtime/library").JsonValue | null;
-            verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
-            userId: string;
-        } | null;
         lenderProfile: {
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -28,11 +21,18 @@ export declare class UsersController {
             isFeatured: boolean;
             pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+        } | null;
+        renterProfile: {
             userId: string;
+            defaultLocationLat: import("@prisma/client/runtime/library").Decimal | null;
+            defaultLocationLng: import("@prisma/client/runtime/library").Decimal | null;
+            defaultAddressText: string | null;
+            preferences: import("@prisma/client/runtime/library").JsonValue | null;
+            verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
         } | null;
     } & {
-        status: import(".prisma/client").$Enums.UserStatus;
         id: string;
+        status: import(".prisma/client").$Enums.UserStatus;
         createdAt: Date;
         updatedAt: Date;
         role: import(".prisma/client").$Enums.UserRole;

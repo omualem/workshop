@@ -14,7 +14,8 @@ const config: Config = {
         sand: "#fef3c7",
       },
       fontFamily: {
-        sans: ["Rubik", "Segoe UI", "Arial", "sans-serif"],
+        sans: ["Heebo", "Segoe UI", "Arial", "sans-serif"],
+        display: ["Frank Ruhl Libre", "Heebo", "Segoe UI", "serif"],
       },
       boxShadow: {
         soft: "0 18px 55px rgba(15, 23, 42, 0.08)",

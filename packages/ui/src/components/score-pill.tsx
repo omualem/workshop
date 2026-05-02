@@ -11,7 +11,7 @@ export const ScorePill = ({
 }) => (
   <div
     className={cn(
-      "inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700",
+      "pill pill-sage",
       className,
     )}
   >

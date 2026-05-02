@@ -1,22 +1,46 @@
 import { Card } from "@rental/ui";
 import { DashboardShell } from "../../../components/dashboard-shell";
+import { adminNavItems } from "../../../components/admin/admin-nav";
+import { api } from "../../../lib/api";
 
-const navItems = [
-  { href: "/admin/dashboard", label: "סקירה" },
-  { href: "/admin/users", label: "משתמשים" },
-  { href: "/admin/listings", label: "Moderation" },
-  { href: "/admin/bookings", label: "Bookings" },
-  { href: "/admin/disputes", label: "Disputes" },
-  { href: "/admin/reviews", label: "ביקורות" },
-  { href: "/admin/categories", label: "קטגוריות" },
-  { href: "/admin/ranking", label: "Ranking Config" },
-  { href: "/admin/audit", label: "Audit Logs" },
-];
+export const dynamic = "force-dynamic";
 
-export default function AdminDisputesPage() {
+export default async function AdminDisputesPage() {
+  const disputes = await api.adminDisputes();
+
   return (
-    <DashboardShell title="Disputes" subtitle="ניהול מחלוקות ופתרון מקרים חריגים." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">מחלוקות, שיוך אדמין, resolution notes ו-status tracking.</Card>
+    <DashboardShell
+      title="מחלוקות"
+      subtitle="ניהול מחלוקות ופתרון מקרים חריגים על בסיס נתוני אמת."
+      navItems={adminNavItems}
+      activeHref="/admin/disputes"
+    >
+      <Card className="overflow-x-auto">
+        {disputes.length === 0 ? (
+          <p className="text-sm text-slate-600">אין מחלוקות פתוחות</p>
+        ) : (
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>נפתח על ידי</th>
+                <th>סטטוס</th>
+                <th>סיבה</th>
+                <th>אדמין מטפל</th>
+              </tr>
+            </thead>
+            <tbody>
+              {disputes.map((dispute: any) => (
+                <tr key={dispute.id}>
+                  <td>{dispute.openedBy?.fullName ?? "לא צוין"}</td>
+                  <td>{dispute.status}</td>
+                  <td>{dispute.reason}</td>
+                  <td>{dispute.assignedAdmin?.fullName ?? "לא שויך"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Card>
     </DashboardShell>
   );
 }

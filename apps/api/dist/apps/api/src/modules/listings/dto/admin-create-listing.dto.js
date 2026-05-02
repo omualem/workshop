@@ -15,6 +15,7 @@ const create_listing_dto_1 = require("./create-listing.dto");
 class AdminCreateListingDto extends create_listing_dto_1.CreateListingDto {
     lenderId;
     status;
+    imageUrls;
 }
 exports.AdminCreateListingDto = AdminCreateListingDto;
 __decorate([
@@ -26,4 +27,10 @@ __decorate([
     (0, class_validator_1.IsEnum)(["DRAFT", "PENDING_REVIEW", "ACTIVE", "BLOCKED", "ARCHIVED"]),
     __metadata("design:type", String)
 ], AdminCreateListingDto.prototype, "status", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsUrl)({}, { each: true }),
+    __metadata("design:type", Array)
+], AdminCreateListingDto.prototype, "imageUrls", void 0);
 //# sourceMappingURL=admin-create-listing.dto.js.map

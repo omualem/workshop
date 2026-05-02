@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEnum, IsOptional, IsString, IsUrl } from "class-validator";
 import { CreateListingDto } from "./create-listing.dto";
 
 export class AdminCreateListingDto extends CreateListingDto {
@@ -8,4 +8,9 @@ export class AdminCreateListingDto extends CreateListingDto {
   @IsOptional()
   @IsEnum(["DRAFT", "PENDING_REVIEW", "ACTIVE", "BLOCKED", "ARCHIVED"])
   status?: "DRAFT" | "PENDING_REVIEW" | "ACTIVE" | "BLOCKED" | "ARCHIVED";
+
+  @IsOptional()
+  @IsArray()
+  @IsUrl({}, { each: true })
+  imageUrls?: string[];
 }

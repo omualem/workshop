@@ -34,6 +34,15 @@ export class ListingsController {
     return this.listingsService.findAll(query);
   }
 
+  // Autocomplete endpoint for the bundle-request builder's "specific listing"
+  // mode. MUST be registered before the parameterized "listings/:id" route.
+  @Public()
+  @Get("listings/search")
+  search(@Query("q") q?: string, @Query("limit") limit?: string) {
+    const parsedLimit = limit ? parseInt(limit, 10) : 10;
+    return this.listingsService.searchActive(q, parsedLimit);
+  }
+
   @Public()
   @Get("listings/:id")
   findOne(@Param("id") id: string) {

@@ -1,5 +1,7 @@
 import {
+  IsArray,
   IsBoolean,
+  IsDateString,
   IsIn,
   IsInt,
   IsNumber,
@@ -9,11 +11,52 @@ import {
   MaxLength,
   Min,
   MinLength,
+  ValidateNested,
 } from "class-validator";
+import { Type } from "class-transformer";
+
+export class ListingAttributeValueInputDto {
+  @IsString()
+  @MinLength(1)
+  attributeKey!: string;
+
+  attributeValue!: unknown;
+}
+
+export class ListingAvailabilityBlockInputDto {
+  @IsDateString()
+  startDate!: string;
+
+  @IsDateString()
+  endDate!: string;
+
+  @IsOptional()
+  @IsIn(["AVAILABLE", "BLOCKED", "BOOKED", "MAINTENANCE"])
+  status?: "AVAILABLE" | "BLOCKED" | "BOOKED" | "MAINTENANCE";
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  quantity?: number;
+
+  @IsOptional()
+  @IsString()
+  reason?: string;
+}
 
 export class CreateListingDto {
   @IsString()
   categoryId!: string;
+
+  @IsString()
+  cityId!: string;
+
+  @IsString()
+  streetId!: string;
+
+  @IsInt()
+  @Min(1)
+  addressNumber!: number;
 
   @IsString()
   @MinLength(2)
@@ -33,6 +76,14 @@ export class CreateListingDto {
   @MinLength(10)
   descriptionEn!: string;
 
+  @IsOptional()
+  @IsString()
+  suitableFor?: string;
+
+  @IsOptional()
+  @IsString()
+  mainUses?: string;
+
   @IsIn(["NEW", "LIKE_NEW", "GOOD", "FAIR", "HEAVY_USE"])
   condition!: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE";
 
@@ -44,18 +95,48 @@ export class CreateListingDto {
   @Min(0)
   depositAmount!: number;
 
+  @IsOptional()
   @IsNumber()
-  pickupLat!: number;
+  pickupLat?: number;
 
+  @IsOptional()
   @IsNumber()
-  pickupLng!: number;
+  pickupLng?: number;
 
+  @IsOptional()
   @IsString()
   @MinLength(4)
-  pickupAddressText!: string;
+  pickupAddressText?: string;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @IsString()
+  pickupInstructions?: string;
 
   @IsBoolean()
   deliverySupported!: boolean;
+
+  @IsOptional()
+  includedItems?: string[];
+
+  @IsOptional()
+  @IsString()
+  cancellationPolicy?: string;
+
+  @IsOptional()
+  @IsString()
+  returnTerms?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  requiresOperator?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  setupRequired?: boolean;
 
   @IsInt()
   @Min(1)
@@ -70,8 +151,14 @@ export class CreateListingDto {
   maxRentalDays!: number;
 
   @IsOptional()
-  attributeValues?: Array<{
-    attributeKey: string;
-    attributeValue: unknown;
-  }>;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ListingAttributeValueInputDto)
+  attributeValues?: ListingAttributeValueInputDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ListingAvailabilityBlockInputDto)
+  availabilityBlocks?: ListingAvailabilityBlockInputDto[];
 }

@@ -5,19 +5,19 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from "@rental/types";
+import {
+  loginSchema,
+  registerSchema,
+  type LoginInput,
+  type RegisterInput,
+} from "@rental/types";
 import { Button, Card } from "@rental/ui";
 import { api } from "../../lib/api";
+import { AppLogo } from "../app-logo";
 
 const redirectByRole = (role: string) => {
-  if (role === "ADMIN") {
-    return "/admin/dashboard";
-  }
-
-  if (role === "LENDER") {
-    return "/lender/dashboard";
-  }
-
+  if (role === "ADMIN") return "/admin/dashboard";
+  if (role === "LENDER") return "/lender/dashboard";
   return "/renter/dashboard";
 };
 
@@ -32,6 +32,9 @@ function AuthPanel({
 }) {
   return (
     <Card className="mx-auto max-w-xl space-y-6 p-6 md:p-8">
+      <div className="mb-1 flex justify-center">
+        <AppLogo size={88} priority className="h-[88px] w-[88px]" />
+      </div>
       <div>
         <div className="surface-eyebrow">Access</div>
         <h1 className="mt-3 text-2xl font-semibold text-slate-950">{title}</h1>
@@ -48,7 +51,7 @@ export function SignInForm() {
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "admin@rentmatch.local",
+      email: "admin1@rentmatch.local",
       password: "Password123!",
     },
   });
@@ -70,7 +73,10 @@ export function SignInForm() {
       title="כניסה לחשבון"
       subtitle="גישה לחיפושי bundle, תוצאות מדורגות, הזמנות ולוחות בקרה לפי תפקיד."
     >
-      <form className="space-y-4" onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
+      <form
+        className="space-y-4"
+        onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
+      >
         <div>
           <label className="form-label">אימייל</label>
           <input className="form-input" {...form.register("email")} />

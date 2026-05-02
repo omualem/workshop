@@ -3,7 +3,7 @@ import { SignInForm } from "../../../components/forms/auth-form";
 
 export default function SignInPage() {
   return (
-    <SiteShell>
+    <SiteShell activeHref="/">
       <section className="surface-section py-14">
         <SignInForm />
       </section>

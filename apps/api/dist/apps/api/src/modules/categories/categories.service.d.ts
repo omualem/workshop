@@ -9,8 +9,8 @@ export declare class CategoriesService {
     constructor(prisma: PrismaService, auditService: AuditService);
     findAll(): Prisma.PrismaPromise<({
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -20,8 +20,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;
@@ -32,8 +32,8 @@ export declare class CategoriesService {
     })[]>;
     findOne(id: string): Promise<{
         parent: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -43,8 +43,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -54,8 +54,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;
@@ -69,8 +69,8 @@ export declare class CategoriesService {
             listings: number;
         };
         parent: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -80,8 +80,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -91,8 +91,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;
@@ -103,8 +103,8 @@ export declare class CategoriesService {
     })[]>;
     create(dto: CreateCategoryDto, actorUserId?: string): Promise<{
         parent: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -114,8 +114,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -125,8 +125,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;
@@ -137,8 +137,8 @@ export declare class CategoriesService {
     }>;
     update(id: string, dto: UpdateCategoryDto, actorUserId?: string): Promise<{
         parent: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -148,8 +148,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
-            status: import(".prisma/client").$Enums.CategoryStatus;
             id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
             parentId: string | null;
@@ -159,8 +159,8 @@ export declare class CategoriesService {
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
-        status: import(".prisma/client").$Enums.CategoryStatus;
         id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
         parentId: string | null;

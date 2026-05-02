@@ -22,10 +22,13 @@ let CategoriesService = class CategoriesService {
     }
     findAll() {
         return this.prisma.category.findMany({
-            where: { status: "ACTIVE" },
-            orderBy: [{ parentId: "asc" }, { nameHe: "asc" }],
+            where: { status: "ACTIVE", parentId: null },
+            orderBy: { nameHe: "asc" },
             include: {
-                children: true,
+                children: {
+                    where: { status: "ACTIVE" },
+                    orderBy: { nameHe: "asc" },
+                },
             },
         });
     }

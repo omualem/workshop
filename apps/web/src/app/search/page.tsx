@@ -18,7 +18,7 @@ export default async function SearchPage({
   ]);
 
   return (
-    <SiteShell>
+    <SiteShell activeHref="/search">
       <div className="surface-section py-14">
         <div className="mb-8">
           <div className="surface-eyebrow">Marketplace</div>

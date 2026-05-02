@@ -1,71 +1,91 @@
 import { DashboardShell } from "../../../components/dashboard-shell";
+import { adminNavItems } from "../../../components/admin/admin-nav";
 import { api } from "../../../lib/api";
 
-const navItems = [
-  { href: "/admin/dashboard", label: "סקירה" },
-  { href: "/admin/users", label: "משתמשים" },
-  { href: "/admin/listings", label: "Moderation" },
-  { href: "/admin/bookings", label: "Bookings" },
-  { href: "/admin/disputes", label: "Disputes" },
-  { href: "/admin/reviews", label: "ביקורות" },
-  { href: "/admin/categories", label: "קטגוריות" },
-  { href: "/admin/ranking", label: "Ranking Config" },
-  { href: "/admin/audit", label: "Audit Logs" },
-];
+export const dynamic = "force-dynamic";
+
+const metricLabels: Record<string, string> = {
+  users: "משתמשים",
+  renters: "שוכרים",
+  lenders: "מלווים",
+  listings: "פריטים",
+  disputes: "מחלוקות",
+  bundleSearches: "חיפושי באנדלים",
+};
 
 export default async function AdminDashboardPage() {
-  const overview = await api.adminOverview();
+  const [overview, moderationQueue] = await Promise.all([
+    api.adminOverview() as Promise<Record<string, number>>,
+    api.adminModeration(),
+  ]);
 
   return (
     <DashboardShell
       title="לוח אדמין"
-      subtitle="תצפית על משתמשים, moderation, observability ודירוג."
-      navItems={navItems}
+      subtitle="תצפית על נתוני המערכת בפועל מתוך מסד הנתונים."
+      navItems={adminNavItems}
       activeHref="/admin/dashboard"
     >
       <div className="mb-6">
         <div className="surface-eyebrow">Admin Overview</div>
         <h1 className="mt-3 text-3xl font-semibold text-slate-950">סקירה</h1>
         <p className="mt-2 text-sm leading-7 text-slate-600">
-          תמונת מצב מהירה על ליבה התפעולית של המערכת, כולל moderation, דירוג ותקלות.
+          כל המספרים במסך הזה מחושבים ישירות מהטבלאות המקומיות.
         </p>
       </div>
 
       <div className="dashboard-stat-grid">
-        {Object.entries(overview).map(([key, value]) => (
+        {Object.entries(metricLabels).map(([key, label]) => (
           <div key={key} className="dashboard-stat-card">
-            <div className="dashboard-stat-label">{key}</div>
-            <div className="dashboard-stat-value">{String(value)}</div>
+            <div className="dashboard-stat-label">{label}</div>
+            <div className="dashboard-stat-value">{overview[key] ?? 0}</div>
           </div>
         ))}
       </div>
 
       <div className="surface-panel mt-6 p-6">
-        <h2 className="text-lg font-semibold text-slate-950">תור moderation</h2>
-        <table className="dashboard-table mt-4">
-          <thead>
-            <tr>
-              <th>Listing</th>
-              <th>מלווה</th>
-              <th>סיבה</th>
-              <th>גיל</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>מקרן קצר טווח</td>
-              <td>Compact AV Cluster</td>
-              <td>תיאור חלקי</td>
-              <td>שעה</td>
-            </tr>
-            <tr>
-              <td>חבילת תאורה ניידת</td>
-              <td>Bundle Hub Central</td>
-              <td>התנגשות זמינות</td>
-              <td>3 שעות</td>
-            </tr>
-          </tbody>
-        </table>
+        <h2 className="text-lg font-semibold text-slate-950">
+          תור בדיקת פריטים
+        </h2>
+        {moderationQueue.length === 0 ? (
+          <p className="mt-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+            אין פריטים שממתינים לבדיקה
+          </p>
+        ) : (
+          <table className="dashboard-table mt-4">
+            <thead>
+              <tr>
+                <th>פריט</th>
+                <th>מלווה</th>
+                <th>קטגוריה</th>
+                <th>סטטוס</th>
+              </tr>
+            </thead>
+            <tbody>
+              {moderationQueue.map((listing: any) => (
+                <tr key={listing.id}>
+                  <td>{listing.titleHe}</td>
+                  <td>{listing.lender?.displayName ?? "לא צוין"}</td>
+                  <td>{listing.category?.nameHe ?? "לא צוין"}</td>
+                  <td>{listing.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <div className="surface-panel mt-6 p-6">
+        <h2 className="text-lg font-semibold text-slate-950">חיפושי באנדלים</h2>
+        {(overview.bundleSearches ?? 0) === 0 ? (
+          <p className="mt-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+            אין עדיין חיפושי באנדלים
+          </p>
+        ) : (
+          <p className="mt-4 text-sm text-slate-600">
+            {overview.bundleSearches} חיפושים קיימים במסד הנתונים.
+          </p>
+        )}
       </div>
     </DashboardShell>
   );

@@ -1,22 +1,46 @@
 import { Card } from "@rental/ui";
 import { DashboardShell } from "../../../components/dashboard-shell";
+import { adminNavItems } from "../../../components/admin/admin-nav";
+import { api } from "../../../lib/api";
 
-const navItems = [
-  { href: "/admin/dashboard", label: "סקירה" },
-  { href: "/admin/users", label: "משתמשים" },
-  { href: "/admin/listings", label: "Moderation" },
-  { href: "/admin/bookings", label: "Bookings" },
-  { href: "/admin/disputes", label: "Disputes" },
-  { href: "/admin/reviews", label: "ביקורות" },
-  { href: "/admin/categories", label: "קטגוריות" },
-  { href: "/admin/ranking", label: "Ranking Config" },
-  { href: "/admin/audit", label: "Audit Logs" },
-];
+export const dynamic = "force-dynamic";
 
-export default function AdminRankingPage() {
+export default async function AdminRankingPage() {
+  const configs = await api.adminRankingConfig();
+
   return (
-    <DashboardShell title="Ranking Config" subtitle="Presets, weights, penalties ו-feature flags." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">המסך יאפשר לשנות preset defaults ולבדוק למה bundle A דורג מעל bundle B.</Card>
+    <DashboardShell
+      title="הגדרות דירוג"
+      subtitle="פריסטים ומשקלים שנשמרו במסד הנתונים."
+      navItems={adminNavItems}
+      activeHref="/admin/ranking"
+    >
+      <Card className="overflow-x-auto">
+        {configs.length === 0 ? (
+          <p className="text-sm text-slate-600">אין הגדרות דירוג להצגה</p>
+        ) : (
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>מפתח</th>
+                <th>שם</th>
+                <th>עודכן על ידי</th>
+                <th>עודכן בתאריך</th>
+              </tr>
+            </thead>
+            <tbody>
+              {configs.map((config: any) => (
+                <tr key={config.id}>
+                  <td>{config.presetKey}</td>
+                  <td>{config.displayNameHe}</td>
+                  <td>{config.updatedBy?.fullName ?? "לא צוין"}</td>
+                  <td>{new Date(config.updatedAt).toLocaleString("he-IL")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Card>
     </DashboardShell>
   );
 }

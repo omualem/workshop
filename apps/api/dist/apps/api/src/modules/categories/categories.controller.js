@@ -54,6 +54,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("ADMIN"),
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)("admin/manage"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

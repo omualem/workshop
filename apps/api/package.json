@@ -11,6 +11,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
+    "db:import:addresses": "ts-node --transpile-only prisma/import-addresses.ts",
+    "db:seed:optimizer-demo": "ts-node --transpile-only prisma/seed-optimizer-demo.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed"
