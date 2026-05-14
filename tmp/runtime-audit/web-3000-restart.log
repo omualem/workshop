@@ -1,0 +1,10 @@
+
+> apps-web@1.0.0 start
+> next start -p 3000
+
+   ▲ Next.js 15.5.15
+   - Local:        http://localhost:3000
+   - Network:      http://10.5.0.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 440ms

@@ -14,19 +14,19 @@ export declare class RentersController {
         };
     } & {
         userId: string;
+        preferences: import("@prisma/client/runtime/library").JsonValue | null;
         defaultLocationLat: import("@prisma/client/runtime/library").Decimal | null;
         defaultLocationLng: import("@prisma/client/runtime/library").Decimal | null;
         defaultAddressText: string | null;
-        preferences: import("@prisma/client/runtime/library").JsonValue | null;
         verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
     }>;
     savedSearches(user: {
         sub: string;
     }): import(".prisma/client").Prisma.PrismaPromise<{
         id: string;
-        renterId: string;
         createdAt: Date;
         name: string;
+        renterId: string;
         searchPayload: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
     favorites(user: {
@@ -52,29 +52,32 @@ export declare class RentersController {
             };
             category: {
                 id: string;
-                status: import(".prisma/client").$Enums.CategoryStatus;
+                nameHe: string;
                 createdAt: Date;
                 updatedAt: Date;
+                status: import(".prisma/client").$Enums.CategoryStatus;
                 parentId: string | null;
                 slug: string;
-                nameHe: string;
                 nameEn: string;
                 attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
             };
             media: {
                 id: string;
+                sortOrder: number;
                 listingId: string;
                 url: string;
-                sortOrder: number;
                 altText: string;
             }[];
         } & {
+            city: string | null;
             id: string;
-            status: import(".prisma/client").$Enums.ListingStatus;
             createdAt: Date;
             updatedAt: Date;
+            cityId: string | null;
             lenderId: string;
             categoryId: string;
+            streetId: string | null;
+            addressNumber: number | null;
             titleHe: string;
             titleEn: string;
             descriptionHe: string;
@@ -82,13 +85,13 @@ export declare class RentersController {
             suitableFor: string | null;
             mainUses: string | null;
             condition: import(".prisma/client").$Enums.ListingCondition;
+            status: import(".prisma/client").$Enums.ListingStatus;
             basePriceDaily: import("@prisma/client/runtime/library").Decimal;
             depositAmount: import("@prisma/client/runtime/library").Decimal;
             qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
             pickupLat: import("@prisma/client/runtime/library").Decimal;
             pickupLng: import("@prisma/client/runtime/library").Decimal;
             pickupAddressText: string;
-            city: string | null;
             pickupInstructions: string | null;
             deliverySupported: boolean;
             includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -102,8 +105,8 @@ export declare class RentersController {
         };
     } & {
         id: string;
-        renterId: string;
         createdAt: Date;
         listingId: string;
+        renterId: string;
     })[]>;
 }

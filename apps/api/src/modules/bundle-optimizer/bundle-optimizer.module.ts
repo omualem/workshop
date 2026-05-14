@@ -11,6 +11,7 @@ import { BundleScoringService } from "./bundle-scoring.service";
 import { CandidateFilterService } from "./candidate-filter.service";
 import { MetricNormalizationService } from "./metric-normalization.service";
 import { ParetoFilterService } from "./pareto-filter.service";
+import { PreferenceMappingService } from "./preference-mapping.service";
 
 @Module({
   imports: [AvailabilityModule, PricingModule, AddressesModule],
@@ -23,6 +24,7 @@ import { ParetoFilterService } from "./pareto-filter.service";
     BeamSearchService,
     ParetoFilterService,
     BundleExplanationService,
+    PreferenceMappingService,
     LenderReliabilityService,
   ],
   exports: [BundleOptimizerService],

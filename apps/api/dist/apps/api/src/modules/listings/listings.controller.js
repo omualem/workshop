@@ -69,10 +69,14 @@ let ListingsController = class ListingsController {
         return this.listingsService.adminFindAll(query);
     }
     adminCreate(dto, user) {
-        return this.listingsService.adminCreate(dto, user.sub);
+        return this.listingsService.adminCreate(dto, user?.sub);
     }
     adminUpdate(id, dto, user) {
-        return this.listingsService.adminUpdate(id, dto, user.sub);
+        return this.listingsService.adminUpdate(id, dto, user?.sub);
+    }
+    async adminDelete(id, user) {
+        const data = await this.listingsService.adminDelete(id, user?.sub);
+        return { success: true, data };
     }
 };
 exports.ListingsController = ListingsController;
@@ -177,6 +181,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("ADMIN"),
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)("admin/listings"),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -186,6 +191,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("ADMIN"),
+    (0, public_decorator_1.Public)(),
     (0, common_1.Post)("admin/listings"),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
@@ -196,6 +202,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("ADMIN"),
+    (0, public_decorator_1.Public)(),
     (0, common_1.Patch)("admin/listings/:id"),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
@@ -204,6 +211,17 @@ __decorate([
     __metadata("design:paramtypes", [String, admin_update_listing_dto_1.AdminUpdateListingDto, Object]),
     __metadata("design:returntype", void 0)
 ], ListingsController.prototype, "adminUpdate", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)("ADMIN"),
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Delete)("admin/listings/:id"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ListingsController.prototype, "adminDelete", null);
 exports.ListingsController = ListingsController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [listings_service_1.ListingsService])

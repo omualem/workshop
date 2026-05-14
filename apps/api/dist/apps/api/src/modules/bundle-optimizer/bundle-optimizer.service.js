@@ -11,25 +11,43 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BundleOptimizerService = void 0;
 const common_1 = require("@nestjs/common");
+const addresses_service_1 = require("../addresses/addresses.service");
 const beam_search_service_1 = require("./beam-search.service");
 const bundle_explanation_service_1 = require("./bundle-explanation.service");
 const bundle_scoring_service_1 = require("./bundle-scoring.service");
 const candidate_filter_service_1 = require("./candidate-filter.service");
 const pareto_filter_service_1 = require("./pareto-filter.service");
+const preference_mapping_service_1 = require("./preference-mapping.service");
 let BundleOptimizerService = class BundleOptimizerService {
     candidateFilter;
     beamSearch;
     scoring;
     pareto;
     explanation;
-    constructor(candidateFilter, beamSearch, scoring, pareto, explanation) {
+    addresses;
+    preferenceMapping;
+    constructor(candidateFilter, beamSearch, scoring, pareto, explanation, addresses, preferenceMapping) {
         this.candidateFilter = candidateFilter;
         this.beamSearch = beamSearch;
         this.scoring = scoring;
         this.pareto = pareto;
         this.explanation = explanation;
+        this.addresses = addresses;
+        this.preferenceMapping = preferenceMapping;
     }
     async optimize(request) {
+        request = await this.resolveRenterLocation(request);
+        const resolvedPreferences = this.preferenceMapping.resolvePreferences(request);
+        request = {
+            ...request,
+            preferenceProfile: resolvedPreferences.profile,
+            basePreferenceProfile: resolvedPreferences.baseProfile,
+            preferenceSliders: resolvedPreferences.sliders,
+            preferences: {
+                ...request.preferences,
+                weights: resolvedPreferences.weights,
+            },
+        };
         const { candidatesBySlot, counts, expandedSlots, slotDebug } = await this.candidateFilter.buildCandidatesPerSlot(request);
         const includeDebug = process.env.NODE_ENV !== "production";
         const emptySlot = this.candidateFilter.findEmptySlot(expandedSlots, candidatesBySlot);
@@ -41,7 +59,7 @@ let BundleOptimizerService = class BundleOptimizerService {
         if (completeBundles.length === 0) {
             return this.emptyResult(request, counts, null);
         }
-        const allScored = completeBundles.map((bundle) => this.scoring.calculateFinalScore(bundle, request.preferences, request.budget));
+        const allScored = completeBundles.map((bundle) => this.scoring.calculateFinalScore(bundle, request.preferences, request.budget, resolvedPreferences));
         const { kept: paretoKept, removedCount: paretoRemoved } = this.pareto.filter(allScored);
         const finalScored = paretoKept
             .sort((a, b) => b.breakdown.finalScore - a.breakdown.finalScore)
@@ -59,6 +77,9 @@ let BundleOptimizerService = class BundleOptimizerService {
                     budget: request.budget,
                     maxPickupPoints: request.maxPickupPoints,
                     userLocation: request.userLocation,
+                    preferenceProfile: request.preferenceProfile,
+                    basePreferenceProfile: request.basePreferenceProfile,
+                    preferenceSliders: request.preferenceSliders,
                     preferences: request.preferences,
                 },
                 algorithm: {
@@ -128,6 +149,9 @@ let BundleOptimizerService = class BundleOptimizerService {
                     budget: request.budget,
                     maxPickupPoints: request.maxPickupPoints,
                     userLocation: request.userLocation,
+                    preferenceProfile: request.preferenceProfile,
+                    basePreferenceProfile: request.basePreferenceProfile,
+                    preferenceSliders: request.preferenceSliders,
                     preferences: request.preferences,
                 },
                 bundles: [],
@@ -161,6 +185,31 @@ let BundleOptimizerService = class BundleOptimizerService {
             },
         };
     }
+    async resolveRenterLocation(request) {
+        const loc = request.userLocation;
+        if (loc.lat !== undefined && loc.lng !== undefined) {
+            return request;
+        }
+        if (loc.cityId === undefined ||
+            loc.streetId === undefined ||
+            loc.addressNumber === undefined) {
+            return request;
+        }
+        const resolved = await this.addresses.geocodeRenterAddress({
+            cityId: loc.cityId,
+            streetId: loc.streetId,
+            addressNumber: loc.addressNumber,
+        });
+        return {
+            ...request,
+            userLocation: {
+                ...loc,
+                lat: resolved.lat,
+                lng: resolved.lng,
+                address: loc.address ?? resolved.addressText,
+            },
+        };
+    }
 };
 exports.BundleOptimizerService = BundleOptimizerService;
 exports.BundleOptimizerService = BundleOptimizerService = __decorate([
@@ -169,7 +218,9 @@ exports.BundleOptimizerService = BundleOptimizerService = __decorate([
         beam_search_service_1.BeamSearchService,
         bundle_scoring_service_1.BundleScoringService,
         pareto_filter_service_1.ParetoFilterService,
-        bundle_explanation_service_1.BundleExplanationService])
+        bundle_explanation_service_1.BundleExplanationService,
+        addresses_service_1.AddressesService,
+        preference_mapping_service_1.PreferenceMappingService])
 ], BundleOptimizerService);
 function sumValues(record) {
     return Object.values(record).reduce((s, v) => s + v, 0);

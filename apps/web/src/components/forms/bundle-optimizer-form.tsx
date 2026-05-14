@@ -19,41 +19,61 @@ const CONDITION_OPTIONS: { value: ConditionLevel; label: string }[] = [
   { value: "HEAVY_USE", label: "שימוש כבד" },
 ];
 
-type ProfileKey = "balanced" | "cheapest" | "closest" | "mostReliable" | "highQuality";
+type PreferenceTemplateKey =
+  | "balanced"
+  | "cheapest"
+  | "closest"
+  | "minimalEffort"
+  | "professional"
+  | "highQuality";
+type PreferenceProfileKey = PreferenceTemplateKey | "custom";
 
-export const RANKING_PROFILES: Record<
-  ProfileKey,
-  {
-    label: string;
-    weights: {
-      price: number;
-      distance: number;
-      reliability: number;
-      condition: number;
-      availability: number;
-    };
-  }
+type PreferenceSliders = {
+  price: number;
+  distance: number;
+  reliability: number;
+  condition: number;
+  availability: number;
+  pickupSimplicity: number;
+};
+
+export const PREFERENCE_TEMPLATES: Record<
+  PreferenceTemplateKey,
+  { label: string; sliders: PreferenceSliders }
 > = {
   balanced: {
-    label: "מאוזן",
-    weights: { price: 0.2, distance: 0.2, reliability: 0.2, condition: 0.2, availability: 0.2 },
+    label: "חבילה מאוזנת",
+    sliders: { price: 7, distance: 7, reliability: 7, condition: 7, availability: 7, pickupSimplicity: 7 },
   },
   cheapest: {
     label: "הכי זול",
-    weights: { price: 0.4, distance: 0.15, reliability: 0.15, condition: 0.15, availability: 0.15 },
+    sliders: { price: 10, distance: 6, reliability: 5, condition: 4, availability: 7, pickupSimplicity: 5 },
   },
   closest: {
     label: "הכי קרוב",
-    weights: { price: 0.15, distance: 0.4, reliability: 0.15, condition: 0.15, availability: 0.15 },
+    sliders: { price: 5, distance: 10, reliability: 6, condition: 5, availability: 7, pickupSimplicity: 8 },
   },
-  mostReliable: {
-    label: "הכי אמין",
-    weights: { price: 0.15, distance: 0.15, reliability: 0.4, condition: 0.2, availability: 0.1 },
+  minimalEffort: {
+    label: "מינימום התעסקות",
+    sliders: { price: 5, distance: 8, reliability: 7, condition: 6, availability: 8, pickupSimplicity: 10 },
+  },
+  professional: {
+    label: "הפקה מקצועית",
+    sliders: { price: 4, distance: 5, reliability: 10, condition: 10, availability: 9, pickupSimplicity: 7 },
   },
   highQuality: {
     label: "איכות גבוהה",
-    weights: { price: 0.1, distance: 0.15, reliability: 0.2, condition: 0.4, availability: 0.15 },
+    sliders: { price: 5, distance: 5, reliability: 8, condition: 10, availability: 8, pickupSimplicity: 6 },
   },
+};
+
+const SLIDER_LABELS: Record<keyof PreferenceSliders, string> = {
+  price: "מחיר",
+  distance: "מרחק",
+  reliability: "אמינות משכיר",
+  condition: "מצב מוצר",
+  availability: "זמינות",
+  pickupSimplicity: "קלות איסוף",
 };
 
 type SpecificListingPick = {
@@ -104,7 +124,26 @@ type OptimizerResponse = {
       budget: number;
       pickupPointCount: number;
       metrics: Record<string, number>;
-      scoreBreakdown: Record<string, number>;
+      scoreBreakdown: {
+        weightedUtility: number;
+        variancePenalty: number;
+        bottleneckTerm: number;
+        pickupPenalty: number;
+        maxDistancePenalty?: number;
+        lowScorePenalty?: number;
+        rawFinalScore?: number;
+        finalScore: number;
+        preferences?: {
+          profile: PreferenceProfileKey;
+          baseProfile?: PreferenceTemplateKey;
+          sliders: PreferenceSliders;
+          normalizedWeights: Record<
+            "price" | "distance" | "reliability" | "condition" | "availability",
+            number
+          >;
+          penaltyMultipliers?: Record<string, unknown>;
+        };
+      };
       derived?: {
         avgDistance: number;
         maxDistance: number;
@@ -163,7 +202,11 @@ export function BundleOptimizerForm() {
   );
   const [budget, setBudget] = useState(1500);
   const [maxPickupPoints, setMaxPickupPoints] = useState<number | "">(3);
-  const [profile, setProfile] = useState<ProfileKey>("balanced");
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<PreferenceTemplateKey>("balanced");
+  const [preferenceSliders, setPreferenceSliders] =
+    useState<PreferenceSliders>(PREFERENCE_TEMPLATES.balanced.sliders);
+  const [isPreferenceCustomized, setIsPreferenceCustomized] = useState(false);
   const [slots, setSlots] = useState<SlotState[]>(() => [newSlot("category")]);
   const [validation, setValidation] = useState<ValidationState>({ slotErrors: {} });
   const [result, setResult] = useState<OptimizerResponse | null>(null);
@@ -198,7 +241,9 @@ export function BundleOptimizerForm() {
       addressSelection,
       budget,
       maxPickupPoints: typeof maxPickupPoints === "number" ? maxPickupPoints : undefined,
-      profile,
+      selectedTemplate,
+      preferenceSliders,
+      isPreferenceCustomized,
     });
     setLastRequest(body);
     mutation.mutate(body);
@@ -208,6 +253,15 @@ export function BundleOptimizerForm() {
     setSlots((prev) => prev.map((s) => (s.uiId === uiId ? { ...s, ...patch } : s)));
   const removeSlot = (uiId: string) => setSlots((prev) => prev.filter((s) => s.uiId !== uiId));
   const addSlot = () => setSlots((prev) => [...prev, newSlot("category")]);
+  const selectPreferenceTemplate = (key: PreferenceTemplateKey) => {
+    setSelectedTemplate(key);
+    setPreferenceSliders(PREFERENCE_TEMPLATES[key].sliders);
+    setIsPreferenceCustomized(false);
+  };
+  const updatePreferenceSlider = (key: keyof PreferenceSliders, value: number) => {
+    setPreferenceSliders((prev) => ({ ...prev, [key]: value }));
+    setIsPreferenceCustomized(true);
+  };
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]" dir="rtl">
@@ -275,20 +329,50 @@ export function BundleOptimizerForm() {
           </div>
 
           <Field label="פרופיל דירוג">
+            <h3 className="mb-2 text-sm font-semibold text-slate-700">כיצד לדרג את החבילה?</h3>
             <div className="flex flex-wrap gap-2">
-              {(Object.keys(RANKING_PROFILES) as ProfileKey[]).map((key) => (
+              {(Object.keys(PREFERENCE_TEMPLATES) as PreferenceTemplateKey[]).map((key) => (
                 <button
                   type="button"
                   key={key}
-                  onClick={() => setProfile(key)}
+                  onClick={() => selectPreferenceTemplate(key)}
                   className={`rounded-full border px-3 py-1 text-xs ${
-                    profile === key
+                    selectedTemplate === key
                       ? "border-cyan-600 bg-cyan-50 text-cyan-800"
                       : "border-slate-300 bg-white text-slate-700"
                   }`}
                 >
-                  {RANKING_PROFILES[key].label}
+                  {PREFERENCE_TEMPLATES[key].label}
                 </button>
+              ))}
+            </div>
+            <p className="mt-3 text-xs leading-6 text-slate-600">
+              המשקלים מחושבים לפי החשיבות שבחרת. לדוגמה, ערך גבוה יותר למחיר יגרום למערכת להעדיף חבילות זולות יותר.
+            </p>
+            {isPreferenceCustomized && (
+              <p className="mt-1 text-xs font-semibold text-cyan-700">
+                התאמה אישית על בסיס: {PREFERENCE_TEMPLATES[selectedTemplate].label}
+              </p>
+            )}
+            <div className="mt-4 grid gap-3">
+              {(Object.keys(SLIDER_LABELS) as Array<keyof PreferenceSliders>).map((key) => (
+                <label key={key} className="grid gap-1 text-sm text-slate-700" dir="rtl">
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="font-medium">{SLIDER_LABELS[key]}</span>
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+                      {preferenceSliders[key]}
+                    </span>
+                  </span>
+                  <input
+                    type="range"
+                    min={1}
+                    max={10}
+                    step={1}
+                    value={preferenceSliders[key]}
+                    onChange={(e) => updatePreferenceSlider(key, Number(e.target.value))}
+                    className="w-full accent-cyan-600"
+                  />
+                </label>
               ))}
             </div>
           </Field>
@@ -749,7 +833,9 @@ export function buildOptimizerRequest(args: {
   addressSelection: AddressSelectionValue;
   budget: number;
   maxPickupPoints: number | undefined;
-  profile: ProfileKey;
+  selectedTemplate: PreferenceTemplateKey;
+  preferenceSliders: PreferenceSliders;
+  isPreferenceCustomized: boolean;
 }) {
   const address = buildRequestedAddress(args.addressSelection);
   const userLocation = {
@@ -758,7 +844,9 @@ export function buildOptimizerRequest(args: {
     streetId: args.addressSelection.streetId,
     addressNumber: Number.parseInt(args.addressSelection.addressNumber, 10),
   };
-  const weights = RANKING_PROFILES[args.profile].weights;
+  const preferenceProfile: PreferenceProfileKey = args.isPreferenceCustomized
+    ? "custom"
+    : args.selectedTemplate;
 
   const slots = args.slots.map((s, idx) => {
     const slotKey = `slot-${idx + 1}`;
@@ -785,8 +873,10 @@ export function buildOptimizerRequest(args: {
     dateRange: { startDate: args.startDate, endDate: args.endDate },
     userLocation,
     budget: args.budget,
+    preferenceProfile,
+    ...(preferenceProfile === "custom" ? { basePreferenceProfile: args.selectedTemplate } : {}),
+    preferenceSliders: args.preferenceSliders,
     preferences: {
-      weights,
       lambdaVariance: 0.35,
       alphaBottleneck: 0.25,
       betaPickup: 0.4,
@@ -948,6 +1038,10 @@ function BundleCard({ bundle }: { bundle: OptimizerResponse["data"]["bundles"][n
         <Stat label="נקודות איסוף" value={String(bundle.pickupPointCount)} />
       </div>
 
+      {bundle.scoreBreakdown.preferences && (
+        <PreferenceSummary preferences={bundle.scoreBreakdown.preferences} />
+      )}
+
       <div>
         <div className="mb-1 text-xs font-semibold text-slate-500">מדדים</div>
         <div className="grid grid-cols-5 gap-2 text-xs">
@@ -1019,6 +1113,38 @@ function BundleCard({ bundle }: { bundle: OptimizerResponse["data"]["bundles"][n
   );
 }
 
+function PreferenceSummary({
+  preferences,
+}: {
+  preferences: NonNullable<
+    OptimizerResponse["data"]["bundles"][number]["scoreBreakdown"]["preferences"]
+  >;
+}) {
+  const weights = preferences.normalizedWeights;
+  const entries: Array<keyof typeof weights> = [
+    "price",
+    "distance",
+    "reliability",
+    "condition",
+    "availability",
+  ];
+
+  return (
+    <div className="rounded-lg border border-cyan-100 bg-cyan-50/60 p-3 text-xs text-slate-700">
+      <div className="font-semibold text-slate-900">
+        הדירוג חושב לפי: {profileLabel(preferences.profile, preferences.baseProfile)}
+      </div>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {entries.map((key) => (
+          <span key={key} className="rounded-full bg-white px-2 py-1 text-slate-700">
+            {metricLabel(key)}: {Math.round(weights[key] * 100)}%
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md bg-slate-50 px-2 py-1">
@@ -1037,4 +1163,13 @@ function metricLabel(key: string): string {
     availability: "זמינות",
   };
   return map[key] ?? key;
+}
+
+function profileLabel(profile?: PreferenceProfileKey, baseProfile?: PreferenceTemplateKey): string {
+  if (profile === "custom") {
+    return baseProfile
+      ? `התאמה אישית (${PREFERENCE_TEMPLATES[baseProfile].label})`
+      : "התאמה אישית";
+  }
+  return profile ? PREFERENCE_TEMPLATES[profile]?.label ?? profile : "חבילה מאוזנת";
 }

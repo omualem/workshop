@@ -7,25 +7,25 @@ export declare class BundleSearchController {
     }): Promise<any>;
     getSearch(id: string): Promise<{
         id: string;
-        renterId: string | null;
-        status: import(".prisma/client").$Enums.BundleSearchStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.BundleSearchStatus;
+        renterId: string | null;
         maxPickupPoints: number | null;
+        requestedItems: import("@prisma/client/runtime/library").JsonValue;
+        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
+        sameLenderPreferred: boolean;
+        deliveryPreferred: boolean;
+        exactDatesOnly: boolean;
         searchSessionId: string;
         dateRangeStart: Date;
         dateRangeEnd: Date;
-        requestedItems: import("@prisma/client/runtime/library").JsonValue;
         renterLocationLat: import("@prisma/client/runtime/library").Decimal;
         renterLocationLng: import("@prisma/client/runtime/library").Decimal;
         renterAddressText: string;
         weightPreferences: import("@prisma/client/runtime/library").JsonValue;
         resultsSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
         debugSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
-        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
-        sameLenderPreferred: boolean;
-        deliveryPreferred: boolean;
-        exactDatesOnly: boolean;
     }>;
     getResults(id: string): Promise<{
         searchId: string;

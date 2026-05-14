@@ -55,6 +55,37 @@ function buildScored(
       condition: 0,
       availability: 0,
     },
+    preferences: {
+      profile: "balanced",
+      sliders: {
+        price: 7,
+        distance: 7,
+        reliability: 7,
+        condition: 7,
+        availability: 7,
+        pickupSimplicity: 7,
+      },
+      normalizedWeights: {
+        price: 0.2,
+        distance: 0.2,
+        reliability: 0.2,
+        condition: 0.2,
+        availability: 0.2,
+      },
+      penaltyMultipliers: {
+        pickup: 1,
+        lowScore: {
+          price: 1,
+          distance: 1,
+          reliability: 1,
+          condition: 1,
+          availability: 1,
+        },
+        maxDistance: 1,
+        variance: 1,
+        bottleneck: 1,
+      },
+    },
     rawFinalScore: 7.8,
     finalScore: 7.8,
     ...overrides,
@@ -167,5 +198,61 @@ describe("BundleExplanationService", () => {
     expect(result.scoreBreakdown.lowScorePenalty).toBe(1.2);
     expect(result.scoreBreakdown.rawFinalScore).toBe(8.4);
     expect(result.lowScorePenaltyBreakdown).toBeDefined();
+  });
+
+  it("includes selected preference profile in explanations and scoreBreakdown", () => {
+    const result = svc.build(
+      buildScored(
+        [makeItem()],
+        {
+          price: 8,
+          distance: 8,
+          reliability: 8,
+          condition: 8,
+          availability: 9,
+        },
+        {
+          preferences: {
+            profile: "custom",
+            baseProfile: "cheapest",
+            sliders: {
+              price: 10,
+              distance: 6,
+              reliability: 5,
+              condition: 4,
+              availability: 7,
+              pickupSimplicity: 5,
+            },
+            normalizedWeights: {
+              price: 10 / 32,
+              distance: 6 / 32,
+              reliability: 5 / 32,
+              condition: 4 / 32,
+              availability: 7 / 32,
+            },
+            penaltyMultipliers: {
+              pickup: 5 / 7,
+              lowScore: {
+                price: 10 / 7,
+                distance: 6 / 7,
+                reliability: 5 / 7,
+                condition: 4 / 7,
+                availability: 1,
+              },
+              maxDistance: 6 / 7,
+              variance: 1,
+              bottleneck: 0.95,
+            },
+          },
+        },
+      ),
+      1000,
+    );
+
+    expect(result.explanations).toContain(
+      "הדירוג חושב לפי המשקלים שהוגדרו ידנית.",
+    );
+    expect(result.scoreBreakdown.preferences.profile).toBe("custom");
+    expect(result.scoreBreakdown.preferences.baseProfile).toBe("cheapest");
   });
 });

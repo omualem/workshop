@@ -13,16 +13,19 @@ exports.ListingsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const prisma_utils_1 = require("../../shared/utils/prisma.utils");
+const addresses_service_1 = require("../addresses/addresses.service");
 const audit_service_1 = require("../audit/audit.service");
 const availability_service_1 = require("../availability/availability.service");
 let ListingsService = class ListingsService {
     prisma;
     auditService;
     availabilityService;
-    constructor(prisma, auditService, availabilityService) {
+    addressesService;
+    constructor(prisma, auditService, availabilityService, addressesService) {
         this.prisma = prisma;
         this.auditService = auditService;
         this.availabilityService = availabilityService;
+        this.addressesService = addressesService;
     }
     async findAll(query) {
         const page = Math.max(1, parseInt(query.page ?? "1", 10));
@@ -51,6 +54,8 @@ let ListingsService = class ListingsService {
             },
             include: {
                 category: true,
+                cityRef: true,
+                streetRef: true,
                 lender: {
                     include: {
                         user: true,
@@ -145,6 +150,8 @@ let ListingsService = class ListingsService {
                 availabilityBlocks: {
                     orderBy: { startDate: "asc" },
                 },
+                cityRef: true,
+                streetRef: true,
                 pricingRules: true,
                 reviews: {
                     include: {
@@ -163,8 +170,9 @@ let ListingsService = class ListingsService {
         return this.toListingDetailResponse(listing);
     }
     async create(lenderId, dto) {
+        const data = await this.buildListingWriteData(dto, lenderId, "PENDING_REVIEW");
         const listing = await this.prisma.listing.create({
-            data: this.buildListingWriteData(dto, lenderId, "PENDING_REVIEW"),
+            data,
             include: {
                 attributeValues: true,
                 availabilityBlocks: {
@@ -173,6 +181,8 @@ let ListingsService = class ListingsService {
                 media: {
                     orderBy: { sortOrder: "asc" },
                 },
+                cityRef: true,
+                streetRef: true,
             },
         });
         await this.auditService.log({
@@ -186,9 +196,10 @@ let ListingsService = class ListingsService {
     }
     async update(lenderId, id, dto) {
         const existing = await this.requireLenderOwnedListing(lenderId, id);
+        const data = await this.buildListingUpdateData(dto, existing);
         const updated = await this.prisma.listing.update({
             where: { id },
-            data: this.buildListingUpdateData(dto, existing),
+            data,
             include: {
                 attributeValues: true,
                 availabilityBlocks: {
@@ -197,6 +208,8 @@ let ListingsService = class ListingsService {
                 media: {
                     orderBy: { sortOrder: "asc" },
                 },
+                cityRef: true,
+                streetRef: true,
             },
         });
         await this.auditService.log({
@@ -255,6 +268,8 @@ let ListingsService = class ListingsService {
             include: {
                 media: true,
                 category: true,
+                cityRef: true,
+                streetRef: true,
             },
             orderBy: { updatedAt: "desc" },
         });
@@ -289,7 +304,9 @@ let ListingsService = class ListingsService {
             where: {
                 categoryId: query.categoryId,
                 lenderId: query.lenderId,
-                status: query.status,
+                status: query.status
+                    ? query.status
+                    : { not: "ARCHIVED" },
                 OR: query.search
                     ? [
                         { titleHe: { contains: query.search } },
@@ -301,6 +318,8 @@ let ListingsService = class ListingsService {
             },
             include: {
                 category: true,
+                cityRef: true,
+                streetRef: true,
                 lender: {
                     include: {
                         user: true,
@@ -319,10 +338,13 @@ let ListingsService = class ListingsService {
         return listings.map((listing) => (0, prisma_utils_1.normalizeDecimalObject)(listing));
     }
     async adminCreate(dto, actorUserId) {
+        const data = await this.buildListingWriteData(dto, dto.lenderId, dto.status ?? "ACTIVE");
         const listing = await this.prisma.listing.create({
-            data: this.buildListingWriteData(dto, dto.lenderId, dto.status ?? "ACTIVE"),
+            data,
             include: {
                 category: true,
+                cityRef: true,
+                streetRef: true,
                 lender: {
                     include: {
                         user: true,
@@ -357,16 +379,21 @@ let ListingsService = class ListingsService {
                 availabilityBlocks: {
                     orderBy: { startDate: "asc" },
                 },
+                cityRef: true,
+                streetRef: true,
             },
         });
         if (!existing) {
             throw new common_1.NotFoundException("Listing not found");
         }
+        const data = await this.buildListingUpdateData(dto, existing);
         const updated = await this.prisma.listing.update({
             where: { id },
-            data: this.buildListingUpdateData(dto, existing),
+            data,
             include: {
                 category: true,
+                cityRef: true,
+                streetRef: true,
                 lender: {
                     include: {
                         user: true,
@@ -391,12 +418,41 @@ let ListingsService = class ListingsService {
         });
         return (0, prisma_utils_1.normalizeDecimalObject)(updated);
     }
-    buildListingWriteData(dto, lenderId, status) {
+    async adminDelete(id, actorUserId) {
+        const existing = await this.prisma.listing.findUnique({
+            where: { id },
+        });
+        if (!existing) {
+            throw new common_1.NotFoundException("Listing not found");
+        }
+        if (existing.status !== "ARCHIVED") {
+            const archived = await this.prisma.listing.update({
+                where: { id },
+                data: { status: "ARCHIVED" },
+            });
+            await this.auditService.log({
+                actorUserId,
+                action: "admin.listing.delete",
+                entityType: "Listing",
+                entityId: id,
+                before: existing,
+                after: archived,
+            });
+        }
+        return { id };
+    }
+    async buildListingWriteData(dto, lenderId, status) {
         this.assertRentalDayBounds(dto.minRentalDays, dto.maxRentalDays);
-        const location = this.resolvePickupLocation(dto);
+        const location = await this.resolvePickupLocation(dto);
+        if (!location) {
+            throw new common_1.BadRequestException("Listing pickup location is required");
+        }
         return {
             lender: { connect: { userId: lenderId } },
             category: { connect: { id: dto.categoryId } },
+            cityRef: { connect: { id: location.cityId } },
+            streetRef: { connect: { id: location.streetId } },
+            addressNumber: location.addressNumber,
             titleHe: dto.titleHe,
             titleEn: dto.titleEn,
             descriptionHe: dto.descriptionHe,
@@ -411,7 +467,7 @@ let ListingsService = class ListingsService {
             pickupLat: location.pickupLat,
             pickupLng: location.pickupLng,
             pickupAddressText: location.pickupAddressText,
-            city: location.city,
+            city: location.cityName,
             pickupInstructions: dto.pickupInstructions,
             deliverySupported: dto.deliverySupported,
             includedItems: dto.includedItems,
@@ -452,9 +508,9 @@ let ListingsService = class ListingsService {
                 : undefined,
         };
     }
-    buildListingUpdateData(dto, existing) {
+    async buildListingUpdateData(dto, existing) {
         this.assertRentalDayBounds(dto.minRentalDays ?? existing?.minRentalDays, dto.maxRentalDays ?? existing?.maxRentalDays);
-        const location = this.resolvePickupLocation(dto, existing);
+        const location = await this.resolvePickupLocation(dto, existing);
         return {
             lender: "lenderId" in dto && dto.lenderId
                 ? { connect: { userId: dto.lenderId } }
@@ -462,6 +518,13 @@ let ListingsService = class ListingsService {
             category: dto.categoryId
                 ? { connect: { id: dto.categoryId } }
                 : undefined,
+            cityRef: location?.cityId
+                ? { connect: { id: location.cityId } }
+                : undefined,
+            streetRef: location?.streetId
+                ? { connect: { id: location.streetId } }
+                : undefined,
+            addressNumber: location?.addressNumber,
             titleHe: dto.titleHe,
             titleEn: dto.titleEn,
             descriptionHe: dto.descriptionHe,
@@ -475,7 +538,7 @@ let ListingsService = class ListingsService {
             pickupLat: location?.pickupLat,
             pickupLng: location?.pickupLng,
             pickupAddressText: location?.pickupAddressText,
-            city: location?.city,
+            city: location?.cityName,
             pickupInstructions: dto.pickupInstructions,
             deliverySupported: dto.deliverySupported,
             includedItems: dto.includedItems,
@@ -533,74 +596,18 @@ let ListingsService = class ListingsService {
         }
     }
     resolvePickupLocation(dto, existing) {
-        const hasLocationInput = dto.pickupLat !== undefined ||
-            dto.pickupLng !== undefined ||
-            dto.pickupAddressText !== undefined ||
-            dto.city !== undefined;
-        if (!hasLocationInput && existing) {
-            return undefined;
-        }
-        const city = dto.city?.trim() || existing?.city || "";
-        const rawAddress = dto.pickupAddressText?.trim() || existing?.pickupAddressText || "";
-        const lat = dto.pickupLat !== undefined && Number.isFinite(dto.pickupLat)
-            ? dto.pickupLat
-            : undefined;
-        const lng = dto.pickupLng !== undefined && Number.isFinite(dto.pickupLng)
-            ? dto.pickupLng
-            : undefined;
-        if (!city && !rawAddress && (lat === undefined || lng === undefined)) {
-            throw new common_1.BadRequestException("pickup location is required");
-        }
-        const pickupAddressText = rawAddress || city || "איסוף עצמי";
-        if (lat !== undefined && lng !== undefined) {
-            return {
-                pickupLat: lat,
-                pickupLng: lng,
-                pickupAddressText,
-                city: city || existing?.city || null,
-            };
-        }
-        const fallback = this.fallbackCoordinatesForCity(city || pickupAddressText, existing
-            ? {
-                lat: (0, prisma_utils_1.decimalToNumber)(existing.pickupLat) ?? 32.0853,
-                lng: (0, prisma_utils_1.decimalToNumber)(existing.pickupLng) ?? 34.7818,
-            }
-            : undefined);
-        return {
-            pickupLat: fallback.lat,
-            pickupLng: fallback.lng,
-            pickupAddressText,
-            city: city || existing?.city || null,
-        };
-    }
-    fallbackCoordinatesForCity(rawValue, fallback) {
-        const normalized = rawValue.toLowerCase().replace(/[\s-]/g, "");
-        const cityMap = {
-            "תלאביב": { lat: 32.0853, lng: 34.7818 },
-            "תלאביביפו": { lat: 32.0853, lng: 34.7818 },
-            "ירושלים": { lat: 31.7683, lng: 35.2137 },
-            "jerusalem": { lat: 31.7683, lng: 35.2137 },
-            "חיפה": { lat: 32.794, lng: 34.9896 },
-            "haifa": { lat: 32.794, lng: 34.9896 },
-            "בארשבע": { lat: 31.252, lng: 34.7915 },
-            "beersheva": { lat: 31.252, lng: 34.7915 },
-            "ראשוןלציון": { lat: 31.973, lng: 34.7925 },
-            "פתחתקווה": { lat: 32.084, lng: 34.8878 },
-            "נתניה": { lat: 32.3215, lng: 34.8532 },
-            "אשדוד": { lat: 31.8014, lng: 34.6435 },
-        };
-        if (cityMap[normalized]) {
-            return cityMap[normalized];
-        }
-        if (fallback) {
-            return fallback;
-        }
-        return { lat: 32.0853, lng: 34.7818 };
+        return this.addressesService.resolveListingAddress({
+            cityId: dto.cityId,
+            streetId: dto.streetId,
+            addressNumber: dto.addressNumber,
+            pickupLat: dto.pickupLat,
+            pickupLng: dto.pickupLng,
+        }, existing);
     }
     async requireLenderOwnedListing(lenderId, listingId) {
         const listing = await this.prisma.listing.findUnique({
             where: { id: listingId },
-            include: { media: true, attributeValues: true },
+            include: { media: true, attributeValues: true, cityRef: true, streetRef: true },
         });
         if (!listing) {
             throw new common_1.NotFoundException("Listing not found");
@@ -632,6 +639,10 @@ let ListingsService = class ListingsService {
             },
             location: {
                 city: listing.city,
+                cityId: listing.cityId,
+                streetId: listing.streetId,
+                addressNumber: listing.addressNumber,
+                street: listing.streetRef?.nameHe ?? null,
                 area: listing.city,
                 pickupSummary: listing.pickupInstructions ?? listing.pickupAddressText,
                 pickupAddressText: listing.pickupAddressText,
@@ -925,6 +936,7 @@ exports.ListingsService = ListingsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         audit_service_1.AuditService,
-        availability_service_1.AvailabilityService])
+        availability_service_1.AvailabilityService,
+        addresses_service_1.AddressesService])
 ], ListingsService);
 //# sourceMappingURL=listings.service.js.map

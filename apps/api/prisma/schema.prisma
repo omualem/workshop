@@ -195,6 +195,9 @@ model LenderProfile {
   deliveryWindows            DeliveryWindow[]
   bookingItems               BookingItem[]
   bundleCandidateItems       BundleCandidateItem[]
+
+  @@index([averageRating])
+  @@index([completedTransactionsCount])
 }
 
 model Category {
@@ -286,6 +289,12 @@ model Listing {
   favorites            Favorite[]
   bundleCandidateItems BundleCandidateItem[]
 
+  @@index([categoryId])
+  @@index([status])
+  @@index([basePriceDaily])
+  @@index([condition])
+  @@index([lenderId])
+  @@index([pickupLat, pickupLng])
   @@index([categoryId, status])
   @@index([lenderId, status])
   @@index([cityId])
@@ -324,6 +333,9 @@ model ListingAvailabilityBlock {
   reason    String?
   listing   Listing                 @relation(fields: [listingId], references: [id], onDelete: Cascade)
 
+  @@index([listingId])
+  @@index([startDate, endDate])
+  @@index([status])
   @@index([listingId, startDate, endDate])
 }
 

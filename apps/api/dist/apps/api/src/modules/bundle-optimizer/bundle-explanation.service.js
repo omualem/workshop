@@ -13,14 +13,24 @@ let BundleExplanationService = class BundleExplanationService {
         const { metrics, breakdown, bundle, derived } = scored;
         const explanations = [];
         const tradeoffs = [];
+        const profileExplanation = this.preferenceProfileExplanation(breakdown.preferences.profile);
         if (bundle.totalPrice <= budget) {
             explanations.push("החבילה עומדת בתקציב שהוגדר");
+        }
+        if (profileExplanation) {
+            explanations.push(profileExplanation);
         }
         if (metrics.availability >= 9.5) {
             explanations.push("כל הפריטים זמינים בתאריכים שבחרת");
         }
-        else if (metrics.availability < 6) {
-            tradeoffs.push("חלק מהפריטים זמינים בקושי בתאריכים שבחרת");
+        else if (metrics.availability < 7) {
+            const weakest = this.weakestBy(bundle.items, (i) => i.m_availability);
+            if (weakest) {
+                tradeoffs.push(`זמינות נמוכה לאחד הפריטים בתאריכים שבחרת: ${weakest.titleHe}`);
+            }
+            else {
+                tradeoffs.push("חלק מהפריטים זמינים בקושי בתאריכים שבחרת");
+            }
         }
         if (bundle.uniquePickupCount === 1) {
             explanations.push("נקודת איסוף אחת בלבד");
@@ -31,20 +41,37 @@ let BundleExplanationService = class BundleExplanationService {
         if (metrics.reliability >= 8) {
             explanations.push("המשכירים בחבילה בעלי דירוג גבוה");
         }
-        else if (metrics.reliability < 6) {
-            tradeoffs.push("דירוג האמינות של המשכירים נמוך מהממוצע");
+        else if (metrics.reliability < 6.5) {
+            const weakest = this.weakestBy(bundle.items, (i) => i.m_reliability);
+            if (weakest) {
+                tradeoffs.push(`אמינות אחד המשכירים נמוכה יחסית (פריט: ${weakest.titleHe})`);
+            }
+            else {
+                tradeoffs.push("דירוג האמינות של המשכירים נמוך מהממוצע");
+            }
+        }
+        const newLender = bundle.items.find((i) => i.lenderCompletedTransactions !== undefined &&
+            i.lenderCompletedTransactions < 5);
+        if (newLender) {
+            tradeoffs.push("בחבילה יש משכיר חדש יחסית עם מעט עסקאות קודמות");
         }
         if (metrics.condition >= 8) {
             explanations.push("מצב המוצרים בחבילה גבוה");
         }
-        else if (metrics.condition < 6) {
-            tradeoffs.push("חלק מהפריטים במצב פחות טוב");
+        else if (metrics.condition < 6.5) {
+            const weakest = this.weakestBy(bundle.items, (i) => i.m_condition);
+            if (weakest && weakest.m_condition < 6.5) {
+                tradeoffs.push(`אחד הפריטים בחבילה במצב נמוך יחסית: ${weakest.titleHe}`);
+            }
+            else {
+                tradeoffs.push("מצב אחד הפריטים מוריד את ציון החבילה");
+            }
         }
         if (metrics.distance >= 7) {
             explanations.push("מרחק האיסוף קצר יחסית");
         }
         else if (metrics.distance < 4) {
-            tradeoffs.push("מרחק האיסוף גדול יחסית");
+            tradeoffs.push("החבילה כוללת נקודת איסוף רחוקה יחסית");
         }
         if (derived.maxDistance >= 15 && derived.avgDistance > 0 && derived.maxDistance > 1.6 * derived.avgDistance) {
             tradeoffs.push(`נקודת איסוף אחת רחוקה במיוחד (${derived.maxDistance.toFixed(1)} ק״מ)`);
@@ -56,7 +83,17 @@ let BundleExplanationService = class BundleExplanationService {
             explanations.push("המחיר נמוך משמעותית מהתקציב");
         }
         else if (metrics.price < 4) {
-            tradeoffs.push("המחיר אינו הנמוך ביותר, אך החבילה מאוזנת יותר");
+            tradeoffs.push("החבילה קרובה לתקציב המקסימלי");
+        }
+        const sliders = breakdown.preferences.sliders;
+        if (sliders.reliability >= 8 && metrics.reliability < 6.5) {
+            tradeoffs.push("למרות שהוגדרה חשיבות גבוהה לאמינות, אחד המשכירים בחבילה קיבל ציון אמינות נמוך יחסית.");
+        }
+        if (sliders.condition >= 8 && metrics.condition < 6.5) {
+            tradeoffs.push("למרות שהוגדרה חשיבות גבוהה למצב המוצר, אחד הפריטים במצב נמוך יחסית.");
+        }
+        if (sliders.pickupSimplicity >= 8 && bundle.uniquePickupCount > 1) {
+            tradeoffs.push("למרות שהוגדרה חשיבות גבוהה לקלות איסוף, החבילה כוללת יותר מנקודת איסוף אחת.");
         }
         return {
             label: this.pickLabel(scored),
@@ -77,7 +114,29 @@ let BundleExplanationService = class BundleExplanationService {
                 bottleneckTerm: round(breakdown.bottleneckTerm),
                 pickupPenalty: round(breakdown.pickupPenalty),
                 maxDistancePenalty: round(breakdown.maxDistancePenalty),
+                lowScorePenalty: round(breakdown.lowScorePenalty),
+                rawFinalScore: round(breakdown.rawFinalScore),
                 finalScore: round(breakdown.finalScore),
+                preferences: {
+                    profile: breakdown.preferences.profile,
+                    baseProfile: breakdown.preferences.baseProfile,
+                    sliders: breakdown.preferences.sliders,
+                    normalizedWeights: roundRecord(breakdown.preferences.normalizedWeights),
+                    penaltyMultipliers: {
+                        pickup: round(breakdown.preferences.penaltyMultipliers.pickup),
+                        lowScore: roundRecord(breakdown.preferences.penaltyMultipliers.lowScore),
+                        maxDistance: round(breakdown.preferences.penaltyMultipliers.maxDistance),
+                        variance: round(breakdown.preferences.penaltyMultipliers.variance),
+                        bottleneck: round(breakdown.preferences.penaltyMultipliers.bottleneck),
+                    },
+                },
+            },
+            lowScorePenaltyBreakdown: {
+                price: round(breakdown.lowScorePenaltyBreakdown.price),
+                distance: round(breakdown.lowScorePenaltyBreakdown.distance),
+                reliability: round(breakdown.lowScorePenaltyBreakdown.reliability),
+                condition: round(breakdown.lowScorePenaltyBreakdown.condition),
+                availability: round(breakdown.lowScorePenaltyBreakdown.availability),
             },
             derived: {
                 avgDistance: round(derived.avgDistance),
@@ -106,6 +165,20 @@ let BundleExplanationService = class BundleExplanationService {
             })),
         };
     }
+    weakestBy(items, selector) {
+        if (items.length === 0)
+            return undefined;
+        let weakest = items[0];
+        let weakestValue = selector(weakest);
+        for (let i = 1; i < items.length; i++) {
+            const value = selector(items[i]);
+            if (value < weakestValue) {
+                weakest = items[i];
+                weakestValue = value;
+            }
+        }
+        return weakest;
+    }
     pickLabel(scored) {
         const { metrics, breakdown, bundle } = scored;
         if (metrics.price >= 8 && breakdown.finalScore >= 7)
@@ -118,6 +191,20 @@ let BundleExplanationService = class BundleExplanationService {
             return "החבילה המאוזנת ביותר";
         return "חבילה מומלצת";
     }
+    preferenceProfileExplanation(profile) {
+        switch (profile) {
+            case "cheapest":
+                return "המערכת נתנה עדיפות גבוהה למחיר ולכן חבילות זולות קיבלו יתרון.";
+            case "minimalEffort":
+                return "המערכת נתנה עדיפות לאיסוף פשוט ולכן חבילות עם פחות נקודות איסוף קיבלו יתרון.";
+            case "professional":
+                return "המערכת נתנה עדיפות לאמינות, מצב מוצר וזמינות בגלל פרופיל הפקה מקצועית.";
+            case "custom":
+                return "הדירוג חושב לפי המשקלים שהוגדרו ידנית.";
+            default:
+                return null;
+        }
+    }
 };
 exports.BundleExplanationService = BundleExplanationService;
 exports.BundleExplanationService = BundleExplanationService = __decorate([
@@ -125,5 +212,8 @@ exports.BundleExplanationService = BundleExplanationService = __decorate([
 ], BundleExplanationService);
 function round(n) {
     return Math.round(n * 100) / 100;
+}
+function roundRecord(record) {
+    return Object.fromEntries(Object.entries(record).map(([key, value]) => [key, round(value)]));
 }
 //# sourceMappingURL=bundle-explanation.service.js.map

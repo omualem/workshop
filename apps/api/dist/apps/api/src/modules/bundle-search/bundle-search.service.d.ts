@@ -16,25 +16,25 @@ export declare class BundleSearchService {
     create(input: BundleSearchInput, renterId?: string): Promise<any>;
     getSearch(id: string): Promise<{
         id: string;
-        renterId: string | null;
-        status: import(".prisma/client").$Enums.BundleSearchStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.BundleSearchStatus;
+        renterId: string | null;
         maxPickupPoints: number | null;
+        requestedItems: import("@prisma/client/runtime/library").JsonValue;
+        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
+        sameLenderPreferred: boolean;
+        deliveryPreferred: boolean;
+        exactDatesOnly: boolean;
         searchSessionId: string;
         dateRangeStart: Date;
         dateRangeEnd: Date;
-        requestedItems: import("@prisma/client/runtime/library").JsonValue;
         renterLocationLat: import("@prisma/client/runtime/library").Decimal;
         renterLocationLng: import("@prisma/client/runtime/library").Decimal;
         renterAddressText: string;
         weightPreferences: import("@prisma/client/runtime/library").JsonValue;
         resultsSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
         debugSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
-        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
-        sameLenderPreferred: boolean;
-        deliveryPreferred: boolean;
-        exactDatesOnly: boolean;
     }>;
     getResults(id: string): Promise<{
         searchId: string;
@@ -90,8 +90,8 @@ export declare class BundleSearchService {
         candidates: ({
             items: {
                 id: string;
-                listingId: string;
                 lenderId: string;
+                listingId: string;
                 quantity: number;
                 bundleCandidateId: string;
                 requestedSlotKey: string;
@@ -99,8 +99,8 @@ export declare class BundleSearchService {
             }[];
         } & {
             id: string;
-            totalPrice: import("@prisma/client/runtime/library").Decimal;
             createdAt: Date;
+            totalPrice: import("@prisma/client/runtime/library").Decimal;
             rankIndex: number;
             searchRequestId: string;
             scoreTotal: import("@prisma/client/runtime/library").Decimal;
@@ -120,25 +120,25 @@ export declare class BundleSearchService {
         })[];
     } & {
         id: string;
-        renterId: string | null;
-        status: import(".prisma/client").$Enums.BundleSearchStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.BundleSearchStatus;
+        renterId: string | null;
         maxPickupPoints: number | null;
+        requestedItems: import("@prisma/client/runtime/library").JsonValue;
+        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
+        sameLenderPreferred: boolean;
+        deliveryPreferred: boolean;
+        exactDatesOnly: boolean;
         searchSessionId: string;
         dateRangeStart: Date;
         dateRangeEnd: Date;
-        requestedItems: import("@prisma/client/runtime/library").JsonValue;
         renterLocationLat: import("@prisma/client/runtime/library").Decimal;
         renterLocationLng: import("@prisma/client/runtime/library").Decimal;
         renterAddressText: string;
         weightPreferences: import("@prisma/client/runtime/library").JsonValue;
         resultsSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
         debugSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
-        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
-        sameLenderPreferred: boolean;
-        deliveryPreferred: boolean;
-        exactDatesOnly: boolean;
     }>;
     private buildCacheKey;
     private selectCuratedBundles;

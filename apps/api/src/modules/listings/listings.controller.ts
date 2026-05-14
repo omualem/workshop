@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -119,6 +120,7 @@ export class ListingsController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("ADMIN")
+  @Public()
   @Get("admin/listings")
   adminFindAll(@Query() query: AdminListingQueryDto) {
     return this.listingsService.adminFindAll(query);
@@ -126,19 +128,30 @@ export class ListingsController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("ADMIN")
+  @Public()
   @Post("admin/listings")
   adminCreate(@Body() dto: AdminCreateListingDto, @CurrentUser() user: { sub: string }) {
-    return this.listingsService.adminCreate(dto, user.sub);
+    return this.listingsService.adminCreate(dto, user?.sub);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("ADMIN")
+  @Public()
   @Patch("admin/listings/:id")
   adminUpdate(
     @Param("id") id: string,
     @Body() dto: AdminUpdateListingDto,
     @CurrentUser() user: { sub: string },
   ) {
-    return this.listingsService.adminUpdate(id, dto, user.sub);
+    return this.listingsService.adminUpdate(id, dto, user?.sub);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @Public()
+  @Delete("admin/listings/:id")
+  async adminDelete(@Param("id") id: string, @CurrentUser() user: { sub: string }) {
+    const data = await this.listingsService.adminDelete(id, user?.sub);
+    return { success: true, data };
   }
 }

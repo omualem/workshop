@@ -158,6 +158,13 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify(input),
     }),
+  deleteAdminListing: (id: string) =>
+    fetchJson<{ success: boolean; data: { id: string } }>(
+      `/admin/listings/${id}`,
+      {
+        method: "DELETE",
+      },
+    ),
   createBundleSearch: (input: BundleSearchInput) =>
     fetchJson(
       "/bundle-search",

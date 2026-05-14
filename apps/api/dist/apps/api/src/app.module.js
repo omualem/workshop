@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const core_1 = require("@nestjs/core");
 const throttler_1 = require("@nestjs/throttler");
+const addresses_module_1 = require("./modules/addresses/addresses.module");
 const audit_module_1 = require("./modules/audit/audit.module");
 const auth_module_1 = require("./modules/auth/auth.module");
 const availability_module_1 = require("./modules/availability/availability.module");
@@ -57,6 +58,7 @@ exports.AppModule = AppModule = __decorate([
             users_module_1.UsersModule,
             renters_module_1.RentersModule,
             lenders_module_1.LendersModule,
+            addresses_module_1.AddressesModule,
             categories_module_1.CategoriesModule,
             listings_module_1.ListingsModule,
             availability_module_1.AvailabilityModule,

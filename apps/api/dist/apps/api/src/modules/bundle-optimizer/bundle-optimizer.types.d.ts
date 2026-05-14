@@ -57,6 +57,31 @@ export declare const optimizerWeightsSchema: z.ZodObject<{
     condition: z.ZodNumber;
     availability: z.ZodNumber;
 }, z.core.$strip>;
+export declare const preferenceProfileSchema: z.ZodEnum<{
+    custom: "custom";
+    balanced: "balanced";
+    cheapest: "cheapest";
+    closest: "closest";
+    minimalEffort: "minimalEffort";
+    professional: "professional";
+    highQuality: "highQuality";
+}>;
+export declare const basePreferenceProfileSchema: z.ZodEnum<{
+    balanced: "balanced";
+    cheapest: "cheapest";
+    closest: "closest";
+    minimalEffort: "minimalEffort";
+    professional: "professional";
+    highQuality: "highQuality";
+}>;
+export declare const preferenceSlidersSchema: z.ZodObject<{
+    price: z.ZodNumber;
+    distance: z.ZodNumber;
+    reliability: z.ZodNumber;
+    condition: z.ZodNumber;
+    availability: z.ZodNumber;
+    pickupSimplicity: z.ZodNumber;
+}, z.core.$strip>;
 export declare const optimizerPreferencesSchema: z.ZodObject<{
     weights: z.ZodDefault<z.ZodObject<{
         price: z.ZodNumber;
@@ -109,12 +134,40 @@ export declare const optimizerRequestSchema: z.ZodObject<{
         endDate: z.ZodString;
     }, z.core.$strip>;
     userLocation: z.ZodObject<{
-        lat: z.ZodNumber;
-        lng: z.ZodNumber;
+        lat: z.ZodOptional<z.ZodNumber>;
+        lng: z.ZodOptional<z.ZodNumber>;
         address: z.ZodOptional<z.ZodString>;
+        cityId: z.ZodOptional<z.ZodString>;
+        streetId: z.ZodOptional<z.ZodString>;
+        addressNumber: z.ZodOptional<z.ZodNumber>;
     }, z.core.$strip>;
     budget: z.ZodNumber;
     maxPickupPoints: z.ZodOptional<z.ZodNumber>;
+    preferenceProfile: z.ZodOptional<z.ZodEnum<{
+        custom: "custom";
+        balanced: "balanced";
+        cheapest: "cheapest";
+        closest: "closest";
+        minimalEffort: "minimalEffort";
+        professional: "professional";
+        highQuality: "highQuality";
+    }>>;
+    basePreferenceProfile: z.ZodOptional<z.ZodEnum<{
+        balanced: "balanced";
+        cheapest: "cheapest";
+        closest: "closest";
+        minimalEffort: "minimalEffort";
+        professional: "professional";
+        highQuality: "highQuality";
+    }>>;
+    preferenceSliders: z.ZodOptional<z.ZodObject<{
+        price: z.ZodNumber;
+        distance: z.ZodNumber;
+        reliability: z.ZodNumber;
+        condition: z.ZodNumber;
+        availability: z.ZodNumber;
+        pickupSimplicity: z.ZodNumber;
+    }, z.core.$strip>>;
     preferences: z.ZodDefault<z.ZodObject<{
         weights: z.ZodDefault<z.ZodObject<{
             price: z.ZodNumber;
@@ -134,6 +187,9 @@ export declare const optimizerRequestSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type OptimizerWeights = z.infer<typeof optimizerWeightsSchema>;
 export type OptimizerPreferences = z.infer<typeof optimizerPreferencesSchema>;
+export type PreferenceProfile = z.infer<typeof preferenceProfileSchema>;
+export type BasePreferenceProfile = z.infer<typeof basePreferenceProfileSchema>;
+export type PreferenceSliders = z.infer<typeof preferenceSlidersSchema>;
 export type OptimizerRequest = z.infer<typeof optimizerRequestSchema>;
 export type SlotInput = z.infer<typeof slotInputSchema>;
 export type SlotConstraints = NonNullable<z.infer<typeof slotConstraintsSchema>>;
@@ -154,6 +210,7 @@ export interface CandidateItem {
     pickupLat: number;
     pickupLng: number;
     inventoryCount: number;
+    lenderCompletedTransactions?: number;
     attributeValues: Array<{
         attributeKey: string;
         attributeValue: unknown;
@@ -195,7 +252,42 @@ export interface ScoreBreakdown {
     bottleneckTerm: number;
     pickupPenalty: number;
     maxDistancePenalty: number;
+    lowScorePenalty: number;
+    lowScorePenaltyBreakdown: {
+        price: number;
+        distance: number;
+        reliability: number;
+        condition: number;
+        availability: number;
+    };
+    preferences: {
+        profile: PreferenceProfile;
+        baseProfile?: BasePreferenceProfile;
+        sliders: PreferenceSliders;
+        normalizedWeights: OptimizerWeights;
+        penaltyMultipliers: {
+            pickup: number;
+            lowScore: {
+                price: number;
+                distance: number;
+                reliability: number;
+                condition: number;
+                availability: number;
+            };
+            maxDistance: number;
+            variance: number;
+            bottleneck: number;
+        };
+    };
+    rawFinalScore: number;
     finalScore: number;
+}
+export interface ResolvedOptimizerPreferences {
+    profile: PreferenceProfile;
+    baseProfile?: BasePreferenceProfile;
+    sliders: PreferenceSliders;
+    weights: OptimizerWeights;
+    penaltyWeights: ScoreBreakdown["preferences"]["penaltyMultipliers"];
 }
 export interface DerivedQuantities {
     avgDistance: number;

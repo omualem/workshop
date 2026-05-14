@@ -11,6 +11,9 @@ export declare class ListingAvailabilityBlockInputDto {
 }
 export declare class CreateListingDto {
     categoryId: string;
+    cityId: string;
+    streetId: string;
+    addressNumber: number;
     titleHe: string;
     titleEn: string;
     descriptionHe: string;

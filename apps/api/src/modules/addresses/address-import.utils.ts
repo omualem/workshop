@@ -46,7 +46,7 @@ export function findAddressSourceFile(projectRoot = resolveProjectRoot()) {
     .map((fileName) => path.join(projectRoot, fileName));
 
   return candidates.find((filePath) => {
-    const firstLine = readFileSync(filePath, "utf8").split(/\r?\n/, 1)[0] ?? "";
+    const firstLine = readAddressFileText(filePath).split(/\r?\n/, 1)[0] ?? "";
     return (
       firstLine.includes(HEADER_CITY_CODE) &&
       firstLine.includes(HEADER_CITY_NAME) &&
@@ -57,7 +57,7 @@ export function findAddressSourceFile(projectRoot = resolveProjectRoot()) {
 }
 
 export function parseAddressSourceFile(filePath: string): ParsedAddressSource {
-  const raw = readFileSync(filePath, "utf8");
+  const raw = readAddressFileText(filePath);
   const [headerLine = "", ...lines] = raw.split(/\r?\n/);
   const headers = splitCsvLine(headerLine).map((value) =>
     normalizeHebrewAddressText(value),
@@ -263,6 +263,37 @@ function splitCsvLine(line: string) {
   return cells;
 }
 
+function readAddressFileText(filePath: string) {
+  const buffer = readFileSync(filePath);
+  const utf8 = buffer.toString("utf8");
+  if (utf8.includes(HEADER_CITY_CODE)) {
+    return utf8;
+  }
+  return decodeWindows1255(buffer);
+}
+
+function decodeWindows1255(buffer: Buffer) {
+  let text = "";
+  for (const byte of buffer) {
+    if (byte >= 0xe0 && byte <= 0xfa) {
+      text += String.fromCharCode(0x05d0 + byte - 0xe0);
+    } else {
+      text += String.fromCharCode(byte);
+    }
+  }
+  return text;
+}
+
 function resolveProjectRoot() {
-  return path.resolve(__dirname, "../../../..");
+  const candidates = [
+    process.cwd(),
+    path.resolve(process.cwd(), "../.."),
+    path.resolve(__dirname, "../../../.."),
+    path.resolve(__dirname, "../../../../../.."),
+  ];
+  return (
+    candidates.find((candidate) =>
+      existsSync(path.join(candidate, "ערים ורחובות.csv")),
+    ) ?? path.resolve(process.cwd(), "../..")
+  );
 }

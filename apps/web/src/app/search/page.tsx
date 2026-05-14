@@ -5,6 +5,8 @@ import { SearchFilters } from "../../components/search-filters";
 import { SearchPagination } from "../../components/search-pagination";
 import { api } from "../../lib/api";
 
+export const dynamic = "force-dynamic";
+
 export default async function SearchPage({
   searchParams,
 }: {

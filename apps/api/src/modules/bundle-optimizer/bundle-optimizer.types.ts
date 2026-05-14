@@ -83,13 +83,36 @@ export const optimizerWeightsSchema = z.object({
   availability: z.number().min(0),
 });
 
+export const preferenceProfileSchema = z.enum([
+  "balanced",
+  "cheapest",
+  "closest",
+  "minimalEffort",
+  "professional",
+  "highQuality",
+  "custom",
+]);
+
+export const basePreferenceProfileSchema = preferenceProfileSchema.exclude([
+  "custom",
+]);
+
+export const preferenceSlidersSchema = z.object({
+  price: z.number().min(1).max(10),
+  distance: z.number().min(1).max(10),
+  reliability: z.number().min(1).max(10),
+  condition: z.number().min(1).max(10),
+  availability: z.number().min(1).max(10),
+  pickupSimplicity: z.number().min(1).max(10),
+});
+
 export const optimizerPreferencesSchema = z.object({
   weights: optimizerWeightsSchema.default({
-    price: 0.25,
+    price: 0.2,
     distance: 0.2,
     reliability: 0.2,
     condition: 0.2,
-    availability: 0.15,
+    availability: 0.2,
   }),
   lambdaVariance: z.number().min(0).default(0.35),
   alphaBottleneck: z.number().min(0).default(0.25),
@@ -131,13 +154,16 @@ export const optimizerRequestSchema = z.object({
     ),
   budget: z.number().positive(),
   maxPickupPoints: z.number().int().positive().max(20).optional(),
+  preferenceProfile: preferenceProfileSchema.optional(),
+  basePreferenceProfile: basePreferenceProfileSchema.optional(),
+  preferenceSliders: preferenceSlidersSchema.optional(),
   preferences: optimizerPreferencesSchema.default({
     weights: {
-      price: 0.25,
+      price: 0.2,
       distance: 0.2,
       reliability: 0.2,
       condition: 0.2,
-      availability: 0.15,
+      availability: 0.2,
     },
     lambdaVariance: 0.35,
     alphaBottleneck: 0.25,
@@ -151,6 +177,9 @@ export const optimizerRequestSchema = z.object({
 
 export type OptimizerWeights = z.infer<typeof optimizerWeightsSchema>;
 export type OptimizerPreferences = z.infer<typeof optimizerPreferencesSchema>;
+export type PreferenceProfile = z.infer<typeof preferenceProfileSchema>;
+export type BasePreferenceProfile = z.infer<typeof basePreferenceProfileSchema>;
+export type PreferenceSliders = z.infer<typeof preferenceSlidersSchema>;
 export type OptimizerRequest = z.infer<typeof optimizerRequestSchema>;
 export type SlotInput = z.infer<typeof slotInputSchema>;
 export type SlotConstraints = NonNullable<z.infer<typeof slotConstraintsSchema>>;
@@ -239,8 +268,35 @@ export interface ScoreBreakdown {
     condition: number;
     availability: number;
   };
+  preferences: {
+    profile: PreferenceProfile;
+    baseProfile?: BasePreferenceProfile;
+    sliders: PreferenceSliders;
+    normalizedWeights: OptimizerWeights;
+    penaltyMultipliers: {
+      pickup: number;
+      lowScore: {
+        price: number;
+        distance: number;
+        reliability: number;
+        condition: number;
+        availability: number;
+      };
+      maxDistance: number;
+      variance: number;
+      bottleneck: number;
+    };
+  };
   rawFinalScore: number;       // pre-clamp Score(x)
   finalScore: number;          // clamp(Score(x), 0, 10)
+}
+
+export interface ResolvedOptimizerPreferences {
+  profile: PreferenceProfile;
+  baseProfile?: BasePreferenceProfile;
+  sliders: PreferenceSliders;
+  weights: OptimizerWeights;
+  penaltyWeights: ScoreBreakdown["preferences"]["penaltyMultipliers"];
 }
 
 /** Quantities derived from raw signals and reported in the output. */

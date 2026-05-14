@@ -5,6 +5,7 @@ import { BundleExplanationService } from "./bundle-explanation.service";
 import { BundleScoringService } from "./bundle-scoring.service";
 import { CandidateFilterService } from "./candidate-filter.service";
 import { ParetoFilterService } from "./pareto-filter.service";
+import { PreferenceMappingService } from "./preference-mapping.service";
 import type { OptimizerRequest } from "./bundle-optimizer.types";
 
 @Injectable()
@@ -16,10 +17,24 @@ export class BundleOptimizerService {
     private readonly pareto: ParetoFilterService,
     private readonly explanation: BundleExplanationService,
     private readonly addresses: AddressesService,
+    private readonly preferenceMapping: PreferenceMappingService,
   ) {}
 
   async optimize(request: OptimizerRequest) {
     request = await this.resolveRenterLocation(request);
+    const resolvedPreferences =
+      this.preferenceMapping.resolvePreferences(request);
+    request = {
+      ...request,
+      preferenceProfile: resolvedPreferences.profile,
+      basePreferenceProfile: resolvedPreferences.baseProfile,
+      preferenceSliders: resolvedPreferences.sliders,
+      preferences: {
+        ...request.preferences,
+        weights: resolvedPreferences.weights,
+      },
+    };
+
     const { candidatesBySlot, counts, expandedSlots, slotDebug } =
       await this.candidateFilter.buildCandidatesPerSlot(request);
     const includeDebug = process.env.NODE_ENV !== "production";
@@ -50,6 +65,7 @@ export class BundleOptimizerService {
         bundle,
         request.preferences,
         request.budget,
+        resolvedPreferences,
       ),
     );
 
@@ -77,6 +93,9 @@ export class BundleOptimizerService {
           budget: request.budget,
           maxPickupPoints: request.maxPickupPoints,
           userLocation: request.userLocation,
+          preferenceProfile: request.preferenceProfile,
+          basePreferenceProfile: request.basePreferenceProfile,
+          preferenceSliders: request.preferenceSliders,
           preferences: request.preferences,
         },
         algorithm: {
@@ -163,6 +182,9 @@ export class BundleOptimizerService {
           budget: request.budget,
           maxPickupPoints: request.maxPickupPoints,
           userLocation: request.userLocation,
+          preferenceProfile: request.preferenceProfile,
+          basePreferenceProfile: request.basePreferenceProfile,
+          preferenceSliders: request.preferenceSliders,
           preferences: request.preferences,
         },
         bundles: [],

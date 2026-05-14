@@ -392,7 +392,9 @@ export class ListingsService {
       where: {
         categoryId: query.categoryId,
         lenderId: query.lenderId,
-        status: query.status as ListingStatusValue,
+        status: query.status
+          ? (query.status as ListingStatusValue)
+          : { not: "ARCHIVED" },
         OR: query.search
           ? [
               { titleHe: { contains: query.search } },
@@ -522,6 +524,34 @@ export class ListingsService {
     return normalizeDecimalObject(updated);
   }
 
+  async adminDelete(id: string, actorUserId?: string) {
+    const existing = await this.prisma.listing.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      throw new NotFoundException("Listing not found");
+    }
+
+    if (existing.status !== "ARCHIVED") {
+      const archived = await this.prisma.listing.update({
+        where: { id },
+        data: { status: "ARCHIVED" },
+      });
+
+      await this.auditService.log({
+        actorUserId,
+        action: "admin.listing.delete",
+        entityType: "Listing",
+        entityId: id,
+        before: existing,
+        after: archived,
+      });
+    }
+
+    return { id };
+  }
+
   private async buildListingWriteData(
     dto: (CreateListingDto | AdminCreateListingDto) & { imageUrls?: string[] },
     lenderId: string,
@@ -529,6 +559,9 @@ export class ListingsService {
   ): Promise<Prisma.ListingCreateInput> {
     this.assertRentalDayBounds(dto.minRentalDays, dto.maxRentalDays);
     const location = await this.resolvePickupLocation(dto);
+    if (!location) {
+      throw new BadRequestException("Listing pickup location is required");
+    }
 
     return {
       lender: { connect: { userId: lenderId } },

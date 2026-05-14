@@ -1,8 +1,10 @@
+import { AddressesService } from "../addresses/addresses.service";
 import { BeamSearchService } from "./beam-search.service";
 import { BundleExplanationService } from "./bundle-explanation.service";
 import { BundleScoringService } from "./bundle-scoring.service";
 import { CandidateFilterService } from "./candidate-filter.service";
 import { ParetoFilterService } from "./pareto-filter.service";
+import { PreferenceMappingService } from "./preference-mapping.service";
 import type { OptimizerRequest } from "./bundle-optimizer.types";
 export declare class BundleOptimizerService {
     private readonly candidateFilter;
@@ -10,7 +12,9 @@ export declare class BundleOptimizerService {
     private readonly scoring;
     private readonly pareto;
     private readonly explanation;
-    constructor(candidateFilter: CandidateFilterService, beamSearch: BeamSearchService, scoring: BundleScoringService, pareto: ParetoFilterService, explanation: BundleExplanationService);
+    private readonly addresses;
+    private readonly preferenceMapping;
+    constructor(candidateFilter: CandidateFilterService, beamSearch: BeamSearchService, scoring: BundleScoringService, pareto: ParetoFilterService, explanation: BundleExplanationService, addresses: AddressesService, preferenceMapping: PreferenceMappingService);
     optimize(request: OptimizerRequest): Promise<{
         success: boolean;
         data: {
@@ -58,10 +62,23 @@ export declare class BundleOptimizerService {
                 budget: number;
                 maxPickupPoints: number | undefined;
                 userLocation: {
-                    lat: number;
-                    lng: number;
+                    lat?: number | undefined;
+                    lng?: number | undefined;
                     address?: string | undefined;
+                    cityId?: string | undefined;
+                    streetId?: string | undefined;
+                    addressNumber?: number | undefined;
                 };
+                preferenceProfile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                basePreferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                preferenceSliders: {
+                    price: number;
+                    distance: number;
+                    reliability: number;
+                    condition: number;
+                    availability: number;
+                    pickupSimplicity: number;
+                } | undefined;
                 preferences: {
                     weights: {
                         price: number;
@@ -140,10 +157,23 @@ export declare class BundleOptimizerService {
                 budget: number;
                 maxPickupPoints: number | undefined;
                 userLocation: {
-                    lat: number;
-                    lng: number;
+                    lat?: number | undefined;
+                    lng?: number | undefined;
                     address?: string | undefined;
+                    cityId?: string | undefined;
+                    streetId?: string | undefined;
+                    addressNumber?: number | undefined;
                 };
+                preferenceProfile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                basePreferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                preferenceSliders: {
+                    price: number;
+                    distance: number;
+                    reliability: number;
+                    condition: number;
+                    availability: number;
+                    pickupSimplicity: number;
+                } | undefined;
                 preferences: {
                     weights: {
                         price: number;
@@ -186,7 +216,48 @@ export declare class BundleOptimizerService {
                     bottleneckTerm: number;
                     pickupPenalty: number;
                     maxDistancePenalty: number;
+                    lowScorePenalty: number;
+                    rawFinalScore: number;
                     finalScore: number;
+                    preferences: {
+                        profile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality";
+                        baseProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                        sliders: {
+                            price: number;
+                            distance: number;
+                            reliability: number;
+                            condition: number;
+                            availability: number;
+                            pickupSimplicity: number;
+                        };
+                        normalizedWeights: {
+                            price: number;
+                            distance: number;
+                            reliability: number;
+                            condition: number;
+                            availability: number;
+                        };
+                        penaltyMultipliers: {
+                            pickup: number;
+                            lowScore: {
+                                price: number;
+                                distance: number;
+                                reliability: number;
+                                condition: number;
+                                availability: number;
+                            };
+                            maxDistance: number;
+                            variance: number;
+                            bottleneck: number;
+                        };
+                    };
+                };
+                lowScorePenaltyBreakdown: {
+                    price: number;
+                    distance: number;
+                    reliability: number;
+                    condition: number;
+                    availability: number;
                 };
                 derived: {
                     avgDistance: number;
@@ -220,4 +291,5 @@ export declare class BundleOptimizerService {
         };
     }>;
     private emptyResult;
+    private resolveRenterLocation;
 }

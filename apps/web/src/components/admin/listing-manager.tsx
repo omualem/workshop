@@ -308,6 +308,9 @@ export function ListingManager({
     type: "success" | "error";
     message: string;
   } | null>(null);
+  const [deletingListingId, setDeletingListingId] = useState<string | null>(
+    null,
+  );
 
   const leafCategories = useMemo(
     () => buildLeafCategories(options.categories as CategoryOption[]),
@@ -353,6 +356,24 @@ export function ListingManager({
     },
     onError: () => {
       setFeedback({ type: "error", message: "עדכון הפריט נכשל. נסו שוב." });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: api.deleteAdminListing,
+    onMutate: (id: string) => {
+      setDeletingListingId(id);
+      setFeedback(null);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["admin-listings"] });
+      setFeedback({ type: "success", message: "הפריט נמחק בהצלחה" });
+    },
+    onError: () => {
+      setFeedback({ type: "error", message: "מחיקת הפריט נכשלה" });
+    },
+    onSettled: () => {
+      setDeletingListingId(null);
     },
   });
 
@@ -466,6 +487,14 @@ export function ListingManager({
           : [],
     });
     setIsModalOpen(true);
+  };
+
+  const handleDelete = (item: any) => {
+    const confirmed = window.confirm(
+      "האם למחוק את הפריט? פעולה זו לא ניתנת לביטול.",
+    );
+    if (!confirmed) return;
+    deleteMutation.mutate(item.id);
   };
 
   const setAttributeRow = (
@@ -849,13 +878,25 @@ export function ListingManager({
                       ] ?? item.status}
                     </td>
                     <td className="px-4 py-3">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => startEdit(item)}
-                      >
-                        עריכה
-                      </Button>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          disabled={deletingListingId === item.id}
+                          onClick={() => startEdit(item)}
+                        >
+                          עריכה
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          className="border-rose-200 text-rose-700 hover:border-rose-300 hover:bg-rose-50"
+                          disabled={deletingListingId === item.id}
+                          onClick={() => handleDelete(item)}
+                        >
+                          {deletingListingId === item.id ? "מוחק..." : "מחיקה"}
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))

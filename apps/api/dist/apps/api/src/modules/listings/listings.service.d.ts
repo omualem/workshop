@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
+import { AddressesService } from "../addresses/addresses.service";
 import { AuditService } from "../audit/audit.service";
 import { AvailabilityService } from "../availability/availability.service";
 import { AddMediaDto } from "./dto/add-media.dto";
@@ -15,7 +16,8 @@ export declare class ListingsService {
     private readonly prisma;
     private readonly auditService;
     private readonly availabilityService;
-    constructor(prisma: PrismaService, auditService: AuditService, availabilityService: AvailabilityService);
+    private readonly addressesService;
+    constructor(prisma: PrismaService, auditService: AuditService, availabilityService: AvailabilityService, addressesService: AddressesService);
     findAll(query: ListingQueryDto): Promise<{
         items: ({
             lender: {
@@ -59,10 +61,25 @@ export declare class ListingsService {
                 nameEn: string;
                 attributesSchema: Prisma.JsonValue | null;
             };
+            cityRef: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                nameHe: string;
+                settlementCode: number;
+            } | null;
+            streetRef: {
+                id: string;
+                cityId: string;
+                createdAt: Date;
+                updatedAt: Date;
+                nameHe: string;
+                streetCode: number;
+            } | null;
             media: {
                 id: string;
-                listingId: string;
                 sortOrder: number;
+                listingId: string;
                 url: string;
                 altText: string;
             }[];
@@ -74,21 +91,20 @@ export declare class ListingsService {
             }[];
             availabilityBlocks: {
                 id: string;
-                listingId: string;
-                quantity: number;
                 status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
                 startDate: Date;
+                listingId: string;
                 endDate: Date;
+                quantity: number;
                 reason: string | null;
             }[];
         } & {
             id: string;
             lenderId: string;
-            depositAmount: Prisma.Decimal;
-            status: import(".prisma/client").$Enums.ListingStatus;
-            createdAt: Date;
-            updatedAt: Date;
             categoryId: string;
+            cityId: string | null;
+            streetId: string | null;
+            addressNumber: number | null;
             titleHe: string;
             titleEn: string;
             descriptionHe: string;
@@ -96,7 +112,9 @@ export declare class ListingsService {
             suitableFor: string | null;
             mainUses: string | null;
             condition: import(".prisma/client").$Enums.ListingCondition;
+            status: import(".prisma/client").$Enums.ListingStatus;
             basePriceDaily: Prisma.Decimal;
+            depositAmount: Prisma.Decimal;
             qualityScoreCached: Prisma.Decimal;
             pickupLat: Prisma.Decimal;
             pickupLng: Prisma.Decimal;
@@ -112,6 +130,8 @@ export declare class ListingsService {
             inventoryCount: number;
             minRentalDays: number;
             maxRentalDays: number;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
         total: number;
         page: number;
@@ -276,6 +296,10 @@ export declare class ListingsService {
         };
         location: {
             city: string | null;
+            cityId: string | null;
+            streetId: string | null;
+            addressNumber: number | null;
+            street: string | null;
             area: string | null;
             pickupSummary: string;
             pickupAddressText: string;
@@ -329,6 +353,9 @@ export declare class ListingsService {
         pickupLng: Prisma.Decimal;
         pickupAddressText: string;
         city: string | null;
+        cityId: string | null;
+        streetId: string | null;
+        addressNumber: number | null;
         pickupInstructions: string | null;
         cancellationPolicy: string | null;
         returnTerms: string | null;
@@ -380,12 +407,37 @@ export declare class ListingsService {
                 fullName: string;
             };
         }>;
+        cityRef: {
+            id: string;
+            settlementCode: number;
+            nameHe: string;
+        } | null;
+        streetRef: {
+            id: string;
+            streetCode: number;
+            nameHe: string;
+        } | null;
     }>;
     create(lenderId: string, dto: CreateListingDto): Promise<{
+        cityRef: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            settlementCode: number;
+        } | null;
+        streetRef: {
+            id: string;
+            cityId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            streetCode: number;
+        } | null;
         media: {
             id: string;
-            listingId: string;
             sortOrder: number;
+            listingId: string;
             url: string;
             altText: string;
         }[];
@@ -397,21 +449,20 @@ export declare class ListingsService {
         }[];
         availabilityBlocks: {
             id: string;
-            listingId: string;
-            quantity: number;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             startDate: Date;
+            listingId: string;
             endDate: Date;
+            quantity: number;
             reason: string | null;
         }[];
     } & {
         id: string;
         lenderId: string;
-        depositAmount: Prisma.Decimal;
-        status: import(".prisma/client").$Enums.ListingStatus;
-        createdAt: Date;
-        updatedAt: Date;
         categoryId: string;
+        cityId: string | null;
+        streetId: string | null;
+        addressNumber: number | null;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
@@ -419,7 +470,9 @@ export declare class ListingsService {
         suitableFor: string | null;
         mainUses: string | null;
         condition: import(".prisma/client").$Enums.ListingCondition;
+        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: Prisma.Decimal;
+        depositAmount: Prisma.Decimal;
         qualityScoreCached: Prisma.Decimal;
         pickupLat: Prisma.Decimal;
         pickupLng: Prisma.Decimal;
@@ -435,12 +488,29 @@ export declare class ListingsService {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(lenderId: string, id: string, dto: UpdateListingDto): Promise<{
+        cityRef: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            settlementCode: number;
+        } | null;
+        streetRef: {
+            id: string;
+            cityId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            streetCode: number;
+        } | null;
         media: {
             id: string;
-            listingId: string;
             sortOrder: number;
+            listingId: string;
             url: string;
             altText: string;
         }[];
@@ -452,21 +522,20 @@ export declare class ListingsService {
         }[];
         availabilityBlocks: {
             id: string;
-            listingId: string;
-            quantity: number;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             startDate: Date;
+            listingId: string;
             endDate: Date;
+            quantity: number;
             reason: string | null;
         }[];
     } & {
         id: string;
         lenderId: string;
-        depositAmount: Prisma.Decimal;
-        status: import(".prisma/client").$Enums.ListingStatus;
-        createdAt: Date;
-        updatedAt: Date;
         categoryId: string;
+        cityId: string | null;
+        streetId: string | null;
+        addressNumber: number | null;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
@@ -474,7 +543,9 @@ export declare class ListingsService {
         suitableFor: string | null;
         mainUses: string | null;
         condition: import(".prisma/client").$Enums.ListingCondition;
+        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: Prisma.Decimal;
+        depositAmount: Prisma.Decimal;
         qualityScoreCached: Prisma.Decimal;
         pickupLat: Prisma.Decimal;
         pickupLng: Prisma.Decimal;
@@ -490,21 +561,23 @@ export declare class ListingsService {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     addMedia(lenderId: string, id: string, dto: AddMediaDto): Promise<{
         id: string;
-        listingId: string;
         sortOrder: number;
+        listingId: string;
         url: string;
         altText: string;
     }>;
     addAvailabilityBlock(lenderId: string, id: string, dto: CreateAvailabilityBlockDto): Promise<{
         id: string;
-        listingId: string;
-        quantity: number;
         status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
         startDate: Date;
+        listingId: string;
         endDate: Date;
+        quantity: number;
         reason: string | null;
     }>;
     addPricingRule(lenderId: string, id: string, dto: CreatePricingRuleDto): Promise<{
@@ -533,21 +606,35 @@ export declare class ListingsService {
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         };
+        cityRef: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            settlementCode: number;
+        } | null;
+        streetRef: {
+            id: string;
+            cityId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            streetCode: number;
+        } | null;
         media: {
             id: string;
-            listingId: string;
             sortOrder: number;
+            listingId: string;
             url: string;
             altText: string;
         }[];
     } & {
         id: string;
         lenderId: string;
-        depositAmount: Prisma.Decimal;
-        status: import(".prisma/client").$Enums.ListingStatus;
-        createdAt: Date;
-        updatedAt: Date;
         categoryId: string;
+        cityId: string | null;
+        streetId: string | null;
+        addressNumber: number | null;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
@@ -555,7 +642,9 @@ export declare class ListingsService {
         suitableFor: string | null;
         mainUses: string | null;
         condition: import(".prisma/client").$Enums.ListingCondition;
+        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: Prisma.Decimal;
+        depositAmount: Prisma.Decimal;
         qualityScoreCached: Prisma.Decimal;
         pickupLat: Prisma.Decimal;
         pickupLng: Prisma.Decimal;
@@ -571,6 +660,8 @@ export declare class ListingsService {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     publicAvailability(id: string, startDate: string, endDate: string): Promise<{
         available: boolean;
@@ -618,10 +709,25 @@ export declare class ListingsService {
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         };
+        cityRef: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            settlementCode: number;
+        } | null;
+        streetRef: {
+            id: string;
+            cityId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            streetCode: number;
+        } | null;
         media: {
             id: string;
-            listingId: string;
             sortOrder: number;
+            listingId: string;
             url: string;
             altText: string;
         }[];
@@ -633,21 +739,20 @@ export declare class ListingsService {
         }[];
         availabilityBlocks: {
             id: string;
-            listingId: string;
-            quantity: number;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             startDate: Date;
+            listingId: string;
             endDate: Date;
+            quantity: number;
             reason: string | null;
         }[];
     } & {
         id: string;
         lenderId: string;
-        depositAmount: Prisma.Decimal;
-        status: import(".prisma/client").$Enums.ListingStatus;
-        createdAt: Date;
-        updatedAt: Date;
         categoryId: string;
+        cityId: string | null;
+        streetId: string | null;
+        addressNumber: number | null;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
@@ -655,7 +760,9 @@ export declare class ListingsService {
         suitableFor: string | null;
         mainUses: string | null;
         condition: import(".prisma/client").$Enums.ListingCondition;
+        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: Prisma.Decimal;
+        depositAmount: Prisma.Decimal;
         qualityScoreCached: Prisma.Decimal;
         pickupLat: Prisma.Decimal;
         pickupLng: Prisma.Decimal;
@@ -671,6 +778,8 @@ export declare class ListingsService {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     adminCreate(dto: AdminCreateListingDto, actorUserId?: string): Promise<{
         lender: {
@@ -714,10 +823,25 @@ export declare class ListingsService {
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         };
+        cityRef: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            settlementCode: number;
+        } | null;
+        streetRef: {
+            id: string;
+            cityId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            streetCode: number;
+        } | null;
         media: {
             id: string;
-            listingId: string;
             sortOrder: number;
+            listingId: string;
             url: string;
             altText: string;
         }[];
@@ -729,21 +853,20 @@ export declare class ListingsService {
         }[];
         availabilityBlocks: {
             id: string;
-            listingId: string;
-            quantity: number;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             startDate: Date;
+            listingId: string;
             endDate: Date;
+            quantity: number;
             reason: string | null;
         }[];
     } & {
         id: string;
         lenderId: string;
-        depositAmount: Prisma.Decimal;
-        status: import(".prisma/client").$Enums.ListingStatus;
-        createdAt: Date;
-        updatedAt: Date;
         categoryId: string;
+        cityId: string | null;
+        streetId: string | null;
+        addressNumber: number | null;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
@@ -751,7 +874,9 @@ export declare class ListingsService {
         suitableFor: string | null;
         mainUses: string | null;
         condition: import(".prisma/client").$Enums.ListingCondition;
+        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: Prisma.Decimal;
+        depositAmount: Prisma.Decimal;
         qualityScoreCached: Prisma.Decimal;
         pickupLat: Prisma.Decimal;
         pickupLng: Prisma.Decimal;
@@ -767,6 +892,8 @@ export declare class ListingsService {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     adminUpdate(id: string, dto: AdminUpdateListingDto, actorUserId?: string): Promise<{
         lender: {
@@ -810,10 +937,25 @@ export declare class ListingsService {
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         };
+        cityRef: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            settlementCode: number;
+        } | null;
+        streetRef: {
+            id: string;
+            cityId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            nameHe: string;
+            streetCode: number;
+        } | null;
         media: {
             id: string;
-            listingId: string;
             sortOrder: number;
+            listingId: string;
             url: string;
             altText: string;
         }[];
@@ -825,21 +967,20 @@ export declare class ListingsService {
         }[];
         availabilityBlocks: {
             id: string;
-            listingId: string;
-            quantity: number;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             startDate: Date;
+            listingId: string;
             endDate: Date;
+            quantity: number;
             reason: string | null;
         }[];
     } & {
         id: string;
         lenderId: string;
-        depositAmount: Prisma.Decimal;
-        status: import(".prisma/client").$Enums.ListingStatus;
-        createdAt: Date;
-        updatedAt: Date;
         categoryId: string;
+        cityId: string | null;
+        streetId: string | null;
+        addressNumber: number | null;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
@@ -847,7 +988,9 @@ export declare class ListingsService {
         suitableFor: string | null;
         mainUses: string | null;
         condition: import(".prisma/client").$Enums.ListingCondition;
+        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: Prisma.Decimal;
+        depositAmount: Prisma.Decimal;
         qualityScoreCached: Prisma.Decimal;
         pickupLat: Prisma.Decimal;
         pickupLng: Prisma.Decimal;
@@ -863,12 +1006,16 @@ export declare class ListingsService {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    adminDelete(id: string, actorUserId?: string): Promise<{
+        id: string;
     }>;
     private buildListingWriteData;
     private buildListingUpdateData;
     private assertRentalDayBounds;
     private resolvePickupLocation;
-    private fallbackCoordinatesForCity;
     private requireLenderOwnedListing;
     private toListingDetailResponse;
     private attributesForResponse;

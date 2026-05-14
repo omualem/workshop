@@ -10,20 +10,27 @@ exports.LenderReliabilityService = void 0;
 const common_1 = require("@nestjs/common");
 let LenderReliabilityService = class LenderReliabilityService {
     compute(input) {
-        const sampleWeight = Math.min(1, input.completedTransactionsCount / 25);
-        const bayesianRating = input.averageRating * sampleWeight + 4.2 * (1 - sampleWeight);
+        const sampleWeight = Math.min(1, input.completedTransactionsCount / 30);
+        const bayesianRating = input.averageRating * sampleWeight + 3.7 * (1 - sampleWeight);
         const ratingNormalized = (bayesianRating / 5) * 10;
         const completionRateNormalized = Math.max(0, 10 - (input.cancellationRate + input.lateReturnRate + input.complaintRate) * 0.18);
         const verificationBonus = input.verificationLevel === "TRUSTED"
-            ? 1.2
+            ? 0.8
             : input.verificationLevel === "VERIFIED"
-                ? 0.6
+                ? 0.4
                 : 0;
         const responseBonus = Math.max(0, Math.min(1.2, input.responseTimeScore / 10));
-        return Math.max(0, Math.min(10, ratingNormalized * 0.42 +
+        let reliability = ratingNormalized * 0.42 +
             completionRateNormalized * 0.38 +
             verificationBonus +
-            responseBonus));
+            responseBonus;
+        if (input.completedTransactionsCount < 2) {
+            reliability -= 1.5;
+        }
+        else if (input.completedTransactionsCount < 5) {
+            reliability -= 1.0;
+        }
+        return Math.max(0, Math.min(10, reliability));
     }
 };
 exports.LenderReliabilityService = LenderReliabilityService;

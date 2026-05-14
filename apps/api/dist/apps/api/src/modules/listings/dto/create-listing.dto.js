@@ -56,6 +56,9 @@ __decorate([
 ], ListingAvailabilityBlockInputDto.prototype, "reason", void 0);
 class CreateListingDto {
     categoryId;
+    cityId;
+    streetId;
+    addressNumber;
     titleHe;
     titleEn;
     descriptionHe;
@@ -87,6 +90,19 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateListingDto.prototype, "categoryId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateListingDto.prototype, "cityId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateListingDto.prototype, "streetId", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(1),
+    __metadata("design:type", Number)
+], CreateListingDto.prototype, "addressNumber", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(2),

@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { api, type AddressCityOption, type AddressStreetOption } from "../../lib/api";
+import {
+  api,
+  type AddressCityOption,
+  type AddressStreetOption,
+} from "../../lib/api";
 
 export type AddressSelectionValue = {
   cityId: string;
@@ -31,35 +35,61 @@ export function AddressSelector({
   addressNumberRequired = true,
   previewLabel = "כתובת איסוף מלאה",
 }: AddressSelectorProps) {
-  const [cityQuery, setCityQuery] = useState(value.cityNameHe);
-  const [streetQuery, setStreetQuery] = useState(value.streetNameHe);
+  const [citySearchText, setCitySearchText] = useState(value.cityNameHe);
+  const [streetSearchText, setStreetSearchText] = useState(value.streetNameHe);
+  const [debouncedCitySearchText, setDebouncedCitySearchText] = useState(
+    value.cityNameHe,
+  );
+  const [debouncedStreetSearchText, setDebouncedStreetSearchText] = useState(
+    value.streetNameHe,
+  );
 
   useEffect(() => {
-    setCityQuery(value.cityNameHe);
-  }, [value.cityNameHe]);
+    const timeout = window.setTimeout(() => {
+      setDebouncedCitySearchText(citySearchText);
+    }, 250);
+    return () => window.clearTimeout(timeout);
+  }, [citySearchText]);
 
   useEffect(() => {
-    setStreetQuery(value.streetNameHe);
-  }, [value.streetNameHe]);
+    const timeout = window.setTimeout(() => {
+      setDebouncedStreetSearchText(streetSearchText);
+    }, 250);
+    return () => window.clearTimeout(timeout);
+  }, [streetSearchText]);
+
+  useEffect(() => {
+    setCitySearchText(value.cityNameHe);
+    setDebouncedCitySearchText(value.cityNameHe);
+    setStreetSearchText(value.streetNameHe);
+    setDebouncedStreetSearchText(value.streetNameHe);
+  }, [value.cityId]);
+
+  useEffect(() => {
+    setStreetSearchText(value.streetNameHe);
+    setDebouncedStreetSearchText(value.streetNameHe);
+  }, [value.streetId]);
 
   const citiesQuery = useQuery({
-    queryKey: ["address-cities", cityQuery],
-    queryFn: () => api.addressCities(cityQuery, 20),
+    queryKey: ["address-cities", debouncedCitySearchText],
+    queryFn: () => api.addressCities(debouncedCitySearchText, 20),
   });
 
   const streetsQuery = useQuery({
-    queryKey: ["address-streets", value.cityId, streetQuery],
+    queryKey: ["address-streets", value.cityId, debouncedStreetSearchText],
     queryFn: () =>
       api.addressStreets({
         cityId: value.cityId,
-        q: streetQuery,
+        q: debouncedStreetSearchText,
         limit: 20,
       }),
     enabled: Boolean(value.cityId),
   });
 
   const addressCatalogMissing =
-    citiesQuery.isSuccess && (citiesQuery.data ?? emptyCity).length === 0;
+    citiesQuery.isSuccess &&
+    !debouncedCitySearchText.trim() &&
+    (citiesQuery.data ?? emptyCity).length === 0;
 
   const preview = useMemo(() => {
     const parts: string[] = [];
@@ -90,55 +120,58 @@ export function AddressSelector({
       <div className="grid gap-4 md:grid-cols-3">
         <AddressField
           label="עיר"
-          value={cityQuery}
+          value={citySearchText}
           onChange={(nextValue) => {
-            setCityQuery(nextValue);
+            setCitySearchText(nextValue);
+            setStreetSearchText("");
+            setDebouncedStreetSearchText("");
+            const shouldClearCitySelection = nextValue !== value.cityNameHe;
             onChange({
-              cityId: "",
+              cityId: shouldClearCitySelection ? "" : value.cityId,
               cityNameHe: nextValue,
+              settlementCode: shouldClearCitySelection
+                ? undefined
+                : value.settlementCode,
               streetId: "",
               streetNameHe: "",
               addressNumber: value.addressNumber,
             });
           }}
           placeholder="חיפוש עיר"
-          disabled={addressCatalogMissing}
         />
 
         <AddressField
           label="רחוב"
-          value={streetQuery}
+          value={streetSearchText}
           onChange={(nextValue) => {
-            setStreetQuery(nextValue);
+            setStreetSearchText(nextValue);
+            const shouldClearStreetSelection = nextValue !== value.streetNameHe;
             onChange({
               ...value,
-              streetId: "",
+              streetId: shouldClearStreetSelection ? "" : value.streetId,
               streetNameHe: nextValue,
             });
           }}
-          placeholder={
-            value.cityId ? "חיפוש רחוב" : "בחרו קודם עיר"
-          }
-          disabled={addressCatalogMissing || !value.cityId}
+          placeholder={value.cityId ? "חיפוש רחוב" : "בחרו קודם עיר"}
+          disabled={!value.cityId}
         />
 
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">מספר בית</span>
           <input
-            type="number"
-            min="1"
-            step="1"
+            type="text"
             inputMode="numeric"
             className="w-full rounded-2xl border px-4 py-3 text-right disabled:bg-slate-100"
             dir="rtl"
             value={value.addressNumber}
             disabled={addressCatalogMissing || (addressNumberRequired && !value.streetId)}
-            onChange={(event) =>
+            onChange={(event) => {
+              const nextValue = event.target.value.replace(/[^\d]/g, "");
               onChange({
                 ...value,
-                addressNumber: event.target.value,
-              })
-            }
+                addressNumber: nextValue,
+              });
+            }}
           />
         </label>
       </div>
@@ -148,7 +181,11 @@ export function AddressSelector({
           items={citiesQuery.data ?? emptyCity}
           loading={citiesQuery.isLoading}
           emptyMessage="לא נמצאו ערים תואמות"
-          onSelect={(city) =>
+          onSelect={(city) => {
+            setCitySearchText(city.nameHe);
+            setDebouncedCitySearchText(city.nameHe);
+            setStreetSearchText("");
+            setDebouncedStreetSearchText("");
             onChange({
               cityId: city.id,
               cityNameHe: city.nameHe,
@@ -156,8 +193,8 @@ export function AddressSelector({
               streetId: "",
               streetNameHe: "",
               addressNumber: value.addressNumber,
-            })
-          }
+            });
+          }}
         />
 
         <SuggestionList
@@ -165,13 +202,15 @@ export function AddressSelector({
           loading={streetsQuery.isLoading}
           emptyMessage="לא נמצאו רחובות לעיר שנבחרה"
           disabled={!value.cityId}
-          onSelect={(street) =>
+          onSelect={(street) => {
+            setStreetSearchText(street.nameHe);
+            setDebouncedStreetSearchText(street.nameHe);
             onChange({
               ...value,
               streetId: street.id,
               streetNameHe: street.nameHe,
-            })
-          }
+            });
+          }}
         />
       </div>
 

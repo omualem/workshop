@@ -12,16 +12,16 @@ export declare class RentersService {
         };
     } & {
         userId: string;
+        preferences: import("@prisma/client/runtime/library").JsonValue | null;
         defaultLocationLat: import("@prisma/client/runtime/library").Decimal | null;
         defaultLocationLng: import("@prisma/client/runtime/library").Decimal | null;
         defaultAddressText: string | null;
-        preferences: import("@prisma/client/runtime/library").JsonValue | null;
         verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
     }>;
     savedSearches(userId: string): import(".prisma/client").Prisma.PrismaPromise<{
-        name: string;
         id: string;
         createdAt: Date;
+        name: string;
         renterId: string;
         searchPayload: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
@@ -46,26 +46,32 @@ export declare class RentersService {
             };
             category: {
                 id: string;
-                status: import(".prisma/client").$Enums.CategoryStatus;
+                nameHe: string;
                 createdAt: Date;
                 updatedAt: Date;
+                status: import(".prisma/client").$Enums.CategoryStatus;
                 parentId: string | null;
                 slug: string;
-                nameHe: string;
                 nameEn: string;
                 attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
             };
             media: {
-                url: string;
                 id: string;
                 sortOrder: number;
                 listingId: string;
+                url: string;
                 altText: string;
             }[];
         } & {
+            city: string | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            cityId: string | null;
             lenderId: string;
             categoryId: string;
+            streetId: string | null;
+            addressNumber: number | null;
             titleHe: string;
             titleEn: string;
             descriptionHe: string;
@@ -80,7 +86,6 @@ export declare class RentersService {
             pickupLat: import("@prisma/client/runtime/library").Decimal;
             pickupLng: import("@prisma/client/runtime/library").Decimal;
             pickupAddressText: string;
-            city: string | null;
             pickupInstructions: string | null;
             deliverySupported: boolean;
             includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -91,8 +96,6 @@ export declare class RentersService {
             inventoryCount: number;
             minRentalDays: number;
             maxRentalDays: number;
-            createdAt: Date;
-            updatedAt: Date;
         };
     } & {
         id: string;

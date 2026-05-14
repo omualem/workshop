@@ -16,6 +16,7 @@ import type {
 } from "./bundle-optimizer.types";
 
 const CONDITION_ORDER: ConditionLevel[] = ["HEAVY_USE", "FAIR", "GOOD", "LIKE_NEW", "NEW"];
+const ROUGH_PREFILTER_POOL_SIZE = 100;
 
 // Soft bonus added to the preliminary score of the user's preferred listing
 // in specificListing+allowAlternatives mode, so beam search prefers it over
@@ -104,7 +105,7 @@ export class CandidateFilterService {
       const constraints = this.normalizeConstraints(slot);
 
       // Step 1 — load the raw listing pool for this slot.
-      const rawListings = await this.loadSlotListings(slot);
+      const rawListings = await this.loadSlotListings(slot, constraints);
       beforeFiltering[slot.slotKey] = rawListings.length;
       filteredByAvailability[slot.slotKey] = 0;
       filteredByRentalDays[slot.slotKey] = 0;
@@ -323,12 +324,27 @@ export class CandidateFilterService {
    * - allowAlternatives=false + chosen listing inactive ⇒ empty pool ⇒ slot
    *   becomes infeasible (the optimizer surfaces this as messageHe).
    */
-  private async loadSlotListings(slot: SlotInput) {
+  private async loadSlotListings(slot: SlotInput, constraints: SlotConstraints) {
     const include = {
       lender: true,
       pricingRules: true,
       attributeValues: true,
     } as const;
+    const roughPoolSize = Math.max(ROUGH_PREFILTER_POOL_SIZE, 30);
+    const cheapPrefilter = {
+      ...(constraints.minPrice !== undefined || constraints.maxPrice !== undefined
+        ? {
+            basePriceDaily: {
+              ...(constraints.minPrice !== undefined
+                ? { gte: constraints.minPrice }
+                : {}),
+              ...(constraints.maxPrice !== undefined
+                ? { lte: constraints.maxPrice }
+                : {}),
+            },
+          }
+        : {}),
+    };
 
     if (slot.mode === "specificListing") {
       const chosen = slot.specificListingId
@@ -355,9 +371,12 @@ export class CandidateFilterService {
         where: {
           categoryId: chosen.categoryId,
           status: "ACTIVE",
+          ...cheapPrefilter,
           NOT: { id: chosen.id },
         },
         include,
+        orderBy: [{ basePriceDaily: "asc" }, { updatedAt: "desc" }],
+        take: roughPoolSize,
       });
 
       // De-duplicate by id (chosen first so it gets the soft preference bonus).
@@ -374,9 +393,14 @@ export class CandidateFilterService {
 
     // mode = category
     if (!slot.categoryId) return [];
+    // C_s(u) = Retrieve(s,u): use indexed, cheap filters before expensive
+    // availability/distance/scoring work. Future: replace rough distance
+    // prefilter with geohash/grid index.
     return this.prisma.listing.findMany({
-      where: { categoryId: slot.categoryId, status: "ACTIVE" },
+      where: { categoryId: slot.categoryId, status: "ACTIVE", ...cheapPrefilter },
       include,
+      orderBy: [{ basePriceDaily: "asc" }, { updatedAt: "desc" }],
+      take: roughPoolSize,
     });
   }
 

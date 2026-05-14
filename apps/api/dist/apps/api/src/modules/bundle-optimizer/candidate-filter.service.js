@@ -19,6 +19,7 @@ const lender_reliability_service_1 = require("../bundle-search/lender-reliabilit
 const prisma_utils_1 = require("../../shared/utils/prisma.utils");
 const metric_normalization_service_1 = require("./metric-normalization.service");
 const CONDITION_ORDER = ["HEAVY_USE", "FAIR", "GOOD", "LIKE_NEW", "NEW"];
+const ROUGH_PREFILTER_POOL_SIZE = 100;
 const PREFERRED_LISTING_BONUS = 0.5;
 let CandidateFilterService = class CandidateFilterService {
     prisma;
@@ -63,7 +64,7 @@ let CandidateFilterService = class CandidateFilterService {
         }
         for (const slot of expandedSlots) {
             const constraints = this.normalizeConstraints(slot);
-            const rawListings = await this.loadSlotListings(slot);
+            const rawListings = await this.loadSlotListings(slot, constraints);
             beforeFiltering[slot.slotKey] = rawListings.length;
             filteredByAvailability[slot.slotKey] = 0;
             filteredByRentalDays[slot.slotKey] = 0;
@@ -74,7 +75,7 @@ let CandidateFilterService = class CandidateFilterService {
             for (const listing of rawListings) {
                 const pickupLat = (0, prisma_utils_1.decimalToNumber)(listing.pickupLat) ?? 0;
                 const pickupLng = (0, prisma_utils_1.decimalToNumber)(listing.pickupLng) ?? 0;
-                const distanceKm = (0, utils_1.haversineDistanceKm)({ lat: req.userLocation.lat, lng: req.userLocation.lng }, { lat: pickupLat, lng: pickupLng });
+                const distanceKm = (0, utils_1.haversineDistanceKm)({ lat: req.userLocation.lat ?? 0, lng: req.userLocation.lng ?? 0 }, { lat: pickupLat, lng: pickupLng });
                 const entryDebug = {
                     listingId: listing.id,
                     titleHe: listing.titleHe,
@@ -152,6 +153,7 @@ let CandidateFilterService = class CandidateFilterService {
                     pickupLat,
                     pickupLng,
                     inventoryCount: listing.inventoryCount,
+                    lenderCompletedTransactions: listing.lender?.completedTransactionsCount ?? 0,
                     attributeValues: Array.isArray(listing.attributeValues)
                         ? listing.attributeValues.map((attribute) => ({
                             attributeKey: attribute.attributeKey,
@@ -207,11 +209,26 @@ let CandidateFilterService = class CandidateFilterService {
             slotDebug,
         };
     }
-    async loadSlotListings(slot) {
+    async loadSlotListings(slot, constraints) {
         const include = {
             lender: true,
             pricingRules: true,
             attributeValues: true,
+        };
+        const roughPoolSize = Math.max(ROUGH_PREFILTER_POOL_SIZE, 30);
+        const cheapPrefilter = {
+            ...(constraints.minPrice !== undefined || constraints.maxPrice !== undefined
+                ? {
+                    basePriceDaily: {
+                        ...(constraints.minPrice !== undefined
+                            ? { gte: constraints.minPrice }
+                            : {}),
+                        ...(constraints.maxPrice !== undefined
+                            ? { lte: constraints.maxPrice }
+                            : {}),
+                    },
+                }
+                : {}),
         };
         if (slot.mode === "specificListing") {
             const chosen = slot.specificListingId
@@ -233,9 +250,12 @@ let CandidateFilterService = class CandidateFilterService {
                 where: {
                     categoryId: chosen.categoryId,
                     status: "ACTIVE",
+                    ...cheapPrefilter,
                     NOT: { id: chosen.id },
                 },
                 include,
+                orderBy: [{ basePriceDaily: "asc" }, { updatedAt: "desc" }],
+                take: roughPoolSize,
             });
             const seen = new Set([chosen.id]);
             const merged = [chosen];
@@ -250,8 +270,10 @@ let CandidateFilterService = class CandidateFilterService {
         if (!slot.categoryId)
             return [];
         return this.prisma.listing.findMany({
-            where: { categoryId: slot.categoryId, status: "ACTIVE" },
+            where: { categoryId: slot.categoryId, status: "ACTIVE", ...cheapPrefilter },
             include,
+            orderBy: [{ basePriceDaily: "asc" }, { updatedAt: "desc" }],
+            take: roughPoolSize,
         });
     }
     normalizeConstraints(slot) {

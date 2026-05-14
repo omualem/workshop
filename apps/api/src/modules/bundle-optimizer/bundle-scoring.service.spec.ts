@@ -1,9 +1,10 @@
 import { BundleScoringService } from "./bundle-scoring.service";
 import { MetricNormalizationService } from "./metric-normalization.service";
+import { PreferenceMappingService } from "./preference-mapping.service";
 import type { CandidateItem, OptimizerPreferences, SelectedBundle } from "./bundle-optimizer.types";
 
 const PREFS: OptimizerPreferences = {
-  weights: { price: 0.25, distance: 0.2, reliability: 0.2, condition: 0.2, availability: 0.15 },
+  weights: { price: 0.2, distance: 0.2, reliability: 0.2, condition: 0.2, availability: 0.2 },
   lambdaVariance: 0.35,
   alphaBottleneck: 0.25,
   betaPickup: 0.4,
@@ -46,6 +47,7 @@ function makeItem(over: Partial<CandidateItem> = {}): CandidateItem {
 describe("BundleScoringService", () => {
   const norm = new MetricNormalizationService();
   const svc = new BundleScoringService(norm);
+  const preferenceMapping = new PreferenceMappingService();
 
   it("variance() computes population variance correctly", () => {
     expect(svc.variance([5, 5, 5])).toBe(0);
@@ -140,6 +142,7 @@ describe("BundleScoringService", () => {
     // finalScore is the clamped form of rawFinalScore.
     expect(finalScore).toBeGreaterThanOrEqual(0);
     expect(finalScore).toBeLessThanOrEqual(10);
+    expect(scored.breakdown.preferences.normalizedWeights).toEqual(PREFS.weights);
   });
 
   it("lowScorePenalty is 0 when every metric is above its threshold", () => {
@@ -268,5 +271,147 @@ describe("BundleScoringService", () => {
     const a = svc.calculateFinalScore(balanced, PREFS, 1000);
     const b = svc.calculateFinalScore(imbalanced, PREFS, 1000);
     expect(a.breakdown.finalScore).toBeGreaterThan(b.breakdown.finalScore);
+  });
+
+  it("custom sliders affect ranking between two bundles", () => {
+    const cheaper: SelectedBundle = {
+      items: [
+        makeItem({
+          price: 80,
+          m_reliability: 5.5,
+          m_condition: 5.5,
+          m_availability: 7,
+        }),
+      ],
+      totalPrice: 80,
+      uniqueLenderCount: 1,
+      uniquePickupCount: 1,
+    };
+    const higherQuality: SelectedBundle = {
+      items: [
+        makeItem({
+          price: 200,
+          m_reliability: 10,
+          m_condition: 10,
+          m_availability: 10,
+          condition: "NEW",
+        }),
+      ],
+      totalPrice: 200,
+      uniqueLenderCount: 1,
+      uniquePickupCount: 1,
+    };
+
+    const priceHeavy = preferenceMapping.resolvePreferences({
+      preferenceProfile: "custom",
+      basePreferenceProfile: "cheapest",
+      preferenceSliders: {
+        price: 10,
+        distance: 1,
+        reliability: 1,
+        condition: 1,
+        availability: 1,
+        pickupSimplicity: 5,
+      },
+    });
+    const qualityHeavy = preferenceMapping.resolvePreferences({
+      preferenceProfile: "custom",
+      basePreferenceProfile: "professional",
+      preferenceSliders: {
+        price: 2,
+        distance: 4,
+        reliability: 10,
+        condition: 10,
+        availability: 9,
+        pickupSimplicity: 5,
+      },
+    });
+
+    const pricePrefs = { ...PREFS, weights: priceHeavy.weights };
+    const qualityPrefs = { ...PREFS, weights: qualityHeavy.weights };
+
+    expect(
+      svc.calculateFinalScore(cheaper, pricePrefs, 500, priceHeavy).breakdown
+        .finalScore,
+    ).toBeGreaterThan(
+      svc.calculateFinalScore(higherQuality, pricePrefs, 500, priceHeavy)
+        .breakdown.finalScore,
+    );
+    expect(
+      svc.calculateFinalScore(higherQuality, qualityPrefs, 500, qualityHeavy)
+        .breakdown.finalScore,
+    ).toBeGreaterThan(
+      svc.calculateFinalScore(cheaper, qualityPrefs, 500, qualityHeavy)
+        .breakdown.finalScore,
+    );
+  });
+
+  it("same candidates rank differently under cheapest vs professional", () => {
+    const cheapRisky: SelectedBundle = {
+      items: [
+        makeItem({
+          price: 120,
+          m_reliability: 7,
+          m_condition: 7,
+          m_availability: 8,
+        }),
+      ],
+      totalPrice: 120,
+      uniqueLenderCount: 1,
+      uniquePickupCount: 1,
+    };
+    const expensiveProfessional: SelectedBundle = {
+      items: [
+        makeItem({
+          price: 220,
+          m_reliability: 10,
+          m_condition: 10,
+          m_availability: 10,
+          condition: "NEW",
+        }),
+      ],
+      totalPrice: 220,
+      uniqueLenderCount: 1,
+      uniquePickupCount: 1,
+    };
+
+    const cheapest = preferenceMapping.resolvePreferences({
+      preferenceProfile: "cheapest",
+    });
+    const professional = preferenceMapping.resolvePreferences({
+      preferenceProfile: "professional",
+    });
+
+    expect(
+      svc.calculateFinalScore(
+        cheapRisky,
+        { ...PREFS, weights: cheapest.weights },
+        500,
+        cheapest,
+      ).breakdown.finalScore,
+    ).toBeGreaterThan(
+      svc.calculateFinalScore(
+        expensiveProfessional,
+        { ...PREFS, weights: cheapest.weights },
+        500,
+        cheapest,
+      ).breakdown.finalScore,
+    );
+
+    expect(
+      svc.calculateFinalScore(
+        expensiveProfessional,
+        { ...PREFS, weights: professional.weights },
+        500,
+        professional,
+      ).breakdown.finalScore,
+    ).toBeGreaterThan(
+      svc.calculateFinalScore(
+        cheapRisky,
+        { ...PREFS, weights: professional.weights },
+        500,
+        professional,
+      ).breakdown.finalScore,
+    );
   });
 });

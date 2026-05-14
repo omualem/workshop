@@ -6,6 +6,7 @@ import type {
   CandidateItem,
   DerivedQuantities,
   OptimizerPreferences,
+  ResolvedOptimizerPreferences,
   ScoreBreakdown,
   ScoredBundle,
   SelectedBundle,
@@ -201,16 +202,25 @@ export class BundleScoringService {
    * explanation/debug layers can show users exactly which dimension cost
    * the bundle the most points.
    */
-  calculateLowScorePenalty(metrics: BundleMetrics): {
+  calculateLowScorePenalty(
+    metrics: BundleMetrics,
+    multipliers: ScoreBreakdown["preferences"]["penaltyMultipliers"]["lowScore"] = {
+      price: 1,
+      distance: 1,
+      reliability: 1,
+      condition: 1,
+      availability: 1,
+    },
+  ): {
     total: number;
     breakdown: ScoreBreakdown["lowScorePenaltyBreakdown"];
   } {
     const breakdown = {
-      price: LOW_SCORE_WEIGHTS.price * Math.max(0, LOW_SCORE_THRESHOLDS.price - metrics.price),
-      distance: LOW_SCORE_WEIGHTS.distance * Math.max(0, LOW_SCORE_THRESHOLDS.distance - metrics.distance),
-      reliability: LOW_SCORE_WEIGHTS.reliability * Math.max(0, LOW_SCORE_THRESHOLDS.reliability - metrics.reliability),
-      condition: LOW_SCORE_WEIGHTS.condition * Math.max(0, LOW_SCORE_THRESHOLDS.condition - metrics.condition),
-      availability: LOW_SCORE_WEIGHTS.availability * Math.max(0, LOW_SCORE_THRESHOLDS.availability - metrics.availability),
+      price: LOW_SCORE_WEIGHTS.price * multipliers.price * Math.max(0, LOW_SCORE_THRESHOLDS.price - metrics.price),
+      distance: LOW_SCORE_WEIGHTS.distance * multipliers.distance * Math.max(0, LOW_SCORE_THRESHOLDS.distance - metrics.distance),
+      reliability: LOW_SCORE_WEIGHTS.reliability * multipliers.reliability * Math.max(0, LOW_SCORE_THRESHOLDS.reliability - metrics.reliability),
+      condition: LOW_SCORE_WEIGHTS.condition * multipliers.condition * Math.max(0, LOW_SCORE_THRESHOLDS.condition - metrics.condition),
+      availability: LOW_SCORE_WEIGHTS.availability * multipliers.availability * Math.max(0, LOW_SCORE_THRESHOLDS.availability - metrics.availability),
     };
     const total =
       breakdown.price +
@@ -222,16 +232,37 @@ export class BundleScoringService {
   }
 
   /** Final objective function — calls all components and combines them. */
-  calculateFinalScore(bundle: SelectedBundle, prefs: OptimizerPreferences, budget: number): ScoredBundle {
+  calculateFinalScore(
+    bundle: SelectedBundle,
+    prefs: OptimizerPreferences,
+    budget: number,
+    resolvedPreferences: ResolvedOptimizerPreferences = fallbackResolvedPreferences(prefs),
+  ): ScoredBundle {
     const { metrics, derived } = this.calculateBundleMetrics(bundle, budget, prefs.alphaDistanceMix);
 
     const weightedUtility = this.calculateWeightedUtility(metrics, prefs.weights);
-    const variancePenalty = this.calculateVariancePenalty(metrics, prefs.lambdaVariance);
-    const bottleneckTerm = this.calculateBottleneckTerm(metrics, prefs.alphaBottleneck);
-    const pickupPenalty = this.calculatePickupComplexityPenalty(bundle, derived.pickupCost, prefs.betaPickup);
-    const maxDistancePenalty = this.calculateMaxDistancePenalty(derived.maxDistance, prefs.gammaMaxDistance);
+    const variancePenalty = this.calculateVariancePenalty(
+      metrics,
+      prefs.lambdaVariance * resolvedPreferences.penaltyWeights.variance,
+    );
+    const bottleneckTerm = this.calculateBottleneckTerm(
+      metrics,
+      prefs.alphaBottleneck * resolvedPreferences.penaltyWeights.bottleneck,
+    );
+    const pickupPenalty = this.calculatePickupComplexityPenalty(
+      bundle,
+      derived.pickupCost,
+      prefs.betaPickup * resolvedPreferences.penaltyWeights.pickup,
+    );
+    const maxDistancePenalty = this.calculateMaxDistancePenalty(
+      derived.maxDistance,
+      prefs.gammaMaxDistance * resolvedPreferences.penaltyWeights.maxDistance,
+    );
     const { total: lowScorePenalty, breakdown: lowScorePenaltyBreakdown } =
-      this.calculateLowScorePenalty(metrics);
+      this.calculateLowScorePenalty(
+        metrics,
+        resolvedPreferences.penaltyWeights.lowScore,
+      );
 
     // Score(x) = weightedUtility − λVar + α·min − β·P_u − γ·D_max − LowScorePenalty
     const rawFinalScore =
@@ -251,6 +282,13 @@ export class BundleScoringService {
       maxDistancePenalty,
       lowScorePenalty,
       lowScorePenaltyBreakdown,
+      preferences: {
+        profile: resolvedPreferences.profile,
+        baseProfile: resolvedPreferences.baseProfile,
+        sliders: resolvedPreferences.sliders,
+        normalizedWeights: resolvedPreferences.weights,
+        penaltyMultipliers: resolvedPreferences.penaltyWeights,
+      },
       rawFinalScore,
       finalScore,
     };
@@ -286,4 +324,34 @@ export class BundleScoringService {
   private metricVector(m: BundleMetrics): number[] {
     return [m.price, m.distance, m.reliability, m.condition, m.availability];
   }
+}
+
+function fallbackResolvedPreferences(
+  prefs: OptimizerPreferences,
+): ResolvedOptimizerPreferences {
+  return {
+    profile: "balanced",
+    sliders: {
+      price: 7,
+      distance: 7,
+      reliability: 7,
+      condition: 7,
+      availability: 7,
+      pickupSimplicity: 7,
+    },
+    weights: prefs.weights,
+    penaltyWeights: {
+      pickup: 1,
+      lowScore: {
+        price: 1,
+        distance: 1,
+        reliability: 1,
+        condition: 1,
+        availability: 1,
+      },
+      maxDistance: 1,
+      variance: 1,
+      bottleneck: 1,
+    },
+  };
 }

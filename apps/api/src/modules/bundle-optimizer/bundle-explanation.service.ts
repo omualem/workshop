@@ -18,9 +18,15 @@ export class BundleExplanationService {
     const { metrics, breakdown, bundle, derived } = scored;
     const explanations: string[] = [];
     const tradeoffs: string[] = [];
+    const profileExplanation = this.preferenceProfileExplanation(
+      breakdown.preferences.profile,
+    );
 
     if (bundle.totalPrice <= budget) {
       explanations.push("החבילה עומדת בתקציב שהוגדר");
+    }
+    if (profileExplanation) {
+      explanations.push(profileExplanation);
     }
 
     if (metrics.availability >= 9.5) {
@@ -100,6 +106,23 @@ export class BundleExplanationService {
       tradeoffs.push("החבילה קרובה לתקציב המקסימלי");
     }
 
+    const sliders = breakdown.preferences.sliders;
+    if (sliders.reliability >= 8 && metrics.reliability < 6.5) {
+      tradeoffs.push(
+        "למרות שהוגדרה חשיבות גבוהה לאמינות, אחד המשכירים בחבילה קיבל ציון אמינות נמוך יחסית.",
+      );
+    }
+    if (sliders.condition >= 8 && metrics.condition < 6.5) {
+      tradeoffs.push(
+        "למרות שהוגדרה חשיבות גבוהה למצב המוצר, אחד הפריטים במצב נמוך יחסית.",
+      );
+    }
+    if (sliders.pickupSimplicity >= 8 && bundle.uniquePickupCount > 1) {
+      tradeoffs.push(
+        "למרות שהוגדרה חשיבות גבוהה לקלות איסוף, החבילה כוללת יותר מנקודת איסוף אחת.",
+      );
+    }
+
     return {
       label: this.pickLabel(scored),
       score: round(breakdown.finalScore),
@@ -122,6 +145,25 @@ export class BundleExplanationService {
         lowScorePenalty: round(breakdown.lowScorePenalty),
         rawFinalScore: round(breakdown.rawFinalScore),
         finalScore: round(breakdown.finalScore),
+        preferences: {
+          profile: breakdown.preferences.profile,
+          baseProfile: breakdown.preferences.baseProfile,
+          sliders: breakdown.preferences.sliders,
+          normalizedWeights: roundRecord(breakdown.preferences.normalizedWeights),
+          penaltyMultipliers: {
+            pickup: round(breakdown.preferences.penaltyMultipliers.pickup),
+            lowScore: roundRecord(
+              breakdown.preferences.penaltyMultipliers.lowScore,
+            ),
+            maxDistance: round(
+              breakdown.preferences.penaltyMultipliers.maxDistance,
+            ),
+            variance: round(breakdown.preferences.penaltyMultipliers.variance),
+            bottleneck: round(
+              breakdown.preferences.penaltyMultipliers.bottleneck,
+            ),
+          },
+        },
       },
       lowScorePenaltyBreakdown: {
         price: round(breakdown.lowScorePenaltyBreakdown.price),
@@ -183,8 +225,29 @@ export class BundleExplanationService {
     if (breakdown.variancePenalty < 0.4) return "החבילה המאוזנת ביותר";
     return "חבילה מומלצת";
   }
+
+  private preferenceProfileExplanation(profile: string): string | null {
+    switch (profile) {
+      case "cheapest":
+        return "המערכת נתנה עדיפות גבוהה למחיר ולכן חבילות זולות קיבלו יתרון.";
+      case "minimalEffort":
+        return "המערכת נתנה עדיפות לאיסוף פשוט ולכן חבילות עם פחות נקודות איסוף קיבלו יתרון.";
+      case "professional":
+        return "המערכת נתנה עדיפות לאמינות, מצב מוצר וזמינות בגלל פרופיל הפקה מקצועית.";
+      case "custom":
+        return "הדירוג חושב לפי המשקלים שהוגדרו ידנית.";
+      default:
+        return null;
+    }
+  }
 }
 
 function round(n: number): number {
   return Math.round(n * 100) / 100;
+}
+
+function roundRecord<T extends Record<string, number>>(record: T): T {
+  return Object.fromEntries(
+    Object.entries(record).map(([key, value]) => [key, round(value)]),
+  ) as T;
 }

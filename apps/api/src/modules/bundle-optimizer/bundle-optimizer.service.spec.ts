@@ -1,8 +1,9 @@
 import { BundleOptimizerService } from "./bundle-optimizer.service";
+import { PreferenceMappingService } from "./preference-mapping.service";
 import type { OptimizerRequest, SlotInput } from "./bundle-optimizer.types";
 
 const prefs = {
-  weights: { price: 0.25, distance: 0.2, reliability: 0.2, condition: 0.2, availability: 0.15 },
+  weights: { price: 0.2, distance: 0.2, reliability: 0.2, condition: 0.2, availability: 0.2 },
   lambdaVariance: 0.35,
   alphaBottleneck: 0.25,
   betaPickup: 0.4,
@@ -11,6 +12,7 @@ const prefs = {
   topKPerSlot: 30,
   beamWidth: 50,
 };
+const preferenceMapping = new PreferenceMappingService();
 
 function request(slots: SlotInput[], over: Partial<OptimizerRequest> = {}): OptimizerRequest {
   return {
@@ -49,6 +51,7 @@ describe("BundleOptimizerService", () => {
       {} as any,
       {} as any,
       { geocodeRenterAddress: jest.fn() } as any,
+      preferenceMapping,
     );
 
     const result = (await service.optimize(request(slots))) as any;
@@ -96,6 +99,7 @@ describe("BundleOptimizerService", () => {
       {} as any,
       {} as any,
       { geocodeRenterAddress: jest.fn() } as any,
+      preferenceMapping,
     );
 
     const result = (await service.optimize(request(slots, { maxPickupPoints: 1 }))) as any;
@@ -151,6 +155,7 @@ describe("BundleOptimizerService", () => {
       {} as any,
       {} as any,
       addresses as any,
+      preferenceMapping,
     );
 
     await service.optimize(
