@@ -14,7 +14,11 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  app.use(helmet());
+  app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  }),
+);
   app.use(cookieParser());
   app.enableCors({
     origin: true,
