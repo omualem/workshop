@@ -22,12 +22,6 @@
       "@rental/config/*": [
         "packages/config/src/*"
       ],
-      "@rental/scoring": [
-        "packages/scoring/src/index.ts"
-      ],
-      "@rental/scoring/*": [
-        "packages/scoring/src/*"
-      ],
       "@rental/types": [
         "packages/types/src/index.ts"
       ],

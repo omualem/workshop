@@ -28,7 +28,6 @@
     "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.7.0",
     "@rental/config": "1.0.0",
-    "@rental/scoring": "1.0.0",
     "@rental/types": "1.0.0",
     "@rental/utils": "1.0.0",
     "argon2": "^0.44.0",

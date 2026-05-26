@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { AddressesModule } from "../addresses/addresses.module";
 import { AvailabilityModule } from "../availability/availability.module";
 import { PricingModule } from "../pricing/pricing.module";
-import { LenderReliabilityService } from "../bundle-search/lender-reliability.service";
+import { LenderReliabilityService } from "./lender-reliability.service";
 import { BeamSearchService } from "./beam-search.service";
 import { BundleExplanationService } from "./bundle-explanation.service";
 import { BundleOptimizerController } from "./bundle-optimizer.controller";

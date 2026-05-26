@@ -8,10 +8,10 @@ export declare class AddressesService {
     constructor(prisma: PrismaService, geocoding: GeocodingService);
     searchCities(q?: string, limit?: number): Promise<{
         id: string;
-        settlementCode: number;
-        nameHe: string;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        settlementCode: number;
     }[]>;
     searchStreets(params: {
         cityId?: string;
@@ -19,19 +19,17 @@ export declare class AddressesService {
         q?: string;
         limit?: number;
     }): Promise<{
+        cityId: string;
         id: string;
-        nameHe: string;
         createdAt: Date;
         updatedAt: Date;
-        cityId: string;
+        nameHe: string;
         streetCode: number;
     }[]>;
     resolveListingAddress(input: {
         cityId?: string;
         streetId?: string;
         addressNumber?: number;
-        pickupLat?: number;
-        pickupLng?: number;
     }, existing?: {
         cityId: string | null;
         streetId: string | null;

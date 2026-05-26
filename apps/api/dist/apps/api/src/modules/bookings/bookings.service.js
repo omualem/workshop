@@ -96,7 +96,6 @@ let BookingsService = class BookingsService {
             const created = await tx.booking.create({
                 data: {
                     renterId,
-                    bundleCandidateId: dto.bundleCandidateId,
                     startDate,
                     endDate,
                     totalPrice: computedTotalPrice,

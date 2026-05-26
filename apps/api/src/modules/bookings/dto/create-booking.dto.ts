@@ -24,10 +24,6 @@ class BookingItemInputDto {
 }
 
 export class CreateBookingDto {
-  @IsOptional()
-  @IsString()
-  bundleCandidateId?: string;
-
   @IsDateString()
   startDate!: string;
 

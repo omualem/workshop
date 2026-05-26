@@ -35,19 +35,26 @@ let BundleOptimizerService = class BundleOptimizerService {
         this.addresses = addresses;
         this.preferenceMapping = preferenceMapping;
     }
-    async optimize(request) {
-        request = await this.resolveRenterLocation(request);
-        const resolvedPreferences = this.preferenceMapping.resolvePreferences(request);
-        request = {
-            ...request,
-            preferenceProfile: resolvedPreferences.profile,
-            basePreferenceProfile: resolvedPreferences.baseProfile,
-            preferenceSliders: resolvedPreferences.sliders,
+    async optimize(input) {
+        const resolved = this.preferenceMapping.resolvePreferences(input);
+        let request = {
+            ...input,
+            preferenceProfile: resolved.profile,
+            basePreferenceProfile: resolved.baseProfile,
+            preferenceSliders: resolved.sliders,
             preferences: {
-                ...request.preferences,
-                weights: resolvedPreferences.weights,
+                weights: resolved.weights,
+                lambdaVariance: resolved.lambdaVariance,
+                alphaBottleneck: resolved.alphaBottleneck,
+                betaPickup: resolved.betaPickup,
+                gammaMaxDistance: resolved.gammaMaxDistance,
+                alphaDistanceMix: resolved.alphaDistanceMix,
+                topKPerSlot: resolved.topKPerSlot,
+                beamWidth: resolved.beamWidth,
             },
         };
+        request = await this.resolveRenterLocation(request);
+        const resolvedPreferences = resolved;
         const { candidatesBySlot, counts, expandedSlots, slotDebug } = await this.candidateFilter.buildCandidatesPerSlot(request);
         const includeDebug = process.env.NODE_ENV !== "production";
         const emptySlot = this.candidateFilter.findEmptySlot(expandedSlots, candidatesBySlot);

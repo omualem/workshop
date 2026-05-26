@@ -6,22 +6,21 @@ const renterNav = [
   { href: "/renter/favorites", label: "מועדפים" },
   { href: "/renter/saved-searches", label: "חיפושים שמורים" },
   { href: "/renter/settings", label: "הגדרות" },
-  { href: "/renter/bundle-results", label: "תוצאות bundle" },
 ];
 
 export default function RenterDashboardPage() {
   return (
     <DashboardShell
-      title="לוח מזמין"
-      subtitle="ניהול חיפושים, bundles מדורגים, הזמנות ומועדפים."
+      title="האזור האישי שלי"
+      subtitle="ניהול חבילות, הזמנות ופריטים שאהבתם — הכל במקום אחד."
       navItems={renterNav}
       activeHref="/renter/dashboard"
     >
       <div className="mb-6">
-        <div className="surface-eyebrow">Renter Overview</div>
-        <h1 className="mt-3 text-3xl font-semibold text-slate-950">סקירה</h1>
+        <div className="surface-eyebrow">סקירה כללית</div>
+        <h1 className="mt-3 text-3xl font-semibold text-slate-950">שלום, וברוכים השבים</h1>
         <p className="mt-2 text-sm leading-7 text-slate-600">
-          bundles פעילים, הזמנות קרובות ויכולת קפיצה מהירה לחיפושים האחרונים.
+          כאן תוכלו לראות את החבילות הפעילות, הזמנות שמתקרבות וקיצורי דרך לחיפושים האחרונים.
         </p>
       </div>
 
@@ -35,7 +34,7 @@ export default function RenterDashboardPage() {
           <div className="dashboard-stat-value">2</div>
         </div>
         <div className="dashboard-stat-card">
-          <div className="dashboard-stat-label">מועדפים</div>
+          <div className="dashboard-stat-label">פריטים במועדפים</div>
           <div className="dashboard-stat-value">11</div>
         </div>
       </div>
@@ -47,7 +46,7 @@ export default function RenterDashboardPage() {
             <tr>
               <th>חבילה</th>
               <th>תאריך</th>
-              <th>סה"כ</th>
+              <th>סה״כ</th>
               <th>סטטוס</th>
             </tr>
           </thead>
@@ -56,13 +55,13 @@ export default function RenterDashboardPage() {
               <td>ערכת צילום עירונית</td>
               <td>02.05.2026</td>
               <td>₪1,280</td>
-              <td><span className="dashboard-tag dashboard-tag-ok">מאושרת</span></td>
+              <td><span className="dashboard-tag dashboard-tag-ok">אושרה</span></td>
             </tr>
             <tr>
               <td>חבילת הקרנה לקהילה</td>
               <td>08.05.2026</td>
               <td>₪2,040</td>
-              <td><span className="dashboard-tag dashboard-tag-warn">ממתינה</span></td>
+              <td><span className="dashboard-tag dashboard-tag-warn">ממתינה לאישור</span></td>
             </tr>
           </tbody>
         </table>

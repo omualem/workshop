@@ -15,7 +15,6 @@ export const PREFERENCE_SLIDER_TEMPLATES: Record<
     price: 7,
     distance: 7,
     reliability: 7,
-    condition: 7,
     availability: 7,
     pickupSimplicity: 7,
   },
@@ -23,7 +22,6 @@ export const PREFERENCE_SLIDER_TEMPLATES: Record<
     price: 10,
     distance: 6,
     reliability: 5,
-    condition: 4,
     availability: 7,
     pickupSimplicity: 5,
   },
@@ -31,7 +29,6 @@ export const PREFERENCE_SLIDER_TEMPLATES: Record<
     price: 5,
     distance: 10,
     reliability: 6,
-    condition: 5,
     availability: 7,
     pickupSimplicity: 8,
   },
@@ -39,7 +36,6 @@ export const PREFERENCE_SLIDER_TEMPLATES: Record<
     price: 5,
     distance: 8,
     reliability: 7,
-    condition: 6,
     availability: 8,
     pickupSimplicity: 10,
   },
@@ -47,19 +43,24 @@ export const PREFERENCE_SLIDER_TEMPLATES: Record<
     price: 4,
     distance: 5,
     reliability: 10,
-    condition: 10,
     availability: 9,
     pickupSimplicity: 7,
   },
-  highQuality: {
-    price: 5,
-    distance: 5,
-    reliability: 8,
-    condition: 10,
-    availability: 8,
-    pickupSimplicity: 6,
-  },
 };
+
+/**
+ * Default algorithm-tuning parameters. These are the server's responsibility
+ * and cannot be overridden by the browser.
+ */
+const ALGORITHM_DEFAULTS = {
+  lambdaVariance: 0.35,
+  alphaBottleneck: 0.25,
+  betaPickup: 0.4,
+  gammaMaxDistance: 0.15,
+  alphaDistanceMix: 0.6,
+  topKPerSlot: 30,
+  beamWidth: 50,
+} as const;
 
 @Injectable()
 export class PreferenceMappingService {
@@ -81,11 +82,9 @@ export class PreferenceMappingService {
       sliders.price +
       sliders.distance +
       sliders.reliability +
-      sliders.condition +
       sliders.availability;
 
-    const qualityMean =
-      (sliders.reliability + sliders.condition + sliders.availability) / 3;
+    const confidenceMean = (sliders.reliability + sliders.availability) / 2;
 
     return {
       profile,
@@ -95,7 +94,6 @@ export class PreferenceMappingService {
         price: sliders.price / sumCore,
         distance: sliders.distance / sumCore,
         reliability: sliders.reliability / sumCore,
-        condition: sliders.condition / sumCore,
         availability: sliders.availability / sumCore,
       },
       penaltyWeights: {
@@ -104,7 +102,6 @@ export class PreferenceMappingService {
           price: clamp(sliders.price / 7),
           distance: clamp(sliders.distance / 7),
           reliability: clamp(sliders.reliability / 7),
-          condition: clamp(sliders.condition / 7),
           availability: clamp(sliders.availability / 7),
         },
         maxDistance: clamp(sliders.distance / 7),
@@ -112,16 +109,13 @@ export class PreferenceMappingService {
           1 +
             Math.max(
               0,
-              Math.min(
-                sliders.reliability,
-                sliders.condition,
-                sliders.availability,
-              ) - 7,
+              Math.min(sliders.reliability, sliders.availability) - 7,
             ) *
               0.05,
         ),
-        bottleneck: clamp(1 + (qualityMean - 7) * 0.05),
+        bottleneck: clamp(1 + (confidenceMean - 7) * 0.05),
       },
+      ...ALGORITHM_DEFAULTS,
     };
   }
 

@@ -1,7 +1,7 @@
 import { PrismaService } from "../../prisma/prisma.service";
 import { AvailabilityService } from "../availability/availability.service";
 import { PricingService } from "../pricing/pricing.service";
-import { LenderReliabilityService } from "../bundle-search/lender-reliability.service";
+import { LenderReliabilityService } from "./lender-reliability.service";
 import { MetricNormalizationService } from "./metric-normalization.service";
 import type { CandidateItem, OptimizerRequest, SlotFilterDebug, SlotInput } from "./bundle-optimizer.types";
 export declare class CandidateFilterService {
@@ -27,7 +27,6 @@ export declare class CandidateFilterService {
     private loadSlotListings;
     private normalizeConstraints;
     private computeDeviationDays;
-    private meetsConditionFloor;
     private computeDurationDays;
     isSlotImpossible(candidates: CandidateItem[]): boolean;
     findEmptySlot(slots: SlotInput[], candidatesBySlot: Record<string, CandidateItem[]>): SlotInput | undefined;

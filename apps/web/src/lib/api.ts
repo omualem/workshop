@@ -1,7 +1,5 @@
-import type { BundleSearchInput } from "@rental/types";
 import type { LoginInput, RegisterInput } from "@rental/types";
 import {
-  demoBundleResults,
   demoCategories,
   demoListing,
   demoListings,
@@ -31,15 +29,33 @@ async function fetchJson<T>(
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+      let message = `HTTP ${response.status}`;
+      try {
+        const errorBody = (await response.json()) as {
+          message?: string | string[];
+          error?: string;
+        };
+        if (Array.isArray(errorBody.message) && errorBody.message.length > 0) {
+          message = errorBody.message.join(", ");
+        } else if (typeof errorBody.message === "string") {
+          message = errorBody.message;
+        } else if (typeof errorBody.error === "string") {
+          message = errorBody.error;
+        }
+      } catch {
+        // Ignore non-JSON error responses and keep the HTTP status fallback.
+      }
+      throw new Error(message);
     }
 
     return (await response.json()) as T;
-  } catch {
+  } catch (error) {
     if (fallback !== undefined) {
       return fallback;
     }
-    throw new Error(`API request failed for ${path}`);
+    throw error instanceof Error
+      ? error
+      : new Error(`API request failed for ${path}`);
   }
 }
 
@@ -112,28 +128,46 @@ export const api = {
       demoListingsFallback(query),
     );
   },
-  bundleResults: (id: string) =>
-    fetchJson(`/bundle-search/${id}/results`, undefined, demoBundleResults),
   adminOverview: () => fetchJson("/admin/overview"),
   adminUsers: () => fetchJson<any[]>("/admin/users"),
+  createAdminUser: (input: Record<string, unknown>) =>
+    fetchJson<any>("/admin/users", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  updateAdminUser: (id: string, input: Record<string, unknown>) =>
+    fetchJson<any>(`/admin/users/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
+  deleteAdminUser: (id: string) =>
+    fetchJson<{ success: boolean; data: { id: string; status: string } }>(
+      `/admin/users/${id}`,
+      {
+        method: "DELETE",
+      },
+    ),
   adminModeration: () => fetchJson<any[]>("/admin/moderation"),
   adminBookings: () => fetchJson<any[]>("/admin/bookings"),
   adminDisputes: () => fetchJson<any[]>("/admin/disputes"),
   adminReviews: () => fetchJson<any[]>("/admin/reviews"),
   adminAuditLogs: () => fetchJson<any[]>("/admin/audit-logs"),
-  adminRankingConfig: () => fetchJson<any[]>("/admin/ranking-config"),
   adminCatalogOptions: () =>
     fetchJson<{ categories: any[]; lenders: any[] }>("/admin/catalog/options"),
-  adminCategories: () => fetchJson<any[]>("/categories/admin/manage"),
+  adminCategories: () => fetchJson<any[]>("/admin/categories"),
   createAdminCategory: (input: Record<string, unknown>) =>
-    fetchJson<any>("/categories/admin/manage", {
+    fetchJson<any>("/admin/categories", {
       method: "POST",
       body: JSON.stringify(input),
     }),
   updateAdminCategory: (id: string, input: Record<string, unknown>) =>
-    fetchJson<any>(`/categories/admin/manage/${id}`, {
+    fetchJson<any>(`/admin/categories/${id}`, {
       method: "PATCH",
       body: JSON.stringify(input),
+    }),
+  deleteAdminCategory: (id: string) =>
+    fetchJson<any>(`/admin/categories/${id}`, {
+      method: "DELETE",
     }),
   adminListings: (query?: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
@@ -165,15 +199,15 @@ export const api = {
         method: "DELETE",
       },
     ),
-  createBundleSearch: (input: BundleSearchInput) =>
-    fetchJson(
-      "/bundle-search",
-      {
-        method: "POST",
-        body: JSON.stringify(input),
-      },
-      demoBundleResults,
-    ),
+  duplicateAdminListing: (id: string) =>
+    fetchJson<any>(`/admin/listings/${id}/duplicate`, {
+      method: "POST",
+    }),
+  changeAdminListingOwner: (id: string, lenderId: string) =>
+    fetchJson<any>(`/admin/listings/${id}/change-owner`, {
+      method: "PATCH",
+      body: JSON.stringify({ lenderId }),
+    }),
   optimizeBundle: (input: unknown) =>
     fetchJson<any>(
       "/bundle-optimizer/search",
@@ -244,7 +278,6 @@ export const api = {
         categoryId: string;
         category: { id: string; nameHe: string } | null;
         basePriceDaily: number | string;
-        condition: string;
         city: string | null;
         lenderName: string | null;
         thumbnail: string | null;

@@ -1,9 +1,9 @@
 import { z } from "zod";
 export declare const envSchema: z.ZodObject<{
     NODE_ENV: z.ZodDefault<z.ZodEnum<{
+        production: "production";
         development: "development";
         test: "test";
-        production: "production";
     }>>;
     PORT: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
     DATABASE_URL: z.ZodString;
@@ -18,7 +18,7 @@ export declare const envSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type EnvConfig = z.infer<typeof envSchema>;
 export declare const validateEnv: (input: Record<string, unknown>) => {
-    NODE_ENV: "development" | "test" | "production";
+    NODE_ENV: "production" | "development" | "test";
     PORT: number;
     DATABASE_URL: string;
     REDIS_URL: string | undefined;

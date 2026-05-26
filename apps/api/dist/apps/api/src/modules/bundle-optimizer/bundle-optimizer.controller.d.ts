@@ -1,9 +1,9 @@
 import { BundleOptimizerService } from "./bundle-optimizer.service";
-import { type OptimizerRequest } from "./bundle-optimizer.types";
+import { type OptimizerRequestBody } from "./bundle-optimizer.types";
 export declare class BundleOptimizerController {
     private readonly optimizer;
     constructor(optimizer: BundleOptimizerService);
-    search(body: OptimizerRequest): Promise<{
+    search(body: OptimizerRequestBody): Promise<{
         success: boolean;
         data: {
             debug?: {
@@ -34,11 +34,9 @@ export declare class BundleOptimizerController {
                     quantity: number;
                     categoryId?: string | undefined;
                     specificListingId?: string | undefined;
-                    minCondition?: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE" | undefined;
                     constraints?: {
                         minPrice?: number | undefined;
                         maxPrice?: number | undefined;
-                        minCondition?: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE" | undefined;
                         maxDistanceKm?: number | undefined;
                         allowAlternatives?: boolean | undefined;
                     } | undefined;
@@ -57,13 +55,12 @@ export declare class BundleOptimizerController {
                     streetId?: string | undefined;
                     addressNumber?: number | undefined;
                 };
-                preferenceProfile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
-                basePreferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                preferenceProfile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
+                basePreferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
                 preferenceSliders: {
                     price: number;
                     distance: number;
                     reliability: number;
-                    condition: number;
                     availability: number;
                     pickupSimplicity: number;
                 } | undefined;
@@ -72,7 +69,6 @@ export declare class BundleOptimizerController {
                         price: number;
                         distance: number;
                         reliability: number;
-                        condition: number;
                         availability: number;
                     };
                     lambdaVariance: number;
@@ -129,11 +125,9 @@ export declare class BundleOptimizerController {
                     quantity: number;
                     categoryId?: string | undefined;
                     specificListingId?: string | undefined;
-                    minCondition?: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE" | undefined;
                     constraints?: {
                         minPrice?: number | undefined;
                         maxPrice?: number | undefined;
-                        minCondition?: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE" | undefined;
                         maxDistanceKm?: number | undefined;
                         allowAlternatives?: boolean | undefined;
                     } | undefined;
@@ -152,13 +146,12 @@ export declare class BundleOptimizerController {
                     streetId?: string | undefined;
                     addressNumber?: number | undefined;
                 };
-                preferenceProfile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
-                basePreferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                preferenceProfile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
+                basePreferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
                 preferenceSliders: {
                     price: number;
                     distance: number;
                     reliability: number;
-                    condition: number;
                     availability: number;
                     pickupSimplicity: number;
                 } | undefined;
@@ -167,7 +160,6 @@ export declare class BundleOptimizerController {
                         price: number;
                         distance: number;
                         reliability: number;
-                        condition: number;
                         availability: number;
                     };
                     lambdaVariance: number;
@@ -195,7 +187,6 @@ export declare class BundleOptimizerController {
                     price: number;
                     distance: number;
                     reliability: number;
-                    condition: number;
                     availability: number;
                 };
                 scoreBreakdown: {
@@ -208,13 +199,12 @@ export declare class BundleOptimizerController {
                     rawFinalScore: number;
                     finalScore: number;
                     preferences: {
-                        profile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality";
-                        baseProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                        profile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional";
+                        baseProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
                         sliders: {
                             price: number;
                             distance: number;
                             reliability: number;
-                            condition: number;
                             availability: number;
                             pickupSimplicity: number;
                         };
@@ -222,7 +212,6 @@ export declare class BundleOptimizerController {
                             price: number;
                             distance: number;
                             reliability: number;
-                            condition: number;
                             availability: number;
                         };
                         penaltyMultipliers: {
@@ -231,7 +220,6 @@ export declare class BundleOptimizerController {
                                 price: number;
                                 distance: number;
                                 reliability: number;
-                                condition: number;
                                 availability: number;
                             };
                             maxDistance: number;
@@ -244,7 +232,6 @@ export declare class BundleOptimizerController {
                     price: number;
                     distance: number;
                     reliability: number;
-                    condition: number;
                     availability: number;
                 };
                 derived: {
@@ -267,7 +254,6 @@ export declare class BundleOptimizerController {
                     lenderId: string;
                     titleHe: string;
                     titleEn: string;
-                    condition: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE";
                     price: number;
                     distanceKm: number;
                     attributes: {

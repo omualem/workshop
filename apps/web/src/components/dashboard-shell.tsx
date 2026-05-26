@@ -95,12 +95,12 @@ export function DashboardShell({
         </nav>
         <div className="mt-8 rounded-[16px] bg-slate-50 p-3 text-xs leading-6 text-slate-600">
           <div className="font-semibold text-slate-900">צריכים עזרה?</div>
-          הצוות זמין בעברית בימים א'-ה', 09:00-18:00.
+          הצוות זמין בימים א׳–ה׳ בין השעות 09:00–18:00.
         </div>
       </aside>
       <div className="min-w-0">
         <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200/70 bg-white/80 px-7 py-3.5 backdrop-blur">
-          <div className="text-sm text-slate-500">חיפוש מהיר...</div>
+          <div className="text-sm text-slate-500">חיפוש מהיר</div>
           <div className="flex items-center gap-2">{headerActions}</div>
         </header>
         <main className="px-7 py-6">{children}</main>

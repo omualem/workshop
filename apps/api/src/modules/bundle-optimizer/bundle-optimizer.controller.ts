@@ -2,7 +2,10 @@ import { Body, Controller, Post } from "@nestjs/common";
 import { Public } from "../../shared/decorators/public.decorator";
 import { ZodValidationPipe } from "../../shared/pipes/zod-validation.pipe";
 import { BundleOptimizerService } from "./bundle-optimizer.service";
-import { optimizerRequestSchema, type OptimizerRequest } from "./bundle-optimizer.types";
+import {
+  optimizerRequestBodySchema,
+  type OptimizerRequestBody,
+} from "./bundle-optimizer.types";
 
 @Controller("bundle-optimizer")
 export class BundleOptimizerController {
@@ -11,12 +14,16 @@ export class BundleOptimizerController {
   /**
    * POST /bundle-optimizer/search
    *
-   * Runs the full algorithm: hard-constraint filter → top-K pruning →
-   * beam search → final objective Score(x) → Hebrew explanations.
+   * Accepts only user-facing inputs (slots, dates, location, budget, profile
+   * + sliders). Algorithm-tuning parameters are populated server-side inside
+   * BundleOptimizerService.optimize so the client cannot influence them.
    */
   @Public()
   @Post("search")
-  search(@Body(new ZodValidationPipe(optimizerRequestSchema)) body: OptimizerRequest) {
+  search(
+    @Body(new ZodValidationPipe(optimizerRequestBodySchema))
+    body: OptimizerRequestBody,
+  ) {
     return this.optimizer.optimize(body);
   }
 }

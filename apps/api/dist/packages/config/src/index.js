@@ -15,6 +15,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./locales"), exports);
-__exportStar(require("./ranking"), exports);
 __exportStar(require("./feature-flags"), exports);
 //# sourceMappingURL=index.js.map

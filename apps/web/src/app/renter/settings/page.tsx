@@ -7,13 +7,18 @@ const navItems = [
   { href: "/renter/favorites", label: "מועדפים" },
   { href: "/renter/saved-searches", label: "חיפושים שמורים" },
   { href: "/renter/settings", label: "הגדרות" },
-  { href: "/renter/bundle-results", label: "תוצאות bundle" },
 ];
 
 export default function SettingsPage() {
   return (
-    <DashboardShell title="הגדרות חשבון" subtitle="מיקום ברירת מחדל, העדפות דירוג ושפת הממשק." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">העדפות renter נשמרות בפרופיל ונשלפות אוטומטית בחיפוש הבא.</Card>
+    <DashboardShell
+      title="הגדרות חשבון"
+      subtitle="עדכון פרטים אישיים, כתובת ברירת מחדל והעדפות חיפוש."
+      navItems={navItems}
+    >
+      <Card className="text-sm leading-7 text-slate-600">
+        ההעדפות שלכם נשמרות אוטומטית בפרופיל ומופעלות בחיפוש הבא.
+      </Card>
     </DashboardShell>
   );
 }

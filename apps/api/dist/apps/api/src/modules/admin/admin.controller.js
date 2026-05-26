@@ -19,18 +19,14 @@ const public_decorator_1 = require("../../shared/decorators/public.decorator");
 const roles_decorator_1 = require("../../shared/decorators/roles.decorator");
 const jwt_auth_guard_1 = require("../../shared/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../shared/guards/roles.guard");
-const update_ranking_config_dto_1 = require("./dto/update-ranking-config.dto");
+const create_category_dto_1 = require("../categories/dto/create-category.dto");
+const update_category_dto_1 = require("../categories/dto/update-category.dto");
+const update_admin_user_dto_1 = require("./dto/update-admin-user.dto");
 const admin_service_1 = require("./admin.service");
 let AdminController = class AdminController {
     adminService;
     constructor(adminService) {
         this.adminService = adminService;
-    }
-    bundleSearchDebug(id) {
-        return this.adminService.bundleSearchDebug(id);
-    }
-    updateRankingConfig(user, dto) {
-        return this.adminService.updateRankingConfig(user.sub, dto);
     }
     auditLogs() {
         return this.adminService.auditLogs();
@@ -41,8 +37,31 @@ let AdminController = class AdminController {
     catalogOptions() {
         return this.adminService.catalogOptions();
     }
-    users() {
-        return this.adminService.users();
+    categories(includeArchived) {
+        return this.adminService.adminCategories(includeArchived === "true");
+    }
+    createCategory(dto, user) {
+        return this.adminService.adminCreateCategory(dto, user?.sub);
+    }
+    updateCategory(id, dto, user) {
+        return this.adminService.adminUpdateCategory(id, dto, user?.sub);
+    }
+    async deleteCategory(id, user) {
+        const data = await this.adminService.adminDeleteCategory(id, user?.sub);
+        return { success: true, data };
+    }
+    users(includeDeleted) {
+        return this.adminService.users(includeDeleted === "true");
+    }
+    createUser(dto, user) {
+        return this.adminService.createUser(dto, user?.sub);
+    }
+    updateUser(id, dto, user) {
+        return this.adminService.updateUser(id, dto, user?.sub);
+    }
+    async deleteUser(id, user) {
+        const data = await this.adminService.deleteUser(id, user?.sub);
+        return { success: true, data };
     }
     moderationQueue() {
         return this.adminService.moderationQueue();
@@ -56,26 +75,8 @@ let AdminController = class AdminController {
     reviews() {
         return this.adminService.reviews();
     }
-    rankingConfig() {
-        return this.adminService.rankingConfig();
-    }
 };
 exports.AdminController = AdminController;
-__decorate([
-    (0, common_1.Get)("bundle-search/:id/debug"),
-    __param(0, (0, common_1.Param)("id")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "bundleSearchDebug", null);
-__decorate([
-    (0, common_1.Patch)("ranking-config"),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, update_ranking_config_dto_1.UpdateRankingConfigDto]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "updateRankingConfig", null);
 __decorate([
     (0, common_1.Get)("audit-logs"),
     (0, public_decorator_1.Public)(),
@@ -98,12 +99,77 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "catalogOptions", null);
 __decorate([
+    (0, common_1.Get)("categories"),
+    (0, public_decorator_1.Public)(),
+    __param(0, (0, common_1.Query)("includeArchived")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "categories", null);
+__decorate([
+    (0, common_1.Post)("categories"),
+    (0, public_decorator_1.Public)(),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_category_dto_1.CreateCategoryDto, Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "createCategory", null);
+__decorate([
+    (0, common_1.Patch)("categories/:id"),
+    (0, public_decorator_1.Public)(),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_category_dto_1.UpdateCategoryDto, Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "updateCategory", null);
+__decorate([
+    (0, common_1.Delete)("categories/:id"),
+    (0, public_decorator_1.Public)(),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "deleteCategory", null);
+__decorate([
     (0, common_1.Get)("users"),
     (0, public_decorator_1.Public)(),
+    __param(0, (0, common_1.Query)("includeDeleted")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "users", null);
+__decorate([
+    (0, common_1.Post)("users"),
+    (0, public_decorator_1.Public)(),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [update_admin_user_dto_1.UpdateAdminUserDto, Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "createUser", null);
+__decorate([
+    (0, common_1.Patch)("users/:id"),
+    (0, public_decorator_1.Public)(),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_admin_user_dto_1.UpdateAdminUserDto, Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "updateUser", null);
+__decorate([
+    (0, common_1.Delete)("users/:id"),
+    (0, public_decorator_1.Public)(),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "deleteUser", null);
 __decorate([
     (0, common_1.Get)("moderation"),
     (0, public_decorator_1.Public)(),
@@ -132,13 +198,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "reviews", null);
-__decorate([
-    (0, common_1.Get)("ranking-config"),
-    (0, public_decorator_1.Public)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "rankingConfig", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)("admin"),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

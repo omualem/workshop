@@ -10,7 +10,6 @@ export declare class BundleExplanationService {
             price: number;
             distance: number;
             reliability: number;
-            condition: number;
             availability: number;
         };
         scoreBreakdown: {
@@ -23,13 +22,12 @@ export declare class BundleExplanationService {
             rawFinalScore: number;
             finalScore: number;
             preferences: {
-                profile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality";
-                baseProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "highQuality" | undefined;
+                profile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional";
+                baseProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
                 sliders: {
                     price: number;
                     distance: number;
                     reliability: number;
-                    condition: number;
                     availability: number;
                     pickupSimplicity: number;
                 };
@@ -37,7 +35,6 @@ export declare class BundleExplanationService {
                     price: number;
                     distance: number;
                     reliability: number;
-                    condition: number;
                     availability: number;
                 };
                 penaltyMultipliers: {
@@ -46,7 +43,6 @@ export declare class BundleExplanationService {
                         price: number;
                         distance: number;
                         reliability: number;
-                        condition: number;
                         availability: number;
                     };
                     maxDistance: number;
@@ -59,7 +55,6 @@ export declare class BundleExplanationService {
             price: number;
             distance: number;
             reliability: number;
-            condition: number;
             availability: number;
         };
         derived: {
@@ -82,7 +77,6 @@ export declare class BundleExplanationService {
             lenderId: string;
             titleHe: string;
             titleEn: string;
-            condition: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE";
             price: number;
             distanceKm: number;
             attributes: {

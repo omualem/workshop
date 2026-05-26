@@ -59,13 +59,17 @@ export class AddressesService {
     });
   }
 
+  /**
+   * cityId + streetId + addressNumber are the source of truth for a listing
+   * address. pickupAddressText / pickupLat / pickupLng are DERIVED here and
+   * are never read from the input — any coordinates supplied by a caller are
+   * ignored. Coordinates are always (re)generated via geocoding.
+   */
   async resolveListingAddress(
     input: {
       cityId?: string;
       streetId?: string;
       addressNumber?: number;
-      pickupLat?: number;
-      pickupLng?: number;
     },
     existing?: {
       cityId: string | null;
@@ -110,28 +114,6 @@ export class AddressesService {
     const cityName = normalizeHebrewAddressText(street.city.nameHe);
     const streetName = normalizeHebrewAddressText(street.nameHe);
     const pickupAddressText = `רחוב ${streetName} ${nextAddressNumber}, ${cityName}`;
-
-    const lat =
-      input.pickupLat !== undefined && Number.isFinite(input.pickupLat)
-        ? input.pickupLat
-        : undefined;
-    const lng =
-      input.pickupLng !== undefined && Number.isFinite(input.pickupLng)
-        ? input.pickupLng
-        : undefined;
-
-    if (lat !== undefined && lng !== undefined) {
-      return {
-        cityId: street.city.id,
-        streetId: street.id,
-        addressNumber: nextAddressNumber,
-        cityName,
-        streetName,
-        pickupAddressText,
-        pickupLat: lat,
-        pickupLng: lng,
-      };
-    }
 
     try {
       const geocoded = await this.geocoding.geocodeAddress({

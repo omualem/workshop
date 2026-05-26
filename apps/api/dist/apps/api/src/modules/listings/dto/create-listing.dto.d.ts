@@ -20,13 +20,10 @@ export declare class CreateListingDto {
     descriptionEn: string;
     suitableFor?: string;
     mainUses?: string;
-    condition: "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE";
     basePriceDaily: number;
     depositAmount: number;
-    pickupLat?: number;
-    pickupLng?: number;
-    pickupAddressText?: string;
-    city?: string;
+    popularityScore?: number;
+    manualPriorityBoost?: number;
     pickupInstructions?: string;
     deliverySupported: boolean;
     includedItems?: string[];

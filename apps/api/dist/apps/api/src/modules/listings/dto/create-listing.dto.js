@@ -65,13 +65,10 @@ class CreateListingDto {
     descriptionEn;
     suitableFor;
     mainUses;
-    condition;
     basePriceDaily;
     depositAmount;
-    pickupLat;
-    pickupLng;
-    pickupAddressText;
-    city;
+    popularityScore;
+    manualPriorityBoost;
     pickupInstructions;
     deliverySupported;
     includedItems;
@@ -136,10 +133,6 @@ __decorate([
     __metadata("design:type", String)
 ], CreateListingDto.prototype, "mainUses", void 0);
 __decorate([
-    (0, class_validator_1.IsIn)(["NEW", "LIKE_NEW", "GOOD", "FAIR", "HEAVY_USE"]),
-    __metadata("design:type", String)
-], CreateListingDto.prototype, "condition", void 0);
-__decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
@@ -152,24 +145,14 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.Min)(0),
     __metadata("design:type", Number)
-], CreateListingDto.prototype, "pickupLat", void 0);
+], CreateListingDto.prototype, "popularityScore", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
-], CreateListingDto.prototype, "pickupLng", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(4),
-    __metadata("design:type", String)
-], CreateListingDto.prototype, "pickupAddressText", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateListingDto.prototype, "city", void 0);
+], CreateListingDto.prototype, "manualPriorityBoost", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),

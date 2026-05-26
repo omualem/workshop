@@ -7,7 +7,6 @@ import { AuditModule } from "./modules/audit/audit.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { AvailabilityModule } from "./modules/availability/availability.module";
 import { BookingsModule } from "./modules/bookings/bookings.module";
-import { BundleSearchModule } from "./modules/bundle-search/bundle-search.module";
 import { BundleOptimizerModule } from "./modules/bundle-optimizer/bundle-optimizer.module";
 import { CategoriesModule } from "./modules/categories/categories.module";
 import { HealthModule } from "./modules/health/health.module";
@@ -51,7 +50,6 @@ import { RedisModule } from "./shared/redis/redis.module";
     BookingsModule,
     ReviewsModule,
     NotificationsModule,
-    BundleSearchModule,
     BundleOptimizerModule,
     AuditModule,
     AdminModule,

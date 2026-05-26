@@ -32,9 +32,9 @@ export declare class UsersController {
         } | null;
     } & {
         id: string;
+        status: import(".prisma/client").$Enums.UserStatus;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.UserStatus;
         role: import(".prisma/client").$Enums.UserRole;
         fullName: string;
         email: string;

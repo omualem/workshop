@@ -11,21 +11,21 @@ export default async function AdminReviewsPage() {
   return (
     <DashboardShell
       title="ביקורות"
-      subtitle="ביקורות אמיתיות שהוזנו למערכת."
+      subtitle="כל הביקורות שנרשמו במערכת."
       navItems={adminNavItems}
       activeHref="/admin/reviews"
     >
       <Card className="overflow-x-auto">
         {reviews.length === 0 ? (
-          <p className="text-sm text-slate-600">אין עדיין ביקורות</p>
+          <p className="text-sm text-slate-600">אין כרגע ביקורות להצגה</p>
         ) : (
           <table className="dashboard-table">
             <thead>
               <tr>
-                <th>כותב</th>
-                <th>מקבל ביקורת</th>
+                <th>נכתבה על ידי</th>
+                <th>על</th>
                 <th>דירוג</th>
-                <th>טקסט</th>
+                <th>תוכן הביקורת</th>
               </tr>
             </thead>
             <tbody>

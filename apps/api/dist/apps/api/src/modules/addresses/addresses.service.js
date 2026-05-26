@@ -82,24 +82,6 @@ let AddressesService = AddressesService_1 = class AddressesService {
         const cityName = (0, address_normalization_1.normalizeHebrewAddressText)(street.city.nameHe);
         const streetName = (0, address_normalization_1.normalizeHebrewAddressText)(street.nameHe);
         const pickupAddressText = `רחוב ${streetName} ${nextAddressNumber}, ${cityName}`;
-        const lat = input.pickupLat !== undefined && Number.isFinite(input.pickupLat)
-            ? input.pickupLat
-            : undefined;
-        const lng = input.pickupLng !== undefined && Number.isFinite(input.pickupLng)
-            ? input.pickupLng
-            : undefined;
-        if (lat !== undefined && lng !== undefined) {
-            return {
-                cityId: street.city.id,
-                streetId: street.id,
-                addressNumber: nextAddressNumber,
-                cityName,
-                streetName,
-                pickupAddressText,
-                pickupLat: lat,
-                pickupLng: lng,
-            };
-        }
         try {
             const geocoded = await this.geocoding.geocodeAddress({
                 cityId: street.city.id,

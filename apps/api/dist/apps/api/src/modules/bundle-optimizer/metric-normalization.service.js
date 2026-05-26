@@ -14,26 +14,11 @@ let MetricNormalizationService = class MetricNormalizationService {
             return lo;
         return Math.max(lo, Math.min(hi, value));
     }
-    normalizePriceScore(price, minPrice, maxPrice) {
-        if (maxPrice <= minPrice)
-            return 10;
-        return this.clamp(10 * (maxPrice - price) / (maxPrice - minPrice));
-    }
     normalizeDistanceScore(distanceKm) {
         return this.clamp(10 * Math.exp(-Math.max(0, distanceKm) / 30));
     }
     normalizeReliabilityScore(reliability) {
         return this.clamp(reliability);
-    }
-    normalizeConditionScore(condition) {
-        const table = {
-            NEW: 10,
-            LIKE_NEW: 9,
-            GOOD: 7.5,
-            FAIR: 5,
-            HEAVY_USE: 2,
-        };
-        return this.clamp(table[condition] ?? 5);
     }
     normalizeAvailabilityScore(availability) {
         return this.clamp(availability);

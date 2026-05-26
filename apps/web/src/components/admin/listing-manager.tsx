@@ -10,13 +10,6 @@ import {
   type AddressSelectionValue,
 } from "../forms/address-selector";
 
-type ListingCondition =
-  | "NEW"
-  | "LIKE_NEW"
-  | "GOOD"
-  | "FAIR"
-  | "HEAVY_USE";
-
 type ListingStatus =
   | "DRAFT"
   | "PENDING_REVIEW"
@@ -26,12 +19,8 @@ type ListingStatus =
 
 type AvailabilityStatus = "BLOCKED" | "BOOKED" | "MAINTENANCE";
 
-type AttributeRow = {
-  attributeKey: string;
-  attributeValue: string;
-};
-
 type AvailabilityRow = {
+  id: string;
   startDate: string;
   endDate: string;
   status: AvailabilityStatus;
@@ -40,20 +29,19 @@ type AvailabilityRow = {
 
 type ListingFormState = {
   id?: string;
+  status: ListingStatus;
   lenderId: string;
   categoryId: string;
   titleHe: string;
   descriptionHe: string;
-  condition: ListingCondition;
+  // cityId + streetId + addressNumber are the source of truth for the
+  // address. pickupAddressText / pickupLat / pickupLng are derived by the
+  // backend and are never part of editable form state.
   cityId: string;
   cityNameHe: string;
   streetId: string;
   streetNameHe: string;
   addressNumber: string;
-  city: string;
-  pickupAddressText: string;
-  pickupLat: string;
-  pickupLng: string;
   basePriceDaily: string;
   depositAmount: string;
   inventoryCount: string;
@@ -67,7 +55,6 @@ type ListingFormState = {
   returnTerms: string;
   includedItemsText: string;
   imageUrlsText: string;
-  attributeRows: AttributeRow[];
   availabilityBlocks: AvailabilityRow[];
 };
 
@@ -86,33 +73,31 @@ type LenderOption = {
   };
 };
 
-const emptyAttributeRow: AttributeRow = {
-  attributeKey: "",
-  attributeValue: "",
-};
+function createRowId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
 
-const emptyAvailabilityRow: AvailabilityRow = {
-  startDate: "",
-  endDate: "",
-  status: "BLOCKED",
-  reason: "",
-};
+function createEmptyAvailabilityRow(): AvailabilityRow {
+  return {
+    id: createRowId(),
+    startDate: "",
+    endDate: "",
+    status: "BLOCKED",
+    reason: "",
+  };
+}
 
 const emptyListingForm: ListingFormState = {
+  status: "ACTIVE",
   lenderId: "",
   categoryId: "",
   titleHe: "",
   descriptionHe: "",
-  condition: "GOOD",
   cityId: "",
   cityNameHe: "",
   streetId: "",
   streetNameHe: "",
   addressNumber: "",
-  city: "",
-  pickupAddressText: "",
-  pickupLat: "",
-  pickupLng: "",
   basePriceDaily: "",
   depositAmount: "0",
   inventoryCount: "1",
@@ -126,17 +111,9 @@ const emptyListingForm: ListingFormState = {
   returnTerms: "",
   includedItemsText: "",
   imageUrlsText: "",
-  attributeRows: [emptyAttributeRow],
   availabilityBlocks: [],
 };
 
-const conditionLabels: Record<ListingCondition, string> = {
-  NEW: "חדש",
-  LIKE_NEW: "כמו חדש",
-  GOOD: "טוב",
-  FAIR: "סביר",
-  HEAVY_USE: "שחוק",
-};
 
 const statusLabels: Record<ListingStatus, string> = {
   DRAFT: "טיוטה",
@@ -157,58 +134,6 @@ function parseMultilineList(value: string) {
     .split(/\r?\n|,/)
     .map((item) => item.trim())
     .filter(Boolean);
-}
-
-function parseOptionalNumber(value: string) {
-  const trimmed = value.trim();
-  if (!trimmed) return undefined;
-  const parsed = Number(trimmed);
-  return Number.isFinite(parsed) ? parsed : NaN;
-}
-
-function parseAttributeValue(rawValue: string) {
-  const value = rawValue.trim();
-  if (!value) {
-    return "";
-  }
-  const normalized = value.toLowerCase();
-  if (["כן", "true", "yes"].includes(normalized)) {
-    return true;
-  }
-  if (["לא", "false", "no"].includes(normalized)) {
-    return false;
-  }
-  if (!Number.isNaN(Number(value)) && value !== "") {
-    return Number(value);
-  }
-  if (
-    (value.startsWith("{") && value.endsWith("}")) ||
-    (value.startsWith("[") && value.endsWith("]"))
-  ) {
-    try {
-      return JSON.parse(value);
-    } catch {
-      return value;
-    }
-  }
-  return value;
-}
-
-function serializeAttributeValue(value: unknown) {
-  if (typeof value === "boolean") {
-    return value ? "כן" : "לא";
-  }
-  if (typeof value === "number" || typeof value === "string") {
-    return String(value);
-  }
-  if (value === null || value === undefined) {
-    return "";
-  }
-  try {
-    return JSON.stringify(value);
-  } catch {
-    return String(value);
-  }
 }
 
 function buildLeafCategories(categories: CategoryOption[]) {
@@ -257,25 +182,6 @@ function Section({
   );
 }
 
-function buildAddressPreview(value: Pick<
-  ListingFormState,
-  "cityNameHe" | "streetNameHe" | "addressNumber"
->) {
-  const parts: string[] = [];
-  if (value.streetNameHe.trim()) {
-    parts.push(`רחוב ${value.streetNameHe.trim()}`);
-  }
-  if (value.addressNumber.trim()) {
-    parts.push(value.addressNumber.trim());
-  }
-  const streetPart = parts.join(" ");
-  if (streetPart && value.cityNameHe.trim()) {
-    return `${streetPart}, ${value.cityNameHe.trim()}`;
-  }
-  if (streetPart) return streetPart;
-  return value.cityNameHe.trim();
-}
-
 export function ListingManager({
   initialCreateOpen = false,
 }: {
@@ -288,7 +194,11 @@ export function ListingManager({
     queryKey: ["admin-catalog-options"],
     queryFn: api.adminCatalogOptions,
   });
-  const { data: listings = [], isLoading: isListingsLoading } = useQuery({
+  const {
+    data: listings = [],
+    isLoading: isListingsLoading,
+    error: listingsError,
+  } = useQuery({
     queryKey: ["admin-listings"],
     queryFn: () => api.adminListings(),
   });
@@ -334,8 +244,11 @@ export function ListingManager({
       setIsModalOpen(false);
       router.replace(pathname);
     },
-    onError: () => {
-      setFeedback({ type: "error", message: "יצירת הפריט נכשלה. נסו שוב." });
+    onError: (error) => {
+      setFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "הפעולה נכשלה. נסו שוב.",
+      });
     },
   });
 
@@ -354,8 +267,11 @@ export function ListingManager({
       setIsModalOpen(false);
       router.replace(pathname);
     },
-    onError: () => {
-      setFeedback({ type: "error", message: "עדכון הפריט נכשל. נסו שוב." });
+    onError: (error) => {
+      setFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "הפעולה נכשלה. נסו שוב.",
+      });
     },
   });
 
@@ -369,11 +285,28 @@ export function ListingManager({
       await queryClient.invalidateQueries({ queryKey: ["admin-listings"] });
       setFeedback({ type: "success", message: "הפריט נמחק בהצלחה" });
     },
-    onError: () => {
-      setFeedback({ type: "error", message: "מחיקת הפריט נכשלה" });
+    onError: (error) => {
+      setFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "מחיקת הפריט נכשלה",
+      });
     },
     onSettled: () => {
       setDeletingListingId(null);
+    },
+  });
+
+  const duplicateMutation = useMutation({
+    mutationFn: api.duplicateAdminListing,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["admin-listings"] });
+      setFeedback({ type: "success", message: "הפריט שוכפל בהצלחה." });
+    },
+    onError: (error) => {
+      setFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "שכפול הפריט נכשל.",
+      });
     },
   });
 
@@ -426,11 +359,11 @@ export function ListingManager({
     setFeedback(null);
     setForm({
       id: item.id,
+      status: (item.status ?? "ACTIVE") as ListingStatus,
       lenderId: item.lenderId ?? "",
       categoryId: item.categoryId ?? "",
       titleHe: item.titleHe ?? "",
       descriptionHe: item.descriptionHe ?? "",
-      condition: (item.condition ?? "GOOD") as ListingCondition,
       cityId: item.cityId ?? item.cityRef?.id ?? "",
       cityNameHe: item.cityRef?.nameHe ?? item.city ?? "",
       streetId: item.streetId ?? item.streetRef?.id ?? "",
@@ -438,16 +371,6 @@ export function ListingManager({
       addressNumber:
         item.addressNumber !== undefined && item.addressNumber !== null
           ? String(item.addressNumber)
-          : "",
-      city: item.cityRef?.nameHe ?? item.city ?? "",
-      pickupAddressText: item.pickupAddressText ?? "",
-      pickupLat:
-        item.pickupLat !== undefined && item.pickupLat !== null
-          ? String(Number(item.pickupLat))
-          : "",
-      pickupLng:
-        item.pickupLng !== undefined && item.pickupLng !== null
-          ? String(Number(item.pickupLng))
           : "",
       basePriceDaily: String(Number(item.basePriceDaily ?? 0)),
       depositAmount: String(Number(item.depositAmount ?? 0)),
@@ -469,16 +392,10 @@ export function ListingManager({
             .filter(Boolean)
             .join("\n")
         : "",
-      attributeRows:
-        Array.isArray(item.attributeValues) && item.attributeValues.length > 0
-          ? item.attributeValues.map((attribute: any) => ({
-              attributeKey: attribute.attributeKey ?? "",
-              attributeValue: serializeAttributeValue(attribute.attributeValue),
-            }))
-          : [emptyAttributeRow],
       availabilityBlocks:
         Array.isArray(item.availabilityBlocks) && item.availabilityBlocks.length > 0
           ? item.availabilityBlocks.map((block: any) => ({
+              id: createRowId(),
               startDate: String(block.startDate ?? "").slice(0, 10),
               endDate: String(block.endDate ?? "").slice(0, 10),
               status: (block.status ?? "BLOCKED") as AvailabilityStatus,
@@ -497,34 +414,17 @@ export function ListingManager({
     deleteMutation.mutate(item.id);
   };
 
-  const setAttributeRow = (
-    index: number,
-    key: keyof AttributeRow,
-    value: string,
-  ) => {
-    setForm((current) => ({
-      ...current,
-      attributeRows: current.attributeRows.map((row, rowIndex) =>
-        rowIndex === index ? { ...row, [key]: value } : row,
-      ),
-    }));
+  const handleDuplicate = (item: any) => {
+    duplicateMutation.mutate(item.id);
   };
 
-  const addAttributeRow = () => {
-    setForm((current) => ({
-      ...current,
-      attributeRows: [...current.attributeRows, { ...emptyAttributeRow }],
-    }));
-  };
-
-  const removeAttributeRow = (index: number) => {
-    setForm((current) => ({
-      ...current,
-      attributeRows:
-        current.attributeRows.length === 1
-          ? [{ ...emptyAttributeRow }]
-          : current.attributeRows.filter((_, rowIndex) => rowIndex !== index),
-    }));
+  const handleToggleStatus = (item: any) => {
+    updateMutation.mutate({
+      id: item.id,
+      payload: {
+        status: item.status === "ACTIVE" ? "BLOCKED" : "ACTIVE",
+      },
+    });
   };
 
   const setAvailabilityRow = (
@@ -545,7 +445,7 @@ export function ListingManager({
       ...current,
       availabilityBlocks: [
         ...current.availabilityBlocks,
-        { ...emptyAvailabilityRow },
+        createEmptyAvailabilityRow(),
       ],
     }));
   };
@@ -562,6 +462,22 @@ export function ListingManager({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setFeedback(null);
+    if (!form.lenderId) {
+      setFeedback({ type: "error", message: "יש לבחור מלווה" });
+      return;
+    }
+    if (!form.categoryId) {
+      setFeedback({ type: "error", message: "יש לבחור קטגוריה" });
+      return;
+    }
+    if (!form.titleHe.trim()) {
+      setFeedback({ type: "error", message: "יש להזין כותרת" });
+      return;
+    }
+    if (!form.basePriceDaily.trim()) {
+      setFeedback({ type: "error", message: "יש להזין מחיר ליום" });
+      return;
+    }
 
     if (!form.lenderId) {
       setFeedback({ type: "error", message: "יש לבחור מלווה עבור הפריט." });
@@ -585,9 +501,11 @@ export function ListingManager({
     const inventoryCount = Number(form.inventoryCount);
     const minRentalDays = Number(form.minRentalDays);
     const maxRentalDays = Number(form.maxRentalDays);
-    const pickupLat = parseOptionalNumber(form.pickupLat);
-    const pickupLng = parseOptionalNumber(form.pickupLng);
     const addressNumber = Number(form.addressNumber);
+    if (!Number.isFinite(basePriceDaily) || basePriceDaily <= 0) {
+      setFeedback({ type: "error", message: "מחיר ליום חייב להיות גדול מ-0" });
+      return;
+    }
 
     if (!Number.isFinite(basePriceDaily) || basePriceDaily <= 0) {
       setFeedback({ type: "error", message: "מחיר ליום חייב להיות גדול מאפס." });
@@ -638,32 +556,6 @@ export function ListingManager({
       return;
     }
 
-    const hasCoordinates =
-      pickupLat !== undefined &&
-      pickupLng !== undefined &&
-      Number.isFinite(pickupLat) &&
-      Number.isFinite(pickupLng);
-    const hasCityOrAddress = true;
-
-    if (!hasCoordinates && !hasCityOrAddress) {
-      setFeedback({
-        type: "error",
-        message: "יש להזין לפחות עיר/כתובת איסוף או קו רוחב/קו אורך.",
-      });
-      return;
-    }
-
-    if (
-      (pickupLat !== undefined && !Number.isFinite(pickupLat)) ||
-      (pickupLng !== undefined && !Number.isFinite(pickupLng))
-    ) {
-      setFeedback({
-        type: "error",
-        message: "קו רוחב וקו אורך חייבים להיות מספרים תקינים.",
-      });
-      return;
-    }
-
     const invalidAvailability = form.availabilityBlocks.find((block) => {
       if (!block.startDate && !block.endDate && !block.reason) return false;
       if (!block.startDate || !block.endDate) return true;
@@ -685,15 +577,12 @@ export function ListingManager({
       titleEn: form.titleHe.trim(),
       descriptionHe: form.descriptionHe.trim(),
       descriptionEn: form.descriptionHe.trim(),
-      condition: form.condition,
-      status: "ACTIVE",
+      status: form.status,
       basePriceDaily,
       depositAmount,
       cityId: form.cityId,
       streetId: form.streetId,
       addressNumber,
-      pickupLat: hasCoordinates ? pickupLat : undefined,
-      pickupLng: hasCoordinates ? pickupLng : undefined,
       pickupInstructions: form.pickupInstructions.trim() || undefined,
       deliverySupported: form.deliverySupported,
       includedItems: parseMultilineList(form.includedItemsText),
@@ -704,12 +593,6 @@ export function ListingManager({
       inventoryCount,
       minRentalDays,
       maxRentalDays,
-      attributeValues: form.attributeRows
-        .filter((row) => row.attributeKey.trim())
-        .map((row) => ({
-          attributeKey: row.attributeKey.trim(),
-          attributeValue: parseAttributeValue(row.attributeValue),
-        })),
       availabilityBlocks: form.availabilityBlocks
         .filter((block) => block.startDate && block.endDate)
         .map((block) => ({
@@ -819,6 +702,11 @@ export function ListingManager({
         </div>
 
         <div className="overflow-x-auto">
+          {listingsError ? (
+            <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+              לא ניתן לטעון את הפריטים.
+            </div>
+          ) : null}
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
@@ -886,6 +774,21 @@ export function ListingManager({
                           onClick={() => startEdit(item)}
                         >
                           עריכה
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          disabled={duplicateMutation.isPending}
+                          onClick={() => handleDuplicate(item)}
+                        >
+                          שכפל פריט
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => handleToggleStatus(item)}
+                        >
+                          {item.status === "ACTIVE" ? "השבתה" : "הפעלה"}
                         </Button>
                         <Button
                           type="button"
@@ -1003,46 +906,17 @@ export function ListingManager({
                   />
                 </label>
 
-                <AddressSelector
-                  value={{
-                    cityId: form.cityId,
-                    cityNameHe: form.cityNameHe,
-                    streetId: form.streetId,
-                    streetNameHe: form.streetNameHe,
-                    addressNumber: form.addressNumber,
-                  }}
-                  onChange={(nextValue: AddressSelectionValue) =>
-                    setForm((current) => ({
-                      ...current,
-                      cityId: nextValue.cityId,
-                      cityNameHe: nextValue.cityNameHe,
-                      streetId: nextValue.streetId,
-                      streetNameHe: nextValue.streetNameHe,
-                      addressNumber: nextValue.addressNumber,
-                      city: nextValue.cityNameHe,
-                      pickupAddressText: buildAddressPreview({
-                        cityNameHe: nextValue.cityNameHe,
-                        streetNameHe: nextValue.streetNameHe,
-                        addressNumber: nextValue.addressNumber,
-                      }),
-                    }))
-                  }
-                />
-
-                <label className="hidden">
-                  <span className="text-sm font-medium text-slate-700">מצב הפריט</span>
+                <label className="space-y-2">
+                  <span className="text-sm font-medium text-slate-700">סטטוס</span>
                   <select
                     className="w-full rounded-2xl border px-4 py-3 text-right"
                     dir="rtl"
-                    value={form.condition}
+                    value={form.status}
                     onChange={(event) =>
-                      updateForm(
-                        "condition",
-                        event.target.value as ListingCondition,
-                      )
+                      updateForm("status", event.target.value as ListingStatus)
                     }
                   >
-                    {Object.entries(conditionLabels).map(([value, label]) => (
+                    {Object.entries(statusLabels).map(([value, label]) => (
                       <option key={value} value={value}>
                         {label}
                       </option>
@@ -1050,11 +924,14 @@ export function ListingManager({
                   </select>
                 </label>
 
-                <label className="hidden">
+
+                <label className="space-y-2">
                   <span className="text-sm font-medium text-slate-700">מחיר ליום</span>
                   <input
                     type="number"
                     min="1"
+                    step="0.01"
+                    required
                     className="w-full rounded-2xl border px-4 py-3 text-right"
                     dir="rtl"
                     value={form.basePriceDaily}
@@ -1124,37 +1001,31 @@ export function ListingManager({
               </Section>
 
               <Section title="מיקום ואיסוף">
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">עיר</span>
-                  <input
-                    className="w-full rounded-2xl border px-4 py-3 text-right"
-                    dir="rtl"
-                    value={form.cityNameHe}
-                    readOnly
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-slate-700">
-                    כתובת איסוף
-                  </span>
-                  <input
-                    className="w-full rounded-2xl border px-4 py-3 text-right"
-                    dir="rtl"
-                    value={buildAddressPreview(form)}
-                    readOnly
-                  />
-                </label>
+                <AddressSelector
+                  value={{
+                    cityId: form.cityId,
+                    cityNameHe: form.cityNameHe,
+                    streetId: form.streetId,
+                    streetNameHe: form.streetNameHe,
+                    addressNumber: form.addressNumber,
+                  }}
+                  onChange={(nextValue: AddressSelectionValue) =>
+                    setForm((current) => ({
+                      ...current,
+                      cityId: nextValue.cityId,
+                      cityNameHe: nextValue.cityNameHe,
+                      streetId: nextValue.streetId,
+                      streetNameHe: nextValue.streetNameHe,
+                      addressNumber: nextValue.addressNumber,
+                    }))
+                  }
+                />
 
                 <div className="md:col-span-2">
                   <AddressVerifier
                     cityId={form.cityId}
                     streetId={form.streetId}
                     addressNumber={form.addressNumber}
-                    onVerified={({ lat, lng }) => {
-                      updateForm("pickupLat", String(lat));
-                      updateForm("pickupLng", String(lng));
-                    }}
                   />
                 </div>
 
@@ -1191,7 +1062,7 @@ export function ListingManager({
                   ) : (
                     form.availabilityBlocks.map((block, index) => (
                       <div
-                        key={`${block.startDate}-${block.endDate}-${index}`}
+                        key={block.id}
                         className="grid gap-3 rounded-2xl border border-slate-200 p-4 md:grid-cols-4"
                       >
                         <label className="space-y-2">
@@ -1381,72 +1252,6 @@ export function ListingManager({
                 </label>
               </Section>
 
-              <Section title="מאפיינים טכניים">
-                <div className="md:col-span-2 flex items-center justify-between">
-                  <p className="text-sm text-slate-600">
-                    הוסיפו מפתח וערך. מספרים וערכי כן/לא יישמרו כמספרים ובוליאנים.
-                  </p>
-                  <Button type="button" variant="secondary" onClick={addAttributeRow}>
-                    הוספת מאפיין
-                  </Button>
-                </div>
-
-                <div className="md:col-span-2 space-y-3">
-                  {form.attributeRows.map((row, index) => (
-                    <div
-                      key={`${row.attributeKey}-${index}`}
-                      className="grid gap-3 rounded-2xl border border-slate-200 p-4 md:grid-cols-[1fr_1fr_auto]"
-                    >
-                      <label className="space-y-2">
-                        <span className="text-sm font-medium text-slate-700">מפתח</span>
-                        <input
-                          className="w-full rounded-2xl border px-4 py-3 text-right"
-                          dir="rtl"
-                          placeholder="לדוגמה: powerWatts"
-                          value={row.attributeKey}
-                          onChange={(event) =>
-                            setAttributeRow(
-                              index,
-                              "attributeKey",
-                              event.target.value,
-                            )
-                          }
-                        />
-                      </label>
-
-                      <label className="space-y-2">
-                        <span className="text-sm font-medium text-slate-700">ערך</span>
-                        <input
-                          className="w-full rounded-2xl border px-4 py-3 text-right"
-                          dir="rtl"
-                          placeholder="לדוגמה: 240 או כן"
-                          value={row.attributeValue}
-                          onChange={(event) =>
-                            setAttributeRow(
-                              index,
-                              "attributeValue",
-                              event.target.value,
-                            )
-                          }
-                        />
-                      </label>
-
-                      <div className="space-y-2">
-                        <div className="text-sm font-medium text-slate-700">פעולה</div>
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          className="w-full"
-                          onClick={() => removeAttributeRow(index)}
-                        >
-                          הסרה
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Section>
-
               <div className="flex gap-3">
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting
@@ -1469,16 +1274,18 @@ export function ListingManager({
   );
 }
 
+// Display-only address check. cityId + streetId + addressNumber are the
+// source of truth; coordinates are derived server-side, so this component
+// only confirms the address resolves — it does not feed coordinates back
+// into the form.
 function AddressVerifier({
   cityId,
   streetId,
   addressNumber,
-  onVerified,
 }: {
   cityId: string;
   streetId: string;
   addressNumber: string;
-  onVerified: (result: { lat: number; lng: number }) => void;
 }) {
   const [status, setStatus] = useState<
     | { kind: "idle" }
@@ -1501,7 +1308,6 @@ function AddressVerifier({
         streetId,
         addressNumber: Number(addressNumber),
       });
-      onVerified({ lat: response.data.lat, lng: response.data.lng });
       setStatus({ kind: "success", addressText: response.data.addressText });
     } catch {
       setStatus({ kind: "error", message: "לא ניתן לאמת את הכתובת" });

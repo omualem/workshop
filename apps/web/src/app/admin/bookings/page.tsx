@@ -11,13 +11,13 @@ export default async function AdminBookingsPage() {
   return (
     <DashboardShell
       title="הזמנות"
-      subtitle="הזמנות אמיתיות מתוך מסד הנתונים."
+      subtitle="כל ההזמנות במערכת — סטטוס, סכומים ושוכרים."
       navItems={adminNavItems}
       activeHref="/admin/bookings"
     >
       <Card className="overflow-x-auto">
         {bookings.length === 0 ? (
-          <p className="text-sm text-slate-600">אין הזמנות להצגה</p>
+          <p className="text-sm text-slate-600">אין כרגע הזמנות להצגה</p>
         ) : (
           <table className="dashboard-table">
             <thead>

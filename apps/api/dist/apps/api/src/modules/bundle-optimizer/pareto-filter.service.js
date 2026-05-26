@@ -23,7 +23,6 @@ let ParetoFilterService = class ParetoFilterService {
             "price",
             "distance",
             "reliability",
-            "condition",
             "availability",
         ];
         let strictlyBetter = false;

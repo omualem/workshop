@@ -12,22 +12,22 @@ export default async function HomePage() {
       <section className="surface-section py-16">
         <div className="max-w-2xl space-y-6">
           <span className="inline-flex rounded-full bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-800">
-            שוק השכרה חכם לריבוי פריטים
+            השכרה חכמה. חבילה אחת. ביטחון מלא.
           </span>
           <h1 className="surface-title">
-            שכירו כל מה שצריך לפרויקט שלכם — בחבילה אחת, ממלווים מאומתים.
+            כל הציוד שאתם צריכים — בחבילה אחת, ממשכירים מאומתים.
           </h1>
           <p className="surface-subtitle">
-            RentMatch מאתרת עבורכם קומבינציות מציוד ממספר מלווים, מדרגת כל חבילה לפי מחיר,
-            אמינות, לוגיסטיקה, זמינות ואיכות — ומסבירה בעברית למה כל חבילה מדורגת כפי שהיא.
+            מספרים לנו מה צריך, מתי ולאן, ואנחנו בונים לכם את החבילה המשתלמת והאמינה ביותר.
+            השוו מחיר, מרחק איסוף, איכות וזמינות — והזמינו בלחיצה אחת.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/search">
-              <Button className="px-6 py-3">עיינו בקטלוג</Button>
-            </Link>
             <Link href="/bundle-request">
+              <Button className="px-6 py-3">בניית חבילה מותאמת</Button>
+            </Link>
+            <Link href="/search">
               <Button variant="secondary" className="px-6 py-3">
-                בנו בקשת חבילה
+                גלישה בקטלוג
               </Button>
             </Link>
           </div>
@@ -36,13 +36,13 @@ export default async function HomePage() {
 
       <section className="surface-section pb-24">
         <div className="mb-8">
-          <div className="surface-eyebrow">Marketplace</div>
-          <h2 className="mt-3 text-3xl font-semibold text-slate-950">מוצרים לדוגמה</h2>
+          <div className="surface-eyebrow">קטלוג</div>
+          <h2 className="mt-3 text-3xl font-semibold text-slate-950">פריטים מומלצים</h2>
         </div>
 
         {listings.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center text-slate-500">
-            אין פריטים זמינים כרגע
+            אין כרגע פריטים זמינים. נסו שוב מאוחר יותר.
           </div>
         ) : (
           <>

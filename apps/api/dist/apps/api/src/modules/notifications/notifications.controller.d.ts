@@ -5,12 +5,12 @@ export declare class NotificationsController {
     me(user: {
         sub: string;
     }): import(".prisma/client").Prisma.PrismaPromise<{
+        type: import(".prisma/client").$Enums.NotificationType;
         id: string;
-        createdAt: Date;
         titleHe: string;
         titleEn: string;
+        createdAt: Date;
         userId: string;
-        type: import(".prisma/client").$Enums.NotificationType;
         channel: import(".prisma/client").$Enums.NotificationChannel;
         bodyHe: string;
         bodyEn: string;

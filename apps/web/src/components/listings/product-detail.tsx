@@ -47,7 +47,6 @@ export type ProductDetail = {
   depositAmount?: number | string;
   minRentalDays?: number;
   maxRentalDays?: number;
-  condition?: string;
   deliverySupported?: boolean;
   city?: string | null;
   pickupAddressText?: string | null;
@@ -88,14 +87,6 @@ export type ProductDetail = {
   };
   recentReviews?: ProductReview[];
   reviews?: ProductReview[];
-};
-
-const conditionLabels: Record<string, string> = {
-  NEW: "חדש",
-  LIKE_NEW: "כמו חדש",
-  GOOD: "טוב",
-  FAIR: "סביר",
-  HEAVY_USE: "שחוק",
 };
 
 function formatPrice(value: number | string | undefined) {
@@ -304,17 +295,6 @@ export function ProductAttributesTable({
             ))}
           </tbody>
         </table>
-      </div>
-    </Card>
-  );
-}
-
-export function ProductConditionCard({ condition }: { condition?: string }) {
-  return (
-    <Card className="space-y-3">
-      <SectionTitle>מצב המוצר</SectionTitle>
-      <div className="inline-flex rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white">
-        {conditionLabels[condition ?? ""] ?? "לא צוין"}
       </div>
     </Card>
   );

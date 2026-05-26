@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
 import { AuditModule } from "../audit/audit.module";
-import { BundleSearchModule } from "../bundle-search/bundle-search.module";
+import { CategoriesModule } from "../categories/categories.module";
 import { AdminController } from "./admin.controller";
 import { AdminService } from "./admin.service";
 
 @Module({
-  imports: [AuditModule, BundleSearchModule],
+  imports: [AuditModule, CategoriesModule],
   controllers: [AdminController],
   providers: [AdminService],
 })

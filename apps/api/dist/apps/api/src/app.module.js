@@ -16,7 +16,6 @@ const audit_module_1 = require("./modules/audit/audit.module");
 const auth_module_1 = require("./modules/auth/auth.module");
 const availability_module_1 = require("./modules/availability/availability.module");
 const bookings_module_1 = require("./modules/bookings/bookings.module");
-const bundle_search_module_1 = require("./modules/bundle-search/bundle-search.module");
 const bundle_optimizer_module_1 = require("./modules/bundle-optimizer/bundle-optimizer.module");
 const categories_module_1 = require("./modules/categories/categories.module");
 const health_module_1 = require("./modules/health/health.module");
@@ -66,7 +65,6 @@ exports.AppModule = AppModule = __decorate([
             bookings_module_1.BookingsModule,
             reviews_module_1.ReviewsModule,
             notifications_module_1.NotificationsModule,
-            bundle_search_module_1.BundleSearchModule,
             bundle_optimizer_module_1.BundleOptimizerModule,
             audit_module_1.AuditModule,
             admin_module_1.AdminModule,

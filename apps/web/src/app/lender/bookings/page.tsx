@@ -3,7 +3,7 @@ import { DashboardShell } from "../../../components/dashboard-shell";
 
 const navItems = [
   { href: "/lender/dashboard", label: "סקירה" },
-  { href: "/lender/listings", label: "Listings" },
+  { href: "/lender/listings", label: "פריטים שלי" },
   { href: "/lender/availability", label: "זמינות" },
   { href: "/lender/pricing", label: "תמחור" },
   { href: "/lender/bookings", label: "הזמנות" },
@@ -14,8 +14,10 @@ const navItems = [
 
 export default function LenderBookingsPage() {
   return (
-    <DashboardShell title="בוקינג אינבוקס" subtitle="אישור, דחייה ועדכון סטטוסים." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">כאן המלווה רואה בקשות booking לפי item ownership ומעדכן סטטוסים עם audit logging.</Card>
+    <DashboardShell title="הזמנות נכנסות" subtitle="אישור, דחייה ועדכון סטטוס של הזמנות לפריטים שלכם." navItems={navItems}>
+      <Card className="text-sm leading-7 text-slate-600">
+        כאן תקבלו את כל בקשות ההזמנה לפריטים שבבעלותכם, עם אפשרות לאשר, לדחות או לבקש פרטים נוספים מהשוכר.
+      </Card>
     </DashboardShell>
   );
 }

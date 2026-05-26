@@ -1028,7 +1028,6 @@ async function main() {
   await resetIdentityData();
   const passwordHash = await argon2.hash("Password123!");
   const users = await upsertDemoUsers(passwordHash);
-  await upsertDefaultRankingConfig(users.adminId);
   await insertTaxonomy();
 
   const [
@@ -1077,8 +1076,6 @@ async function resetProductData() {
             "Review",
             "Favorite",
             "SavedSearch",
-            "BundleSearchRequest",
-            "BundleCandidate",
             "Dispute",
           ],
         },
@@ -1089,9 +1086,6 @@ async function resetProductData() {
     prisma.review.deleteMany(),
     prisma.bookingItem.deleteMany(),
     prisma.booking.deleteMany(),
-    prisma.bundleCandidateItem.deleteMany(),
-    prisma.bundleCandidate.deleteMany(),
-    prisma.bundleSearchRequest.deleteMany(),
     prisma.favorite.deleteMany(),
     prisma.savedSearch.deleteMany(),
     prisma.listingMedia.deleteMany(),
@@ -1260,43 +1254,6 @@ async function upsertDemoUsers(passwordHash: string) {
 
 function makeSeedPhone(prefix: number, index: number) {
   return `050${prefix}${String(index + 1).padStart(4, "0")}`;
-}
-
-async function upsertDefaultRankingConfig(adminId: string) {
-  await prisma.rankingConfig.upsert({
-    where: { presetKey: "balanced" },
-    update: {
-      displayNameHe: "מאוזן",
-      weights: {
-        price: 0.2,
-        reliability: 0.22,
-        logistics: 0.22,
-        availability: 0.18,
-        quality: 0.18,
-      } as Prisma.InputJsonValue,
-      lowScoreThreshold: 5.4,
-      stdDevAlpha: 0.35,
-      lowScoreBeta: 0.62,
-      bottleneckGamma: 0.28,
-      updatedByUserId: adminId,
-    },
-    create: {
-      presetKey: "balanced",
-      displayNameHe: "מאוזן",
-      weights: {
-        price: 0.2,
-        reliability: 0.22,
-        logistics: 0.22,
-        availability: 0.18,
-        quality: 0.18,
-      } as Prisma.InputJsonValue,
-      lowScoreThreshold: 5.4,
-      stdDevAlpha: 0.35,
-      lowScoreBeta: 0.62,
-      bottleneckGamma: 0.28,
-      updatedByUserId: adminId,
-    },
-  });
 }
 
 async function insertTaxonomy() {

@@ -45,8 +45,9 @@ let CategoriesService = class CategoriesService {
         }
         return category;
     }
-    findAllAdmin() {
+    findAllAdmin(includeArchived = false) {
         return this.prisma.category.findMany({
+            where: includeArchived ? undefined : { status: { not: "ARCHIVED" } },
             orderBy: [{ parentId: "asc" }, { nameHe: "asc" }],
             include: {
                 parent: true,
@@ -128,6 +129,35 @@ let CategoriesService = class CategoriesService {
             after: category,
         });
         return category;
+    }
+    async remove(id, actorUserId) {
+        const existing = await this.prisma.category.findUnique({
+            where: { id },
+            include: {
+                _count: {
+                    select: {
+                        listings: true,
+                        children: true,
+                    },
+                },
+            },
+        });
+        if (!existing) {
+            throw new common_1.NotFoundException("Category not found");
+        }
+        const category = await this.prisma.category.update({
+            where: { id },
+            data: { status: "ARCHIVED" },
+        });
+        await this.auditService.log({
+            actorUserId,
+            action: "category.delete",
+            entityType: "Category",
+            entityId: category.id,
+            before: existing,
+            after: category,
+        });
+        return { id: category.id, status: category.status };
     }
 };
 exports.CategoriesService = CategoriesService;

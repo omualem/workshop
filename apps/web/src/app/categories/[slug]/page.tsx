@@ -12,10 +12,12 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       <section className="mx-auto max-w-5xl px-6 py-14">
         <div className="mb-8">
           <h1 className="text-4xl font-semibold text-slate-950">{category.nameHe}</h1>
-          <p className="mt-2 text-sm text-slate-600">קטגוריה בעברית מלאה עם RTL וחוזי API i18n-ready.</p>
+          <p className="mt-2 text-sm text-slate-600">
+            כל הפריטים הזמינים בקטגוריה {category.nameHe}, עם סינון לפי מחיר ותאריכים.
+          </p>
         </div>
         <Card className="text-sm leading-7 text-slate-600">
-          כאן ניתן להציג taxonomy, פילטרים, תוצאות וייחוסי bundle לפי הקטגוריה שנבחרה.
+          בקרוב: סינון מתקדם, השוואת מחירים והוספת הפריטים ישירות לחבילה.
         </Card>
       </section>
     </SiteShell>

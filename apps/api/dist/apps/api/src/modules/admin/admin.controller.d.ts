@@ -1,76 +1,10 @@
-import { UpdateRankingConfigDto } from "./dto/update-ranking-config.dto";
+import { CreateCategoryDto } from "../categories/dto/create-category.dto";
+import { UpdateCategoryDto } from "../categories/dto/update-category.dto";
+import { UpdateAdminUserDto } from "./dto/update-admin-user.dto";
 import { AdminService } from "./admin.service";
 export declare class AdminController {
     private readonly adminService;
     constructor(adminService: AdminService);
-    bundleSearchDebug(id: string): Promise<{
-        candidates: ({
-            items: {
-                id: string;
-                lenderId: string;
-                listingId: string;
-                quantity: number;
-                bundleCandidateId: string;
-                requestedSlotKey: string;
-                contributionScores: import("@prisma/client/runtime/library").JsonValue;
-            }[];
-        } & {
-            id: string;
-            createdAt: Date;
-            totalPrice: import("@prisma/client/runtime/library").Decimal;
-            rankIndex: number;
-            searchRequestId: string;
-            scoreTotal: import("@prisma/client/runtime/library").Decimal;
-            priceScore: import("@prisma/client/runtime/library").Decimal;
-            reliabilityScore: import("@prisma/client/runtime/library").Decimal;
-            logisticsScore: import("@prisma/client/runtime/library").Decimal;
-            availabilityScore: import("@prisma/client/runtime/library").Decimal;
-            productQualityScore: import("@prisma/client/runtime/library").Decimal;
-            stabilityScore: import("@prisma/client/runtime/library").Decimal;
-            explanation: import("@prisma/client/runtime/library").JsonValue;
-            debugData: import("@prisma/client/runtime/library").JsonValue | null;
-            totalDistanceKm: import("@prisma/client/runtime/library").Decimal;
-            pickupPointsCount: number;
-            lendersCount: number;
-            exactAvailabilityFit: boolean;
-            label: string | null;
-        })[];
-    } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        status: import(".prisma/client").$Enums.BundleSearchStatus;
-        renterId: string | null;
-        maxPickupPoints: number | null;
-        requestedItems: import("@prisma/client/runtime/library").JsonValue;
-        maxBudget: import("@prisma/client/runtime/library").Decimal | null;
-        sameLenderPreferred: boolean;
-        deliveryPreferred: boolean;
-        exactDatesOnly: boolean;
-        searchSessionId: string;
-        dateRangeStart: Date;
-        dateRangeEnd: Date;
-        renterLocationLat: import("@prisma/client/runtime/library").Decimal;
-        renterLocationLng: import("@prisma/client/runtime/library").Decimal;
-        renterAddressText: string;
-        weightPreferences: import("@prisma/client/runtime/library").JsonValue;
-        resultsSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
-        debugSnapshot: import("@prisma/client/runtime/library").JsonValue | null;
-    }>;
-    updateRankingConfig(user: {
-        sub: string;
-    }, dto: UpdateRankingConfigDto): Promise<{
-        id: string;
-        updatedAt: Date;
-        weights: import("@prisma/client/runtime/library").JsonValue;
-        presetKey: string;
-        displayNameHe: string;
-        lowScoreThreshold: import("@prisma/client/runtime/library").Decimal;
-        stdDevAlpha: import("@prisma/client/runtime/library").Decimal;
-        lowScoreBeta: import("@prisma/client/runtime/library").Decimal;
-        bottleneckGamma: import("@prisma/client/runtime/library").Decimal;
-        updatedByUserId: string | null;
-    }>;
     auditLogs(): import(".prisma/client").Prisma.PrismaPromise<({
         actor: {
             id: string;
@@ -94,16 +28,15 @@ export declare class AdminController {
         lenders: number;
         renters: number;
         listings: number;
-        bundleSearches: number;
         disputes: number;
     }>;
     catalogOptions(): Promise<{
         categories: {
             id: string;
-            nameHe: string;
             status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
+            nameHe: string;
         }[];
         lenders: ({
             user: {
@@ -129,64 +62,245 @@ export declare class AdminController {
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
         })[];
     }>;
-    users(): Promise<{
+    categories(includeArchived?: string): import(".prisma/client").Prisma.PrismaPromise<({
+        _count: {
+            listings: number;
+        };
+        parent: {
+            id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            parentId: string | null;
+            slug: string;
+            nameHe: string;
+            nameEn: string;
+            attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
+        children: {
+            id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            parentId: string | null;
+            slug: string;
+            nameHe: string;
+            nameEn: string;
+            attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+        }[];
+    } & {
+        id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        parentId: string | null;
+        slug: string;
+        nameHe: string;
+        nameEn: string;
+        attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+    })[]>;
+    createCategory(dto: CreateCategoryDto, user?: {
+        sub: string;
+    }): Promise<{
+        parent: {
+            id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            parentId: string | null;
+            slug: string;
+            nameHe: string;
+            nameEn: string;
+            attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
+        children: {
+            id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            parentId: string | null;
+            slug: string;
+            nameHe: string;
+            nameEn: string;
+            attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+        }[];
+    } & {
+        id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        parentId: string | null;
+        slug: string;
+        nameHe: string;
+        nameEn: string;
+        attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+    }>;
+    updateCategory(id: string, dto: UpdateCategoryDto, user?: {
+        sub: string;
+    }): Promise<{
+        parent: {
+            id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            parentId: string | null;
+            slug: string;
+            nameHe: string;
+            nameEn: string;
+            attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
+        children: {
+            id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            parentId: string | null;
+            slug: string;
+            nameHe: string;
+            nameEn: string;
+            attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+        }[];
+    } & {
+        id: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        parentId: string | null;
+        slug: string;
+        nameHe: string;
+        nameEn: string;
+        attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+    }>;
+    deleteCategory(id: string, user?: {
+        sub: string;
+    }): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
+        };
+    }>;
+    users(includeDeleted?: string): Promise<{
         id: string;
         fullName: string;
         email: string;
         phone: string;
-        role: import(".prisma/client").$Enums.UserRole;
-        status: import(".prisma/client").$Enums.UserStatus;
+        role: string;
+        status: string;
         locale: string;
         createdAt: Date;
+        type: string;
         hasRenterProfile: boolean;
         hasLenderProfile: boolean;
         lenderDisplayName: string | null;
+        renterProfile: {
+            defaultAddressText: string | null;
+            verificationStatus: string;
+            preferences: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
+        lenderProfile: {
+            displayName: string;
+            bio: string | null;
+            averageRating: import("@prisma/client/runtime/library").Decimal;
+            completedTransactionsCount: number;
+            reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            cancellationRate: import("@prisma/client/runtime/library").Decimal;
+            lateReturnRate: import("@prisma/client/runtime/library").Decimal;
+            complaintRate: import("@prisma/client/runtime/library").Decimal;
+            responseTimeScore: import("@prisma/client/runtime/library").Decimal;
+            verificationLevel: string;
+        } | null;
     }[]>;
-    moderationQueue(): Promise<({
+    createUser(dto: UpdateAdminUserDto, user?: {
+        sub: string;
+    }): Promise<{
+        id: string;
+        fullName: string;
+        email: string;
+        phone: string;
+        role: string;
+        status: string;
+        locale: string;
+        createdAt: Date;
+        type: string;
+        hasRenterProfile: boolean;
+        hasLenderProfile: boolean;
+        lenderDisplayName: string | null;
+        renterProfile: {
+            defaultAddressText: string | null;
+            verificationStatus: string;
+            preferences: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
+        lenderProfile: {
+            displayName: string;
+            bio: string | null;
+            averageRating: import("@prisma/client/runtime/library").Decimal;
+            completedTransactionsCount: number;
+            reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            cancellationRate: import("@prisma/client/runtime/library").Decimal;
+            lateReturnRate: import("@prisma/client/runtime/library").Decimal;
+            complaintRate: import("@prisma/client/runtime/library").Decimal;
+            responseTimeScore: import("@prisma/client/runtime/library").Decimal;
+            verificationLevel: string;
+        } | null;
+    }>;
+    updateUser(id: string, dto: UpdateAdminUserDto, user?: {
+        sub: string;
+    }): Promise<{
+        id: string;
+        fullName: string;
+        email: string;
+        phone: string;
+        role: string;
+        status: string;
+        locale: string;
+        createdAt: Date;
+        type: string;
+        hasRenterProfile: boolean;
+        hasLenderProfile: boolean;
+        lenderDisplayName: string | null;
+        renterProfile: {
+            defaultAddressText: string | null;
+            verificationStatus: string;
+            preferences: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
+        lenderProfile: {
+            displayName: string;
+            bio: string | null;
+            averageRating: import("@prisma/client/runtime/library").Decimal;
+            completedTransactionsCount: number;
+            reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            cancellationRate: import("@prisma/client/runtime/library").Decimal;
+            lateReturnRate: import("@prisma/client/runtime/library").Decimal;
+            complaintRate: import("@prisma/client/runtime/library").Decimal;
+            responseTimeScore: import("@prisma/client/runtime/library").Decimal;
+            verificationLevel: string;
+        } | null;
+    }>;
+    deleteUser(id: string, user?: {
+        sub: string;
+    }): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            status: import(".prisma/client").$Enums.UserStatus;
+        };
+    }>;
+    moderationQueue(): Promise<{
+        category: {
+            id: string;
+            slug: string;
+            nameHe: string;
+        };
+        id: string;
+        titleHe: string;
+        status: import(".prisma/client").$Enums.ListingStatus;
+        updatedAt: Date;
         lender: {
             userId: string;
             displayName: string;
         };
-        category: {
-            id: string;
-            nameHe: string;
-            slug: string;
-        };
-    } & {
-        city: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        cityId: string | null;
-        lenderId: string;
-        categoryId: string;
-        streetId: string | null;
-        addressNumber: number | null;
-        titleHe: string;
-        titleEn: string;
-        descriptionHe: string;
-        descriptionEn: string;
-        suitableFor: string | null;
-        mainUses: string | null;
-        condition: import(".prisma/client").$Enums.ListingCondition;
-        status: import(".prisma/client").$Enums.ListingStatus;
-        basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
-        qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
-        pickupLat: import("@prisma/client/runtime/library").Decimal;
-        pickupLng: import("@prisma/client/runtime/library").Decimal;
-        pickupAddressText: string;
-        pickupInstructions: string | null;
-        deliverySupported: boolean;
-        includedItems: import("@prisma/client/runtime/library").JsonValue | null;
-        cancellationPolicy: string | null;
-        returnTerms: string | null;
-        requiresOperator: boolean;
-        setupRequired: boolean;
-        inventoryCount: number;
-        minRentalDays: number;
-        maxRentalDays: number;
-    })[]>;
+    }[]>;
     bookings(): Promise<({
         renter: {
             id: string;
@@ -194,34 +308,33 @@ export declare class AdminController {
             email: string;
         };
         items: ({
-            listing: {
-                id: string;
-                titleHe: string;
-            };
             lender: {
                 userId: string;
                 displayName: string;
             };
+            listing: {
+                id: string;
+                titleHe: string;
+            };
         } & {
+            quantity: number;
             id: string;
             lenderId: string;
             depositAmount: import("@prisma/client/runtime/library").Decimal;
             listingId: string;
-            quantity: number;
             bookingId: string;
             itemPrice: import("@prisma/client/runtime/library").Decimal;
             pickupMethod: import(".prisma/client").$Enums.PickupMethod;
             pickupWindow: import("@prisma/client/runtime/library").JsonValue | null;
         })[];
     } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        status: import(".prisma/client").$Enums.BookingStatus;
         startDate: Date;
         endDate: Date;
+        id: string;
+        status: import(".prisma/client").$Enums.BookingStatus;
+        createdAt: Date;
+        updatedAt: Date;
         renterId: string;
-        bundleCandidateId: string | null;
         totalPrice: import("@prisma/client/runtime/library").Decimal;
         totalDeposit: import("@prisma/client/runtime/library").Decimal;
         logisticsScoreSnapshot: import("@prisma/client/runtime/library").Decimal;
@@ -246,11 +359,11 @@ export declare class AdminController {
         } | null;
     } & {
         id: string;
+        status: import(".prisma/client").$Enums.DisputeStatus;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.DisputeStatus;
-        reason: string;
         bookingId: string;
+        reason: string;
         openedByUserId: string;
         assignedAdminId: string | null;
         resolutionNote: string | null;
@@ -280,23 +393,5 @@ export declare class AdminController {
         rating: number;
         text: string;
         tags: import("@prisma/client/runtime/library").JsonValue | null;
-    })[]>;
-    rankingConfig(): Promise<({
-        updatedBy: {
-            id: string;
-            fullName: string;
-            email: string;
-        } | null;
-    } & {
-        id: string;
-        updatedAt: Date;
-        weights: import("@prisma/client/runtime/library").JsonValue;
-        presetKey: string;
-        displayNameHe: string;
-        lowScoreThreshold: import("@prisma/client/runtime/library").Decimal;
-        stdDevAlpha: import("@prisma/client/runtime/library").Decimal;
-        lowScoreBeta: import("@prisma/client/runtime/library").Decimal;
-        bottleneckGamma: import("@prisma/client/runtime/library").Decimal;
-        updatedByUserId: string | null;
     })[]>;
 }

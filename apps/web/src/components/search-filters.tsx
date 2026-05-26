@@ -102,7 +102,7 @@ export function SearchFilters({
         <label className="form-label">חיפוש לפי שם פריט</label>
         <input
           className="form-input"
-          placeholder="שם מוצר, מותג..."
+          placeholder="שם פריט או מותג"
           value={filters.search}
           onChange={(e) => set("search", e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && apply()}
@@ -138,7 +138,7 @@ export function SearchFilters({
 
       {/* Price range */}
       <div className="space-y-2">
-        <label className="form-label">טווח מחיר יומי (₪)</label>
+        <label className="form-label">טווח מחיר ליום (₪)</label>
         <div className="flex items-center gap-2">
           <input
             className="form-input"
@@ -197,7 +197,7 @@ export function SearchFilters({
           onClick={apply}
           className="flex-1 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
         >
-          החל סינון
+          הצגת תוצאות
         </button>
         {hasActiveFilters && (
           <button
@@ -205,7 +205,7 @@ export function SearchFilters({
             onClick={clear}
             className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
           >
-            נקה
+            איפוס
           </button>
         )}
       </div>

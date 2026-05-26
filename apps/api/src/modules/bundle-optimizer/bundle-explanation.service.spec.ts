@@ -14,11 +14,9 @@ function makeItem(over: Partial<CandidateItem> = {}): CandidateItem {
     titleHe: "פריט",
     titleEn: "Item",
     categoryId: "cat",
-    condition: "GOOD",
     price: 200,
     distanceKm: 5,
     reliability: 8,
-    conditionScore: 7.5,
     availability: 10,
     pickupLat: 32.0853,
     pickupLng: 34.7818,
@@ -28,7 +26,6 @@ function makeItem(over: Partial<CandidateItem> = {}): CandidateItem {
     m_price: 8,
     m_distance: 8,
     m_reliability: 8,
-    m_condition: 7.5,
     m_availability: 10,
     preliminaryScore: 0,
     attributeValues: [],
@@ -52,7 +49,6 @@ function buildScored(
       price: 0,
       distance: 0,
       reliability: 0,
-      condition: 0,
       availability: 0,
     },
     preferences: {
@@ -61,16 +57,14 @@ function buildScored(
         price: 7,
         distance: 7,
         reliability: 7,
-        condition: 7,
         availability: 7,
         pickupSimplicity: 7,
       },
       normalizedWeights: {
-        price: 0.2,
-        distance: 0.2,
-        reliability: 0.2,
-        condition: 0.2,
-        availability: 0.2,
+        price: 0.25,
+        distance: 0.25,
+        reliability: 0.25,
+        availability: 0.25,
       },
       penaltyMultipliers: {
         pickup: 1,
@@ -78,7 +72,6 @@ function buildScored(
           price: 1,
           distance: 1,
           reliability: 1,
-          condition: 1,
           availability: 1,
         },
         maxDistance: 1,
@@ -112,25 +105,6 @@ function buildScored(
 describe("BundleExplanationService", () => {
   const svc = new BundleExplanationService();
 
-  it("names the weakest item in a low-condition tradeoff", () => {
-    const items = [
-      makeItem({ titleHe: "פריט טוב", m_condition: 9 }),
-      makeItem({ titleHe: "פריט שחוק", m_condition: 2, listingId: "L2" }),
-    ];
-    const result = svc.build(
-      buildScored(items, {
-        price: 8,
-        distance: 8,
-        reliability: 8,
-        condition: 5,
-        availability: 10,
-      }),
-      1000,
-    );
-    const matched = result.tradeoffs.find((t) => t.includes("פריט שחוק"));
-    expect(matched).toBeDefined();
-  });
-
   it("names the weakest lender in a low-reliability tradeoff", () => {
     const items = [
       makeItem({ titleHe: "פריט אמין", m_reliability: 9 }),
@@ -141,13 +115,11 @@ describe("BundleExplanationService", () => {
         price: 8,
         distance: 8,
         reliability: 5,
-        condition: 8,
         availability: 10,
       }),
       1000,
     );
-    const matched = result.tradeoffs.find((t) => t.includes("פריט בסיכון"));
-    expect(matched).toBeDefined();
+    expect(result.tradeoffs.some((t) => t.includes("פריט בסיכון"))).toBe(true);
   });
 
   it("warns about new lenders even when ratings look fine", () => {
@@ -165,39 +137,29 @@ describe("BundleExplanationService", () => {
         price: 8,
         distance: 8,
         reliability: 8,
-        condition: 8,
         availability: 10,
       }),
       1000,
     );
-    expect(
-      result.tradeoffs.some((t) => t.includes("משכיר חדש")),
-    ).toBe(true);
+    expect(result.tradeoffs.some((t) => t.includes("משכיר חדש"))).toBe(true);
   });
 
-  it("includes lowScorePenalty fields in scoreBreakdown", () => {
-    const items = [makeItem()];
+  it("does not include condition in metrics, score breakdown, item output, or explanations", () => {
     const result = svc.build(
-      buildScored(
-        items,
-        {
-          price: 8,
-          distance: 8,
-          reliability: 8,
-          condition: 8,
-          availability: 9,
-        },
-        {
-          lowScorePenalty: 1.2,
-          rawFinalScore: 8.4,
-          finalScore: 8.4,
-        },
-      ),
+      buildScored([makeItem()], {
+        price: 8,
+        distance: 8,
+        reliability: 8,
+        availability: 9,
+      }),
       1000,
     );
-    expect(result.scoreBreakdown.lowScorePenalty).toBe(1.2);
-    expect(result.scoreBreakdown.rawFinalScore).toBe(8.4);
-    expect(result.lowScorePenaltyBreakdown).toBeDefined();
+    expect(result.metrics).not.toHaveProperty("condition");
+    expect(result.lowScorePenaltyBreakdown).not.toHaveProperty("condition");
+    expect(result.includedItems[0]).not.toHaveProperty("condition");
+    expect([...result.explanations, ...result.tradeoffs].join(" ")).not.toMatch(
+      /מצב|condition/i,
+    );
   });
 
   it("includes selected preference profile in explanations and scoreBreakdown", () => {
@@ -208,7 +170,6 @@ describe("BundleExplanationService", () => {
           price: 8,
           distance: 8,
           reliability: 8,
-          condition: 8,
           availability: 9,
         },
         {
@@ -219,16 +180,14 @@ describe("BundleExplanationService", () => {
               price: 10,
               distance: 6,
               reliability: 5,
-              condition: 4,
               availability: 7,
               pickupSimplicity: 5,
             },
             normalizedWeights: {
-              price: 10 / 32,
-              distance: 6 / 32,
-              reliability: 5 / 32,
-              condition: 4 / 32,
-              availability: 7 / 32,
+              price: 10 / 28,
+              distance: 6 / 28,
+              reliability: 5 / 28,
+              availability: 7 / 28,
             },
             penaltyMultipliers: {
               pickup: 5 / 7,
@@ -236,7 +195,6 @@ describe("BundleExplanationService", () => {
                 price: 10 / 7,
                 distance: 6 / 7,
                 reliability: 5 / 7,
-                condition: 4 / 7,
                 availability: 1,
               },
               maxDistance: 6 / 7,
@@ -249,9 +207,6 @@ describe("BundleExplanationService", () => {
       1000,
     );
 
-    expect(result.explanations).toContain(
-      "הדירוג חושב לפי המשקלים שהוגדרו ידנית.",
-    );
     expect(result.scoreBreakdown.preferences.profile).toBe("custom");
     expect(result.scoreBreakdown.preferences.baseProfile).toBe("cheapest");
   });

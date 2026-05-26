@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -50,6 +51,13 @@ export class CategoriesController {
     @CurrentUser() user: { sub: string },
   ) {
     return this.categoriesService.update(id, dto, user.sub);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @Delete("admin/manage/:id")
+  remove(@Param("id") id: string, @CurrentUser() user: { sub: string }) {
+    return this.categoriesService.remove(id, user.sub);
   }
 
   @Public()

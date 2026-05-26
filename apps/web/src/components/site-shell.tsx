@@ -5,8 +5,8 @@ import { AppLogo } from "./app-logo";
 const navItems = [
   { href: "/", label: "דף הבית" },
   { href: "/search", label: "קטלוג" },
-  { href: "/bundle-request", label: "בקשת חבילה" },
-  { href: "/about", label: "איך זה עובד" },
+  { href: "/bundle-request", label: "בניית חבילה" },
+  { href: "/how-it-works", label: "איך זה עובד" },
 ];
 
 export function SiteShell({
@@ -44,10 +44,10 @@ export function SiteShell({
           </nav>
           <div className="flex items-center gap-2">
             <Link href="/auth/sign-in">
-              <Button variant="ghost">כניסה</Button>
+              <Button variant="ghost">התחברות</Button>
             </Link>
             <Link href="/auth/sign-up">
-              <Button>פתיחת חשבון</Button>
+              <Button>הרשמה</Button>
             </Link>
           </div>
         </div>

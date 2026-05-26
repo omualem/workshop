@@ -15,10 +15,9 @@ const utils_1 = require("@rental/utils");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const availability_service_1 = require("../availability/availability.service");
 const pricing_service_1 = require("../pricing/pricing.service");
-const lender_reliability_service_1 = require("../bundle-search/lender-reliability.service");
+const lender_reliability_service_1 = require("./lender-reliability.service");
 const prisma_utils_1 = require("../../shared/utils/prisma.utils");
 const metric_normalization_service_1 = require("./metric-normalization.service");
-const CONDITION_ORDER = ["HEAVY_USE", "FAIR", "GOOD", "LIKE_NEW", "NEW"];
 const ROUGH_PREFILTER_POOL_SIZE = 100;
 const PREFERRED_LISTING_BONUS = 0.5;
 let CandidateFilterService = class CandidateFilterService {
@@ -87,9 +86,6 @@ let CandidateFilterService = class CandidateFilterService {
                 };
                 if (listing.status !== "ACTIVE")
                     continue;
-                if (!this.meetsConditionFloor(listing.condition, constraints.minCondition)) {
-                    continue;
-                }
                 if (durationDays < listing.minRentalDays ||
                     durationDays > listing.maxRentalDays) {
                     filteredByRentalDays[slot.slotKey] += 1;
@@ -124,16 +120,18 @@ let CandidateFilterService = class CandidateFilterService {
                     continue;
                 }
                 slotDebug[slot.slotKey].push(entryDebug);
-                const reliability = this.reliability.compute({
-                    averageRating: (0, prisma_utils_1.decimalToNumber)(listing.lender.averageRating) ?? 0,
-                    completedTransactionsCount: listing.lender.completedTransactionsCount,
-                    cancellationRate: (0, prisma_utils_1.decimalToNumber)(listing.lender.cancellationRate) ?? 0,
-                    lateReturnRate: (0, prisma_utils_1.decimalToNumber)(listing.lender.lateReturnRate) ?? 0,
-                    complaintRate: (0, prisma_utils_1.decimalToNumber)(listing.lender.complaintRate) ?? 0,
-                    verificationLevel: listing.lender.verificationLevel,
-                    responseTimeScore: (0, prisma_utils_1.decimalToNumber)(listing.lender.responseTimeScore) ?? 5,
-                });
-                const conditionScore = this.normalization.normalizeConditionScore(listing.condition);
+                const reliabilityOverride = (0, prisma_utils_1.decimalToNumber)(listing.lender.reliabilityScoreCached) ?? 0;
+                const reliability = reliabilityOverride > 0
+                    ? Math.max(0, Math.min(10, reliabilityOverride))
+                    : this.reliability.compute({
+                        averageRating: (0, prisma_utils_1.decimalToNumber)(listing.lender.averageRating) ?? 0,
+                        completedTransactionsCount: listing.lender.completedTransactionsCount,
+                        cancellationRate: (0, prisma_utils_1.decimalToNumber)(listing.lender.cancellationRate) ?? 0,
+                        lateReturnRate: (0, prisma_utils_1.decimalToNumber)(listing.lender.lateReturnRate) ?? 0,
+                        complaintRate: (0, prisma_utils_1.decimalToNumber)(listing.lender.complaintRate) ?? 0,
+                        verificationLevel: listing.lender.verificationLevel,
+                        responseTimeScore: (0, prisma_utils_1.decimalToNumber)(listing.lender.responseTimeScore) ?? 5,
+                    });
                 const deviationDays = await this.computeDeviationDays(listing.id, startDate, endDate);
                 const availabilityScore = this.normalization.availabilityFromDeviation(deviationDays);
                 survivors.push({
@@ -144,11 +142,9 @@ let CandidateFilterService = class CandidateFilterService {
                     titleHe: listing.titleHe,
                     titleEn: listing.titleEn,
                     categoryId: listing.categoryId,
-                    condition: listing.condition,
                     price: priceQuote.total,
                     distanceKm,
                     reliability,
-                    conditionScore,
                     availability: availabilityScore,
                     pickupLat,
                     pickupLng,
@@ -164,26 +160,22 @@ let CandidateFilterService = class CandidateFilterService {
                     m_price: 0,
                     m_distance: 0,
                     m_reliability: 0,
-                    m_condition: 0,
                     m_availability: 0,
                     preliminaryScore: 0,
                 });
             }
             afterFiltering[slot.slotKey] = survivors.length;
-            const minPrice = Math.min(...survivors.map((c) => c.price), Infinity);
-            const maxPrice = Math.max(...survivors.map((c) => c.price), 0);
+            const perSlotBudget = Math.max(1, req.budget / Math.max(1, expandedSlots.length));
             for (const c of survivors) {
-                c.m_price = this.normalization.normalizePriceScore(c.price, minPrice, maxPrice);
+                c.m_price = this.normalization.clamp(10 * (1 - c.price / perSlotBudget));
                 c.m_distance = this.normalization.normalizeDistanceScore(c.distanceKm);
                 c.m_reliability = this.normalization.normalizeReliabilityScore(c.reliability);
-                c.m_condition = this.normalization.normalizeConditionScore(c.condition);
                 c.m_availability = this.normalization.normalizeAvailabilityScore(c.availability);
                 const w = req.preferences.weights;
                 c.preliminaryScore =
                     w.price * c.m_price +
                         w.distance * c.m_distance +
                         w.reliability * c.m_reliability +
-                        w.condition * c.m_condition +
                         w.availability * c.m_availability;
                 if (preferredListingId && c.listingId === preferredListingId) {
                     c.preliminaryScore += PREFERRED_LISTING_BONUS;
@@ -277,11 +269,7 @@ let CandidateFilterService = class CandidateFilterService {
         });
     }
     normalizeConstraints(slot) {
-        const c = { ...(slot.constraints ?? {}) };
-        if (c.minCondition === undefined && slot.minCondition !== undefined) {
-            c.minCondition = slot.minCondition;
-        }
-        return c;
+        return { ...(slot.constraints ?? {}) };
     }
     async computeDeviationDays(listingId, startDate, endDate) {
         const blocks = await this.prisma.listingAvailabilityBlock.findMany({
@@ -309,11 +297,6 @@ let CandidateFilterService = class CandidateFilterService {
             }
         }
         return touched.size;
-    }
-    meetsConditionFloor(actual, floor) {
-        if (!floor)
-            return true;
-        return CONDITION_ORDER.indexOf(actual) >= CONDITION_ORDER.indexOf(floor);
     }
     computeDurationDays(startDate, endDate) {
         const dayMs = 24 * 60 * 60 * 1000;

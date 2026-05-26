@@ -9,7 +9,6 @@ type ListingRow = {
   lenderId: string;
   titleHe: string;
   titleEn: string;
-  condition: string;
   pickupLat: number;
   pickupLng: number;
   inventoryCount: number;
@@ -35,7 +34,6 @@ function listing(partial: Partial<ListingRow>): ListingRow {
     lenderId: "lender-1",
     titleHe: "מוצר",
     titleEn: "Product",
-    condition: "GOOD",
     pickupLat: 32.0853,
     pickupLng: 34.7818,
     inventoryCount: 1,
@@ -93,7 +91,7 @@ const baseRequest = (slots: SlotInput[]): OptimizerRequest => ({
   userLocation: { lat: 32.0853, lng: 34.7818 },
   budget: 5000,
   preferences: {
-    weights: { price: 0.25, distance: 0.2, reliability: 0.2, condition: 0.2, availability: 0.15 },
+    weights: { price: 0.25, distance: 0.25, reliability: 0.25, availability: 0.25 },
     lambdaVariance: 0.35,
     alphaBottleneck: 0.25,
     betaPickup: 0.4,
@@ -189,26 +187,6 @@ describe("CandidateFilterService", () => {
         ]),
       );
       expect(candidatesBySlot["s1"].map((c) => c.listingId)).toEqual(["near"]);
-    });
-
-    it("filters by minCondition constraint", async () => {
-      const svc = makeService([
-        listing({ id: "rough", condition: "FAIR" }),
-        listing({ id: "good", condition: "GOOD" }),
-        listing({ id: "new", condition: "NEW" }),
-      ]);
-      const { candidatesBySlot } = await svc.buildCandidatesPerSlot(
-        baseRequest([
-          {
-            slotKey: "s1",
-            mode: "category",
-            categoryId: "cat-1",
-            quantity: 1,
-            constraints: { minCondition: "GOOD" },
-          },
-        ]),
-      );
-      expect(candidatesBySlot["s1"].map((c) => c.listingId).sort()).toEqual(["good", "new"]);
     });
 
     it("returns empty pool when category has no active listings", async () => {

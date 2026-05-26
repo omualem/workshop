@@ -9,30 +9,18 @@ import {
   type AddressSelectionValue,
 } from "./address-selector";
 
-type ConditionLevel = "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "HEAVY_USE";
-
-const CONDITION_OPTIONS: { value: ConditionLevel; label: string }[] = [
-  { value: "NEW", label: "חדש" },
-  { value: "LIKE_NEW", label: "כמו חדש" },
-  { value: "GOOD", label: "טוב" },
-  { value: "FAIR", label: "סביר" },
-  { value: "HEAVY_USE", label: "שימוש כבד" },
-];
-
 type PreferenceTemplateKey =
   | "balanced"
   | "cheapest"
   | "closest"
   | "minimalEffort"
-  | "professional"
-  | "highQuality";
+  | "professional";
 type PreferenceProfileKey = PreferenceTemplateKey | "custom";
 
 type PreferenceSliders = {
   price: number;
   distance: number;
   reliability: number;
-  condition: number;
   availability: number;
   pickupSimplicity: number;
 };
@@ -43,37 +31,32 @@ export const PREFERENCE_TEMPLATES: Record<
 > = {
   balanced: {
     label: "חבילה מאוזנת",
-    sliders: { price: 7, distance: 7, reliability: 7, condition: 7, availability: 7, pickupSimplicity: 7 },
+    sliders: { price: 7, distance: 7, reliability: 7, availability: 7, pickupSimplicity: 7 },
   },
   cheapest: {
     label: "הכי זול",
-    sliders: { price: 10, distance: 6, reliability: 5, condition: 4, availability: 7, pickupSimplicity: 5 },
+    sliders: { price: 10, distance: 6, reliability: 5, availability: 7, pickupSimplicity: 5 },
   },
   closest: {
     label: "הכי קרוב",
-    sliders: { price: 5, distance: 10, reliability: 6, condition: 5, availability: 7, pickupSimplicity: 8 },
+    sliders: { price: 5, distance: 10, reliability: 6, availability: 7, pickupSimplicity: 8 },
   },
   minimalEffort: {
     label: "מינימום התעסקות",
-    sliders: { price: 5, distance: 8, reliability: 7, condition: 6, availability: 8, pickupSimplicity: 10 },
+    sliders: { price: 5, distance: 8, reliability: 7, availability: 8, pickupSimplicity: 10 },
   },
   professional: {
     label: "הפקה מקצועית",
-    sliders: { price: 4, distance: 5, reliability: 10, condition: 10, availability: 9, pickupSimplicity: 7 },
-  },
-  highQuality: {
-    label: "איכות גבוהה",
-    sliders: { price: 5, distance: 5, reliability: 8, condition: 10, availability: 8, pickupSimplicity: 6 },
+    sliders: { price: 4, distance: 5, reliability: 10, availability: 9, pickupSimplicity: 7 },
   },
 };
 
 const SLIDER_LABELS: Record<keyof PreferenceSliders, string> = {
-  price: "מחיר",
-  distance: "מרחק",
-  reliability: "אמינות משכיר",
-  condition: "מצב מוצר",
-  availability: "זמינות",
-  pickupSimplicity: "קלות איסוף",
+  price: "מחיר משתלם",
+  distance: "מרחק קצר",
+  reliability: "אמינות המשכיר",
+  availability: "התאמה לתאריכים",
+  pickupSimplicity: "פשטות האיסוף",
 };
 
 type SpecificListingPick = {
@@ -88,7 +71,6 @@ type SpecificListingPick = {
 type SlotConstraints = {
   minPrice?: number;
   maxPrice?: number;
-  minCondition?: ConditionLevel;
   maxDistanceKm?: number;
   allowAlternatives?: boolean;
 };
@@ -138,7 +120,7 @@ type OptimizerResponse = {
           baseProfile?: PreferenceTemplateKey;
           sliders: PreferenceSliders;
           normalizedWeights: Record<
-            "price" | "distance" | "reliability" | "condition" | "availability",
+            "price" | "distance" | "reliability" | "availability",
             number
           >;
           penaltyMultipliers?: Record<string, unknown>;
@@ -157,7 +139,6 @@ type OptimizerResponse = {
         slotKey: string;
         listingId: string;
         titleHe: string;
-        condition: string;
         price: number;
         distanceKm: number;
       }>;
@@ -267,15 +248,14 @@ export function BundleOptimizerForm() {
     <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]" dir="rtl">
       <Card className="space-y-6 p-6 md:p-7">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-950">בקשת חבילה - בניית דרישות</h2>
+          <h2 className="text-2xl font-semibold text-slate-950">מצאו את חבילת הפריטים הכי טובה בשבילכם!</h2>
           <p className="mt-2 text-sm leading-7 text-slate-600">
-            הוסיפו פריטים לפי קטגוריה או לפי מוצר ספציפי. המערכת תסנן מועמדים לפי האילוצים,
-            תבצע חיפוש קרן, ותדרג חבילות לפי פרופיל הדירוג שבחרתם.
+            ספרו לנו מה אתם צריכים, ואנחנו נבנה עבורכם את החבילה המשתלמת ביותר.
           </p>
         </div>
 
         <section className="space-y-3 rounded-lg border border-slate-200 p-4">
-          <h3 className="text-sm font-semibold text-slate-700">אילוצים גלובליים</h3>
+          <h3 className="text-sm font-semibold text-slate-700">פרטי האירוע</h3>
 
           <div className="grid gap-3 md:grid-cols-2">
             <Field label="תאריך התחלה">
@@ -306,7 +286,7 @@ export function BundleOptimizerForm() {
           </Field>
 
           <div className="grid gap-3 md:grid-cols-2">
-            <Field label="תקציב מקסימלי (₪)">
+            <Field label="התקציב המקסימלי (₪)">
               <input
                 className="form-input"
                 type="number"
@@ -315,7 +295,7 @@ export function BundleOptimizerForm() {
                 onChange={(e) => setBudget(parseFloat(e.target.value) || 0)}
               />
             </Field>
-            <Field label="מקסימום נקודות איסוף">
+            <Field label="מספר מקסימלי של נקודות איסוף">
               <input
                 className="form-input"
                 type="number"
@@ -329,7 +309,7 @@ export function BundleOptimizerForm() {
           </div>
 
           <Field label="פרופיל דירוג">
-            <h3 className="mb-2 text-sm font-semibold text-slate-700">כיצד לדרג את החבילה?</h3>
+            <h3 className="mb-2 text-sm font-semibold text-slate-700">מה חשוב לכם בחבילה?</h3>
             <div className="flex flex-wrap gap-2">
               {(Object.keys(PREFERENCE_TEMPLATES) as PreferenceTemplateKey[]).map((key) => (
                 <button
@@ -509,27 +489,6 @@ function SlotCard({
               })
             }
           />
-        </Field>
-        <Field label="מצב מינימלי">
-          <select
-            className="form-input"
-            value={slot.constraints.minCondition ?? ""}
-            onChange={(e) =>
-              onPatch({
-                constraints: {
-                  ...slot.constraints,
-                  minCondition: (e.target.value as ConditionLevel) || undefined,
-                },
-              })
-            }
-          >
-            <option value="">ללא דרישה</option>
-            {CONDITION_OPTIONS.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </select>
         </Field>
       </div>
 
@@ -893,7 +852,6 @@ function cleanConstraints(c: SlotConstraints) {
   const out: Record<string, unknown> = {};
   if (c.minPrice !== undefined && !Number.isNaN(c.minPrice)) out.minPrice = c.minPrice;
   if (c.maxPrice !== undefined && !Number.isNaN(c.maxPrice)) out.maxPrice = c.maxPrice;
-  if (c.minCondition) out.minCondition = c.minCondition;
   if (c.maxDistanceKm !== undefined && !Number.isNaN(c.maxDistanceKm)) out.maxDistanceKm = c.maxDistanceKm;
   if (c.allowAlternatives !== undefined) out.allowAlternatives = c.allowAlternatives;
   return out;
@@ -1103,7 +1061,7 @@ function BundleCard({ bundle }: { bundle: OptimizerResponse["data"]["bundles"][n
                 <span className="mr-2 text-xs text-slate-400">({it.slotKey})</span>
               </span>
               <span className="text-xs text-slate-500">
-                ₪{it.price} · {it.distanceKm.toFixed(1)} ק״מ · {it.condition}
+                ₪{it.price} · {it.distanceKm.toFixed(1)} ק״מ
               </span>
             </li>
           ))}
@@ -1125,7 +1083,6 @@ function PreferenceSummary({
     "price",
     "distance",
     "reliability",
-    "condition",
     "availability",
   ];
 
@@ -1159,7 +1116,6 @@ function metricLabel(key: string): string {
     price: "מחיר",
     distance: "מרחק",
     reliability: "אמינות",
-    condition: "מצב",
     availability: "זמינות",
   };
   return map[key] ?? key;

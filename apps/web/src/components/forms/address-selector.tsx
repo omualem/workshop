@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   api,
@@ -25,6 +25,7 @@ type AddressSelectorProps = {
   previewLabel?: string;
 };
 
+const MIN_QUERY_LENGTH = 2;
 const emptyCity: AddressCityOption[] = [];
 const emptyStreet: AddressStreetOption[] = [];
 
@@ -32,139 +33,227 @@ export function AddressSelector({
   value,
   onChange,
   streetRequired = true,
-  addressNumberRequired = true,
-  previewLabel = "כתובת איסוף מלאה",
+  previewLabel = "כתובת איסוף",
 }: AddressSelectorProps) {
   const [citySearchText, setCitySearchText] = useState(value.cityNameHe);
   const [streetSearchText, setStreetSearchText] = useState(value.streetNameHe);
-  const [debouncedCitySearchText, setDebouncedCitySearchText] = useState(
-    value.cityNameHe,
-  );
-  const [debouncedStreetSearchText, setDebouncedStreetSearchText] = useState(
-    value.streetNameHe,
-  );
+  const [debouncedCity, setDebouncedCity] = useState(value.cityNameHe);
+  const [debouncedStreet, setDebouncedStreet] = useState(value.streetNameHe);
+  const [cityOpen, setCityOpen] = useState(false);
+  const [streetOpen, setStreetOpen] = useState(false);
+
+  const cityBlurTimer = useRef<number | null>(null);
+  const streetBlurTimer = useRef<number | null>(null);
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      setDebouncedCitySearchText(citySearchText);
-    }, 250);
+    const timeout = window.setTimeout(() => setDebouncedCity(citySearchText), 250);
     return () => window.clearTimeout(timeout);
   }, [citySearchText]);
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      setDebouncedStreetSearchText(streetSearchText);
-    }, 250);
+    const timeout = window.setTimeout(() => setDebouncedStreet(streetSearchText), 250);
     return () => window.clearTimeout(timeout);
   }, [streetSearchText]);
 
   useEffect(() => {
     setCitySearchText(value.cityNameHe);
-    setDebouncedCitySearchText(value.cityNameHe);
-    setStreetSearchText(value.streetNameHe);
-    setDebouncedStreetSearchText(value.streetNameHe);
-  }, [value.cityId]);
+    setDebouncedCity(value.cityNameHe);
+  }, [value.cityId, value.cityNameHe]);
 
   useEffect(() => {
     setStreetSearchText(value.streetNameHe);
-    setDebouncedStreetSearchText(value.streetNameHe);
-  }, [value.streetId]);
+    setDebouncedStreet(value.streetNameHe);
+  }, [value.streetId, value.streetNameHe]);
+
+  const cityQueryActive = debouncedCity.trim().length >= MIN_QUERY_LENGTH;
+  const streetQueryActive =
+    Boolean(value.cityId) &&
+    debouncedStreet.trim().length >= MIN_QUERY_LENGTH;
 
   const citiesQuery = useQuery({
-    queryKey: ["address-cities", debouncedCitySearchText],
-    queryFn: () => api.addressCities(debouncedCitySearchText, 20),
+    queryKey: ["address-cities", debouncedCity],
+    queryFn: () => api.addressCities(debouncedCity, 20),
+    enabled: cityQueryActive,
   });
 
   const streetsQuery = useQuery({
-    queryKey: ["address-streets", value.cityId, debouncedStreetSearchText],
+    queryKey: ["address-streets", value.cityId, debouncedStreet],
     queryFn: () =>
       api.addressStreets({
         cityId: value.cityId,
-        q: debouncedStreetSearchText,
+        q: debouncedStreet,
         limit: 20,
       }),
-    enabled: Boolean(value.cityId),
+    enabled: streetQueryActive,
   });
-
-  const addressCatalogMissing =
-    citiesQuery.isSuccess &&
-    !debouncedCitySearchText.trim() &&
-    (citiesQuery.data ?? emptyCity).length === 0;
 
   const preview = useMemo(() => {
     const parts: string[] = [];
-    if (value.streetNameHe) {
-      parts.push(`רחוב ${value.streetNameHe}`);
-    }
-    if (value.addressNumber.trim()) {
-      parts.push(value.addressNumber.trim());
-    }
+    if (value.streetNameHe) parts.push(`רחוב ${value.streetNameHe}`);
+    if (value.addressNumber.trim()) parts.push(value.addressNumber.trim());
     const streetPart = parts.join(" ");
-    if (streetPart && value.cityNameHe) {
-      return `${streetPart}, ${value.cityNameHe}`;
-    }
+    if (streetPart && value.cityNameHe) return `${streetPart}, ${value.cityNameHe}`;
     if (streetPart) return streetPart;
     if (value.cityNameHe) return value.cityNameHe;
     return "";
   }, [value.addressNumber, value.cityNameHe, value.streetNameHe]);
 
+  const showCityDropdown =
+    cityOpen && citySearchText.trim().length >= MIN_QUERY_LENGTH;
+  const showStreetDropdown =
+    streetOpen &&
+    Boolean(value.cityId) &&
+    streetSearchText.trim().length >= MIN_QUERY_LENGTH;
+
+  const cityItems = citiesQuery.data ?? emptyCity;
+  const streetItems = streetsQuery.data ?? emptyStreet;
+
   return (
-    <div className="space-y-4 md:col-span-2">
-      {addressCatalogMissing ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          <div>מאגר הערים והרחובות לא נטען</div>
-          <div className="mt-1 text-xs">הרץ `npm run db:import:addresses`</div>
-        </div>
-      ) : null}
+    <div className="space-y-3 md:col-span-2" dir="rtl">
+      <div className="grid gap-3 md:grid-cols-3">
+        <label className="relative space-y-1 text-sm">
+          <span className="font-medium text-slate-700">עיר</span>
+          <input
+            type="text"
+            className="form-input"
+            dir="rtl"
+            value={citySearchText}
+            placeholder="התחילו להקליד שם של עיר"
+            autoComplete="off"
+            onFocus={() => {
+              if (cityBlurTimer.current) {
+                window.clearTimeout(cityBlurTimer.current);
+                cityBlurTimer.current = null;
+              }
+              setCityOpen(true);
+            }}
+            onBlur={() => {
+              cityBlurTimer.current = window.setTimeout(() => {
+                setCityOpen(false);
+              }, 120);
+            }}
+            onChange={(event) => {
+              const next = event.target.value;
+              setCitySearchText(next);
+              setCityOpen(true);
+              setStreetSearchText("");
+              setDebouncedStreet("");
+              onChange({
+                cityId: "",
+                cityNameHe: next,
+                settlementCode: undefined,
+                streetId: "",
+                streetNameHe: "",
+                addressNumber: value.addressNumber,
+              });
+              if (!next.trim()) setCityOpen(false);
+            }}
+          />
+          {showCityDropdown ? (
+            <SuggestionPopover
+              loading={citiesQuery.isLoading}
+              emptyMessage="לא נמצאו ערים שמתאימות לחיפוש"
+              items={cityItems}
+              renderItem={(city) => (
+                <>
+                  <span className="text-slate-900">{city.nameHe}</span>
+                  <span className="text-xs text-slate-400">{city.settlementCode}</span>
+                </>
+              )}
+              onSelect={(city) => {
+                if (cityBlurTimer.current) {
+                  window.clearTimeout(cityBlurTimer.current);
+                  cityBlurTimer.current = null;
+                }
+                setCitySearchText(city.nameHe);
+                setDebouncedCity(city.nameHe);
+                setStreetSearchText("");
+                setDebouncedStreet("");
+                setCityOpen(false);
+                onChange({
+                  cityId: city.id,
+                  cityNameHe: city.nameHe,
+                  settlementCode: city.settlementCode,
+                  streetId: "",
+                  streetNameHe: "",
+                  addressNumber: value.addressNumber,
+                });
+              }}
+            />
+          ) : null}
+        </label>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <AddressField
-          label="עיר"
-          value={citySearchText}
-          onChange={(nextValue) => {
-            setCitySearchText(nextValue);
-            setStreetSearchText("");
-            setDebouncedStreetSearchText("");
-            const shouldClearCitySelection = nextValue !== value.cityNameHe;
-            onChange({
-              cityId: shouldClearCitySelection ? "" : value.cityId,
-              cityNameHe: nextValue,
-              settlementCode: shouldClearCitySelection
-                ? undefined
-                : value.settlementCode,
-              streetId: "",
-              streetNameHe: "",
-              addressNumber: value.addressNumber,
-            });
-          }}
-          placeholder="חיפוש עיר"
-        />
+        <label className="relative space-y-1 text-sm">
+          <span className="font-medium text-slate-700">רחוב</span>
+          <input
+            type="text"
+            className="form-input"
+            dir="rtl"
+            value={streetSearchText}
+            placeholder={value.cityId ? "התחילו להקליד שם של רחוב" : "יש לבחור עיר תחילה"}
+            disabled={!value.cityId}
+            autoComplete="off"
+            onFocus={() => {
+              if (streetBlurTimer.current) {
+                window.clearTimeout(streetBlurTimer.current);
+                streetBlurTimer.current = null;
+              }
+              setStreetOpen(true);
+            }}
+            onBlur={() => {
+              streetBlurTimer.current = window.setTimeout(() => {
+                setStreetOpen(false);
+              }, 120);
+            }}
+            onChange={(event) => {
+              const next = event.target.value;
+              setStreetSearchText(next);
+              setStreetOpen(true);
+              onChange({
+                ...value,
+                streetId: "",
+                streetNameHe: next,
+              });
+              if (!next.trim()) setStreetOpen(false);
+            }}
+          />
+          {showStreetDropdown ? (
+            <SuggestionPopover
+              loading={streetsQuery.isLoading}
+              emptyMessage="לא נמצאו רחובות שמתאימים לחיפוש"
+              items={streetItems}
+              renderItem={(street) => (
+                <>
+                  <span className="text-slate-900">{street.nameHe}</span>
+                  <span className="text-xs text-slate-400">{street.streetCode}</span>
+                </>
+              )}
+              onSelect={(street) => {
+                if (streetBlurTimer.current) {
+                  window.clearTimeout(streetBlurTimer.current);
+                  streetBlurTimer.current = null;
+                }
+                setStreetSearchText(street.nameHe);
+                setDebouncedStreet(street.nameHe);
+                setStreetOpen(false);
+                onChange({
+                  ...value,
+                  streetId: street.id,
+                  streetNameHe: street.nameHe,
+                });
+              }}
+            />
+          ) : null}
+        </label>
 
-        <AddressField
-          label="רחוב"
-          value={streetSearchText}
-          onChange={(nextValue) => {
-            setStreetSearchText(nextValue);
-            const shouldClearStreetSelection = nextValue !== value.streetNameHe;
-            onChange({
-              ...value,
-              streetId: shouldClearStreetSelection ? "" : value.streetId,
-              streetNameHe: nextValue,
-            });
-          }}
-          placeholder={value.cityId ? "חיפוש רחוב" : "בחרו קודם עיר"}
-          disabled={!value.cityId}
-        />
-
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-700">מספר בית</span>
+        <label className="space-y-1 text-sm">
+          <span className="font-medium text-slate-700">מספר בית</span>
           <input
             type="text"
             inputMode="numeric"
-            className="w-full rounded-2xl border px-4 py-3 text-right disabled:bg-slate-100"
+            className="form-input"
             dir="rtl"
             value={value.addressNumber}
-            disabled={addressCatalogMissing || (addressNumberRequired && !value.streetId)}
             onChange={(event) => {
               const nextValue = event.target.value.replace(/[^\d]/g, "");
               onChange({
@@ -176,142 +265,59 @@ export function AddressSelector({
         </label>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <SuggestionList
-          items={citiesQuery.data ?? emptyCity}
-          loading={citiesQuery.isLoading}
-          emptyMessage="לא נמצאו ערים תואמות"
-          onSelect={(city) => {
-            setCitySearchText(city.nameHe);
-            setDebouncedCitySearchText(city.nameHe);
-            setStreetSearchText("");
-            setDebouncedStreetSearchText("");
-            onChange({
-              cityId: city.id,
-              cityNameHe: city.nameHe,
-              settlementCode: city.settlementCode,
-              streetId: "",
-              streetNameHe: "",
-              addressNumber: value.addressNumber,
-            });
-          }}
-        />
-
-        <SuggestionList
-          items={streetsQuery.data ?? emptyStreet}
-          loading={streetsQuery.isLoading}
-          emptyMessage="לא נמצאו רחובות לעיר שנבחרה"
-          disabled={!value.cityId}
-          onSelect={(street) => {
-            setStreetSearchText(street.nameHe);
-            setDebouncedStreetSearchText(street.nameHe);
-            onChange({
-              ...value,
-              streetId: street.id,
-              streetNameHe: street.nameHe,
-            });
-          }}
-        />
-      </div>
-
-      <label className="space-y-2">
-        <span className="text-sm font-medium text-slate-700">{previewLabel}</span>
+      <label className="block space-y-1 text-sm">
+        <span className="font-medium text-slate-700">{previewLabel}</span>
         <input
           readOnly
-          className="w-full rounded-2xl border bg-slate-50 px-4 py-3 text-right text-slate-700"
+          className="form-input bg-slate-50"
           dir="rtl"
           value={preview}
-          placeholder="הכתובת תיווצר אוטומטית"
+          placeholder="הכתובת המלאה תופיע כאן אחרי בחירה"
         />
       </label>
 
       {streetRequired && !value.streetId && value.cityId ? (
-        <div className="text-xs text-slate-500">יש לבחור רחוב מתוך המאגר.</div>
+        <div className="text-xs text-slate-500">יש לבחור רחוב מתוך הצעות ההשלמה האוטומטית.</div>
       ) : null}
     </div>
   );
 }
 
-function AddressField({
-  label,
-  value,
-  onChange,
-  placeholder,
-  disabled,
-}: {
-  label: string;
-  value: string;
-  onChange: (nextValue: string) => void;
-  placeholder: string;
-  disabled?: boolean;
-}) {
-  return (
-    <label className="space-y-2">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <input
-        className="w-full rounded-2xl border px-4 py-3 text-right disabled:bg-slate-100"
-        dir="rtl"
-        value={value}
-        placeholder={placeholder}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </label>
-  );
-}
-
-function SuggestionList<T extends AddressCityOption | AddressStreetOption>({
+function SuggestionPopover<T extends { id: string }>({
   items,
   loading,
   emptyMessage,
-  disabled,
+  renderItem,
   onSelect,
 }: {
   items: T[];
   loading: boolean;
   emptyMessage: string;
-  disabled?: boolean;
+  renderItem: (item: T) => React.ReactNode;
   onSelect: (item: T) => void;
 }) {
-  if (disabled) {
-    return (
-      <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-5 text-sm text-slate-400">
-        בחרו קודם עיר
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="rounded-2xl border border-slate-200 px-4 py-5 text-sm text-slate-500">
-        טוען אפשרויות...
-      </div>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-5 text-sm text-slate-500">
-        {emptyMessage}
-      </div>
-    );
-  }
-
   return (
-    <div className="max-h-52 overflow-y-auto rounded-2xl border border-slate-200 bg-white">
-      {items.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          className="flex w-full items-center justify-between gap-3 border-b border-slate-100 px-4 py-3 text-right text-sm last:border-b-0 hover:bg-slate-50"
-          onClick={() => onSelect(item)}
-        >
-          <span className="text-slate-900">{item.nameHe}</span>
-          <span className="text-xs text-slate-400">
-            {"settlementCode" in item ? item.settlementCode : item.streetCode}
-          </span>
-        </button>
-      ))}
+    <div
+      className="absolute inset-x-0 top-full z-20 mt-1 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg"
+      dir="rtl"
+      onMouseDown={(event) => event.preventDefault()}
+    >
+      {loading ? (
+        <div className="px-4 py-3 text-sm text-slate-500">טוענים...</div>
+      ) : items.length === 0 ? (
+        <div className="px-4 py-3 text-sm text-slate-500">{emptyMessage}</div>
+      ) : (
+        items.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className="flex w-full items-center justify-between gap-3 border-b border-slate-100 px-4 py-2 text-right text-sm last:border-b-0 hover:bg-cyan-50"
+            onClick={() => onSelect(item)}
+          >
+            {renderItem(item)}
+          </button>
+        ))
+      )}
     </div>
   );
 }

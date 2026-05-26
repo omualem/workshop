@@ -4,7 +4,6 @@ declare class BookingItemInputDto {
     pickupMethod: "PICKUP" | "DELIVERY" | "HYBRID";
 }
 export declare class CreateBookingDto {
-    bundleCandidateId?: string;
     startDate: string;
     endDate: string;
     totalPrice: number;

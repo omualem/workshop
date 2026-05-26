@@ -11,21 +11,21 @@ export default async function AdminDisputesPage() {
   return (
     <DashboardShell
       title="מחלוקות"
-      subtitle="ניהול מחלוקות ופתרון מקרים חריגים על בסיס נתוני אמת."
+      subtitle="טיפול בפניות ובמקרים חריגים בין שוכרים למשכירים."
       navItems={adminNavItems}
       activeHref="/admin/disputes"
     >
       <Card className="overflow-x-auto">
         {disputes.length === 0 ? (
-          <p className="text-sm text-slate-600">אין מחלוקות פתוחות</p>
+          <p className="text-sm text-slate-600">אין כרגע מחלוקות פתוחות</p>
         ) : (
           <table className="dashboard-table">
             <thead>
               <tr>
-                <th>נפתח על ידי</th>
+                <th>נפתחה על ידי</th>
                 <th>סטטוס</th>
                 <th>סיבה</th>
-                <th>אדמין מטפל</th>
+                <th>מנהל המטפל</th>
               </tr>
             </thead>
             <tbody>
@@ -34,7 +34,7 @@ export default async function AdminDisputesPage() {
                   <td>{dispute.openedBy?.fullName ?? "לא צוין"}</td>
                   <td>{dispute.status}</td>
                   <td>{dispute.reason}</td>
-                  <td>{dispute.assignedAdmin?.fullName ?? "לא שויך"}</td>
+                  <td>{dispute.assignedAdmin?.fullName ?? "טרם שויך"}</td>
                 </tr>
               ))}
             </tbody>

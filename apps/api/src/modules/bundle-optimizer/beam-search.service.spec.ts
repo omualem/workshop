@@ -4,7 +4,7 @@ import { MetricNormalizationService } from "./metric-normalization.service";
 import type { CandidateItem, OptimizerPreferences, SlotInput } from "./bundle-optimizer.types";
 
 const PREFS: OptimizerPreferences = {
-  weights: { price: 0.25, distance: 0.2, reliability: 0.2, condition: 0.2, availability: 0.15 },
+  weights: { price: 0.25, distance: 0.25, reliability: 0.25, availability: 0.25 },
   lambdaVariance: 0.35,
   alphaBottleneck: 0.25,
   betaPickup: 0.4,
@@ -29,11 +29,9 @@ function cand(
     titleHe: id,
     titleEn: id,
     categoryId: "cat",
-    condition: "GOOD",
     price,
     distanceKm: 5,
     reliability: 8,
-    conditionScore: 7.5,
     availability: 10,
     pickupLat: 32 + Math.random() * 0.1,
     pickupLng: 34.7 + Math.random() * 0.1,
@@ -43,7 +41,6 @@ function cand(
     m_price: 8,
     m_distance: 8,
     m_reliability: 8,
-    m_condition: 7.5,
     m_availability: 10,
     preliminaryScore: prelim,
     ...over,

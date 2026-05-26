@@ -7,10 +7,9 @@ export const dynamic = "force-dynamic";
 const metricLabels: Record<string, string> = {
   users: "משתמשים",
   renters: "שוכרים",
-  lenders: "מלווים",
+  lenders: "משכירים",
   listings: "פריטים",
   disputes: "מחלוקות",
-  bundleSearches: "חיפושי באנדלים",
 };
 
 export default async function AdminDashboardPage() {
@@ -21,16 +20,16 @@ export default async function AdminDashboardPage() {
 
   return (
     <DashboardShell
-      title="לוח אדמין"
-      subtitle="תצפית על נתוני המערכת בפועל מתוך מסד הנתונים."
+      title="לוח ניהול"
+      subtitle="תמונת מצב חיה של המערכת: משתמשים, פריטים והזמנות."
       navItems={adminNavItems}
       activeHref="/admin/dashboard"
     >
       <div className="mb-6">
-        <div className="surface-eyebrow">Admin Overview</div>
+        <div className="surface-eyebrow">סקירה כללית</div>
         <h1 className="mt-3 text-3xl font-semibold text-slate-950">סקירה</h1>
         <p className="mt-2 text-sm leading-7 text-slate-600">
-          כל המספרים במסך הזה מחושבים ישירות מהטבלאות המקומיות.
+          כל הנתונים במסך זה מתעדכנים בזמן אמת ממסד הנתונים.
         </p>
       </div>
 
@@ -45,18 +44,18 @@ export default async function AdminDashboardPage() {
 
       <div className="surface-panel mt-6 p-6">
         <h2 className="text-lg font-semibold text-slate-950">
-          תור בדיקת פריטים
+          פריטים בהמתנה לאישור
         </h2>
         {moderationQueue.length === 0 ? (
           <p className="mt-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-            אין פריטים שממתינים לבדיקה
+            אין כרגע פריטים שממתינים לאישור
           </p>
         ) : (
           <table className="dashboard-table mt-4">
             <thead>
               <tr>
                 <th>פריט</th>
-                <th>מלווה</th>
+                <th>משכיר</th>
                 <th>קטגוריה</th>
                 <th>סטטוס</th>
               </tr>
@@ -72,19 +71,6 @@ export default async function AdminDashboardPage() {
               ))}
             </tbody>
           </table>
-        )}
-      </div>
-
-      <div className="surface-panel mt-6 p-6">
-        <h2 className="text-lg font-semibold text-slate-950">חיפושי באנדלים</h2>
-        {(overview.bundleSearches ?? 0) === 0 ? (
-          <p className="mt-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-            אין עדיין חיפושי באנדלים
-          </p>
-        ) : (
-          <p className="mt-4 text-sm text-slate-600">
-            {overview.bundleSearches} חיפושים קיימים במסד הנתונים.
-          </p>
         )}
       </div>
     </DashboardShell>

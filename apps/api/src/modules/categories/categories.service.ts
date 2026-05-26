@@ -45,8 +45,9 @@ export class CategoriesService {
     return category;
   }
 
-  findAllAdmin() {
+  findAllAdmin(includeArchived = false) {
     return this.prisma.category.findMany({
+      where: includeArchived ? undefined : { status: { not: "ARCHIVED" } },
       orderBy: [{ parentId: "asc" }, { nameHe: "asc" }],
       include: {
         parent: true,
@@ -144,5 +145,39 @@ export class CategoriesService {
     });
 
     return category;
+  }
+
+  async remove(id: string, actorUserId?: string) {
+    const existing = await this.prisma.category.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            listings: true,
+            children: true,
+          },
+        },
+      },
+    });
+
+    if (!existing) {
+      throw new NotFoundException("Category not found");
+    }
+
+    const category = await this.prisma.category.update({
+      where: { id },
+      data: { status: "ARCHIVED" },
+    });
+
+    await this.auditService.log({
+      actorUserId,
+      action: "category.delete",
+      entityType: "Category",
+      entityId: category.id,
+      before: existing,
+      after: category,
+    });
+
+    return { id: category.id, status: category.status };
   }
 }

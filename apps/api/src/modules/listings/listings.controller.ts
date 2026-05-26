@@ -15,6 +15,7 @@ import { Roles } from "../../shared/decorators/roles.decorator";
 import { JwtAuthGuard } from "../../shared/guards/jwt-auth.guard";
 import { RolesGuard } from "../../shared/guards/roles.guard";
 import { AddMediaDto } from "./dto/add-media.dto";
+import { AdminChangeListingOwnerDto } from "./dto/admin-change-listing-owner.dto";
 import { AdminCreateListingDto } from "./dto/admin-create-listing.dto";
 import { AdminListingQueryDto } from "./dto/admin-listing-query.dto";
 import { AdminUpdateListingDto } from "./dto/admin-update-listing.dto";
@@ -153,5 +154,25 @@ export class ListingsController {
   async adminDelete(@Param("id") id: string, @CurrentUser() user: { sub: string }) {
     const data = await this.listingsService.adminDelete(id, user?.sub);
     return { success: true, data };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @Public()
+  @Post("admin/listings/:id/duplicate")
+  adminDuplicate(@Param("id") id: string, @CurrentUser() user: { sub: string }) {
+    return this.listingsService.adminDuplicate(id, user?.sub);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @Public()
+  @Patch("admin/listings/:id/change-owner")
+  adminChangeOwner(
+    @Param("id") id: string,
+    @Body() dto: AdminChangeListingOwnerDto,
+    @CurrentUser() user: { sub: string },
+  ) {
+    return this.listingsService.adminChangeOwner(id, dto.lenderId, user?.sub);
   }
 }

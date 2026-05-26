@@ -3,7 +3,7 @@ import { DashboardShell } from "../../../components/dashboard-shell";
 
 const navItems = [
   { href: "/lender/dashboard", label: "סקירה" },
-  { href: "/lender/listings", label: "Listings" },
+  { href: "/lender/listings", label: "פריטים שלי" },
   { href: "/lender/availability", label: "זמינות" },
   { href: "/lender/pricing", label: "תמחור" },
   { href: "/lender/bookings", label: "הזמנות" },
@@ -14,8 +14,10 @@ const navItems = [
 
 export default function LenderProfilePage() {
   return (
-    <DashboardShell title="פרופיל ואמינות" subtitle="אמינות, response time, verification ורמות שיפור." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">המסך מציג את רכיבי ה-reliability score ואת הפעולות המומלצות לשיפורו.</Card>
+    <DashboardShell title="פרופיל ואמינות" subtitle="ציון האמינות שלכם, רמת האימות והפעולות שישפרו אותו." navItems={navItems}>
+      <Card className="text-sm leading-7 text-slate-600">
+        כאן תראו מהם המרכיבים של ציון האמינות שלכם — דירוגים, אחוז הזמנות שהושלמו בהצלחה, זמן מענה ורמת אימות — ומה אפשר לשפר.
+      </Card>
     </DashboardShell>
   );
 }

@@ -20,6 +20,7 @@ const roles_decorator_1 = require("../../shared/decorators/roles.decorator");
 const jwt_auth_guard_1 = require("../../shared/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../shared/guards/roles.guard");
 const add_media_dto_1 = require("./dto/add-media.dto");
+const admin_change_listing_owner_dto_1 = require("./dto/admin-change-listing-owner.dto");
 const admin_create_listing_dto_1 = require("./dto/admin-create-listing.dto");
 const admin_listing_query_dto_1 = require("./dto/admin-listing-query.dto");
 const admin_update_listing_dto_1 = require("./dto/admin-update-listing.dto");
@@ -77,6 +78,12 @@ let ListingsController = class ListingsController {
     async adminDelete(id, user) {
         const data = await this.listingsService.adminDelete(id, user?.sub);
         return { success: true, data };
+    }
+    adminDuplicate(id, user) {
+        return this.listingsService.adminDuplicate(id, user?.sub);
+    }
+    adminChangeOwner(id, dto, user) {
+        return this.listingsService.adminChangeOwner(id, dto.lenderId, user?.sub);
     }
 };
 exports.ListingsController = ListingsController;
@@ -222,6 +229,29 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ListingsController.prototype, "adminDelete", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)("ADMIN"),
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)("admin/listings/:id/duplicate"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ListingsController.prototype, "adminDuplicate", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)("ADMIN"),
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Patch)("admin/listings/:id/change-owner"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, admin_change_listing_owner_dto_1.AdminChangeListingOwnerDto, Object]),
+    __metadata("design:returntype", void 0)
+], ListingsController.prototype, "adminChangeOwner", null);
 exports.ListingsController = ListingsController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [listings_service_1.ListingsService])

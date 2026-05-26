@@ -27,6 +27,17 @@ export declare class RentersService {
     }[]>;
     favorites(userId: string): import(".prisma/client").Prisma.PrismaPromise<({
         listing: {
+            category: {
+                id: string;
+                status: import(".prisma/client").$Enums.CategoryStatus;
+                createdAt: Date;
+                updatedAt: Date;
+                parentId: string | null;
+                slug: string;
+                nameHe: string;
+                nameEn: string;
+                attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
+            };
             lender: {
                 createdAt: Date;
                 updatedAt: Date;
@@ -44,48 +55,36 @@ export declare class RentersService {
                 pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
                 reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
             };
-            category: {
-                id: string;
-                nameHe: string;
-                createdAt: Date;
-                updatedAt: Date;
-                status: import(".prisma/client").$Enums.CategoryStatus;
-                parentId: string | null;
-                slug: string;
-                nameEn: string;
-                attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
-            };
             media: {
                 id: string;
-                sortOrder: number;
                 listingId: string;
+                sortOrder: number;
                 url: string;
                 altText: string;
             }[];
         } & {
-            city: string | null;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            cityId: string | null;
-            lenderId: string;
             categoryId: string;
+            cityId: string | null;
             streetId: string | null;
             addressNumber: number | null;
+            id: string;
+            lenderId: string;
             titleHe: string;
             titleEn: string;
             descriptionHe: string;
             descriptionEn: string;
             suitableFor: string | null;
             mainUses: string | null;
-            condition: import(".prisma/client").$Enums.ListingCondition;
             status: import(".prisma/client").$Enums.ListingStatus;
             basePriceDaily: import("@prisma/client/runtime/library").Decimal;
             depositAmount: import("@prisma/client/runtime/library").Decimal;
             qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            popularityScore: import("@prisma/client/runtime/library").Decimal | null;
+            manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
             pickupLat: import("@prisma/client/runtime/library").Decimal;
             pickupLng: import("@prisma/client/runtime/library").Decimal;
             pickupAddressText: string;
+            city: string | null;
             pickupInstructions: string | null;
             deliverySupported: boolean;
             includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -96,6 +95,8 @@ export declare class RentersService {
             inventoryCount: number;
             minRentalDays: number;
             maxRentalDays: number;
+            createdAt: Date;
+            updatedAt: Date;
         };
     } & {
         id: string;

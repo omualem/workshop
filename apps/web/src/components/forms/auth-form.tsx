@@ -64,14 +64,14 @@ export function SignInForm() {
       router.refresh();
     },
     onError: () => {
-      setError("ההתחברות נכשלה. בדקו את האימייל והסיסמה ונסו שוב.");
+      setError("האימייל או הסיסמה שגויים. בדקו את הפרטים ונסו שוב.");
     },
   });
 
   return (
     <AuthPanel
-      title="כניסה לחשבון"
-      subtitle="גישה לחיפושי bundle, תוצאות מדורגות, הזמנות ולוחות בקרה לפי תפקיד."
+      title="התחברות לחשבון"
+      subtitle="ניהול חבילות, מעקב אחרי הזמנות וגישה אישית ללוח הבקרה שלכם."
     >
       <form
         className="space-y-4"
@@ -87,7 +87,7 @@ export function SignInForm() {
         </div>
         {error ? <p className="text-sm text-rose-600">{error}</p> : null}
         <Button type="submit" className="w-full py-3">
-          {mutation.isPending ? "מתחבר..." : "כניסה"}
+          {mutation.isPending ? "מתחברים..." : "התחברות"}
         </Button>
       </form>
     </AuthPanel>
@@ -116,14 +116,14 @@ export function SignUpForm() {
       router.refresh();
     },
     onError: () => {
-      setError("הרישום נכשל. נסו שוב עם פרטים תקינים.");
+      setError("ההרשמה לא הצליחה. ודאו שכל הפרטים תקינים ונסו שוב.");
     },
   });
 
   return (
     <AuthPanel
-      title="פתיחת חשבון"
-      subtitle="רישום כמזמין או כמלווה, עם המשך ישיר ללוח הבקרה הרלוונטי."
+      title="הרשמה ל-RentMatch"
+      subtitle="בחרו אם אתם רוצים לשכור ציוד או להשכיר את הציוד שלכם — נעבור איתכם ללוח הבקרה המתאים."
     >
       <form
         className="grid gap-4 md:grid-cols-2"
@@ -146,16 +146,16 @@ export function SignUpForm() {
           <input className="form-input" type="password" {...form.register("password")} />
         </div>
         <div className="md:col-span-2">
-          <label className="form-label">תפקיד</label>
+          <label className="form-label">סוג חשבון</label>
           <select className="form-select" {...form.register("role")}>
-            <option value="RENTER">מזמין</option>
-            <option value="LENDER">מלווה</option>
+            <option value="RENTER">שוכר — מחפש ציוד להשכיר</option>
+            <option value="LENDER">משכיר — מציע ציוד להשכרה</option>
           </select>
         </div>
         {error ? <p className="text-sm text-rose-600 md:col-span-2">{error}</p> : null}
         <div className="md:col-span-2">
           <Button type="submit" className="w-full py-3">
-            {mutation.isPending ? "יוצר חשבון..." : "יצירת חשבון"}
+            {mutation.isPending ? "פותחים חשבון..." : "פתיחת חשבון"}
           </Button>
         </div>
       </form>

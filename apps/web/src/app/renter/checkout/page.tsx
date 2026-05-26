@@ -7,18 +7,21 @@ const navItems = [
   { href: "/renter/favorites", label: "מועדפים" },
   { href: "/renter/saved-searches", label: "חיפושים שמורים" },
   { href: "/renter/settings", label: "הגדרות" },
-  { href: "/renter/bundle-results", label: "תוצאות bundle" },
 ];
 
 export default function CheckoutPage() {
   return (
-    <DashboardShell title="Checkout" subtitle="ארכיטקטורת הזמנה payment-ready עם snapshots של scores." navItems={navItems}>
+    <DashboardShell
+      title="אישור הזמנה"
+      subtitle="בדיקה אחרונה לפני שליחת ההזמנה למשכירים."
+      navItems={navItems}
+    >
       <Card className="space-y-4">
-        <h2 className="text-2xl font-semibold text-slate-950">אישור בקשת הזמנה</h2>
+        <h2 className="text-2xl font-semibold text-slate-950">סיכום ההזמנה</h2>
         <p className="text-sm leading-7 text-slate-600">
-          שלב זה שומר Booking ו-BookingItems, ומוכן לחיבור ל-provider חיצוני של authorization/capture.
+          בדקו את הפריטים, התאריכים והעלויות. אחרי האישור — המשכירים יקבלו את הבקשה ויחזרו אליכם עם פרטי האיסוף.
         </p>
-        <Button>שלח בקשת הזמנה</Button>
+        <Button>אישור ושליחת הזמנה</Button>
       </Card>
     </DashboardShell>
   );

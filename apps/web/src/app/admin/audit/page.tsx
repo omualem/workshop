@@ -11,13 +11,13 @@ export default async function AdminAuditPage() {
   return (
     <DashboardShell
       title="יומן פעולות"
-      subtitle="Audit trail של פעולות אמיתיות שנרשמו במסד הנתונים."
+      subtitle="היסטוריה מלאה של פעולות שבוצעו במערכת."
       navItems={adminNavItems}
       activeHref="/admin/audit"
     >
       <Card className="overflow-x-auto">
         {logs.length === 0 ? (
-          <p className="text-sm text-slate-600">אין עדיין פעולות ביומן</p>
+          <p className="text-sm text-slate-600">אין כרגע פעולות ביומן</p>
         ) : (
           <table className="dashboard-table">
             <thead>

@@ -63,12 +63,12 @@ const FIXTURE = {
         },
     ],
     listings: [
-        { id: "demo-l-cam-1", categoryId: "demo-cat-camera", lenderId: "demo-lender-1", titleHe: "Sony A7 IV", price: 320, condition: client_1.ListingCondition.LIKE_NEW },
-        { id: "demo-l-cam-2", categoryId: "demo-cat-camera", lenderId: "demo-lender-2", titleHe: "Canon R6", price: 280, condition: client_1.ListingCondition.GOOD },
-        { id: "demo-l-tri-1", categoryId: "demo-cat-tripod", lenderId: "demo-lender-1", titleHe: "Manfrotto 055", price: 90, condition: client_1.ListingCondition.GOOD },
-        { id: "demo-l-tri-2", categoryId: "demo-cat-tripod", lenderId: "demo-lender-2", titleHe: "Sirui T-2204", price: 70, condition: client_1.ListingCondition.FAIR },
-        { id: "demo-l-lig-1", categoryId: "demo-cat-lighting", lenderId: "demo-lender-1", titleHe: "Aputure 300x", price: 220, condition: client_1.ListingCondition.LIKE_NEW },
-        { id: "demo-l-lig-2", categoryId: "demo-cat-lighting", lenderId: "demo-lender-2", titleHe: "Godox SL150", price: 150, condition: client_1.ListingCondition.GOOD },
+        { id: "demo-l-cam-1", categoryId: "demo-cat-camera", lenderId: "demo-lender-1", titleHe: "Sony A7 IV", price: 320 },
+        { id: "demo-l-cam-2", categoryId: "demo-cat-camera", lenderId: "demo-lender-2", titleHe: "Canon R6", price: 280 },
+        { id: "demo-l-tri-1", categoryId: "demo-cat-tripod", lenderId: "demo-lender-1", titleHe: "Manfrotto 055", price: 90 },
+        { id: "demo-l-tri-2", categoryId: "demo-cat-tripod", lenderId: "demo-lender-2", titleHe: "Sirui T-2204", price: 70 },
+        { id: "demo-l-lig-1", categoryId: "demo-cat-lighting", lenderId: "demo-lender-1", titleHe: "Aputure 300x", price: 220 },
+        { id: "demo-l-lig-2", categoryId: "demo-cat-lighting", lenderId: "demo-lender-2", titleHe: "Godox SL150", price: 150 },
     ],
 };
 async function main() {
@@ -127,7 +127,6 @@ async function main() {
                 titleEn: l.titleHe,
                 descriptionHe: "פריט להשכרה לאלגוריתם הדגמה",
                 descriptionEn: "Demo rental item",
-                condition: l.condition,
                 status: client_1.ListingStatus.ACTIVE,
                 basePriceDaily: l.price,
                 depositAmount: l.price,

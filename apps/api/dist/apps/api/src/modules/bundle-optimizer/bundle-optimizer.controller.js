@@ -31,7 +31,7 @@ exports.BundleOptimizerController = BundleOptimizerController;
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)("search"),
-    __param(0, (0, common_1.Body)(new zod_validation_pipe_1.ZodValidationPipe(bundle_optimizer_types_1.optimizerRequestSchema))),
+    __param(0, (0, common_1.Body)(new zod_validation_pipe_1.ZodValidationPipe(bundle_optimizer_types_1.optimizerRequestBodySchema))),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)

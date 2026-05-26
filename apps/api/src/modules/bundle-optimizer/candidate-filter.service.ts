@@ -3,19 +3,17 @@ import { haversineDistanceKm } from "@rental/utils";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AvailabilityService } from "../availability/availability.service";
 import { PricingService } from "../pricing/pricing.service";
-import { LenderReliabilityService } from "../bundle-search/lender-reliability.service";
+import { LenderReliabilityService } from "./lender-reliability.service";
 import { decimalToNumber } from "../../shared/utils/prisma.utils";
 import { MetricNormalizationService } from "./metric-normalization.service";
 import type {
   CandidateItem,
-  ConditionLevel,
   OptimizerRequest,
   SlotFilterDebug,
   SlotConstraints,
   SlotInput,
 } from "./bundle-optimizer.types";
 
-const CONDITION_ORDER: ConditionLevel[] = ["HEAVY_USE", "FAIR", "GOOD", "LIKE_NEW", "NEW"];
 const ROUGH_PREFILTER_POOL_SIZE = 100;
 
 // Soft bonus added to the preliminary score of the user's preferred listing
@@ -32,7 +30,6 @@ const PREFERRED_LISTING_BONUS = 0.5;
  *             (mode=category ?  category(ℓ) = s.categoryId
  *                            :  ℓ ∈ {specificListing} ∪ alternatives(s))
  *             ∧ status(ℓ) = ACTIVE
- *             ∧ condition(ℓ) ≥ s.minCondition
  *             ∧ availability(ℓ, dateRange) ≥ s.quantity
  *             ∧ minPrice ≤ p(ℓ) ≤ maxPrice
  *             ∧ d(ℓ) ≤ maxDistanceKm
@@ -41,12 +38,11 @@ const PREFERRED_LISTING_BONUS = 0.5;
  *
  * Returns top-K candidates per slot ranked by preliminary weighted score.
  *
- * Quantity expansion (MVP strategy):
+ * Quantity expansion:
  *   A slot with quantity = q is expanded into q internal slots
  *   "{slotKey}::1", "{slotKey}::2", ..., each carrying the same I_s.
- *   Beam search treats them independently. This means the same listing may
- *   currently fill more than one expanded slot when inventoryCount ≥ 1; a
- *   stricter inventoryCount-aware constraint is left as a follow-up.
+ *   Beam search enforces inventoryCount per listing so a single listing
+ *   cannot be selected more times than its available inventory.
  */
 @Injectable()
 export class CandidateFilterService {
@@ -138,17 +134,7 @@ export class CandidateFilterService {
         // (a) Status
         if (listing.status !== "ACTIVE") continue;
 
-        // (b) Condition floor: condition(ℓ) ≥ slot.minCondition
-        if (
-          !this.meetsConditionFloor(
-            listing.condition as ConditionLevel,
-            constraints.minCondition,
-          )
-        ) {
-          continue;
-        }
-
-        // (c) Availability: a_i ≥ requested quantity over [startDate, endDate]
+        // (b) Availability: a_i ≥ requested quantity over [startDate, endDate]
         if (
           durationDays < listing.minRentalDays ||
           durationDays > listing.maxRentalDays
@@ -174,7 +160,7 @@ export class CandidateFilterService {
           continue;
         }
 
-        // (d) Price computation + min/max price + global budget
+        // (c) Price computation + min/max price + global budget
         const priceQuote = this.pricing.computeListingPrice(
           listing as any,
           startDate,
@@ -207,20 +193,28 @@ export class CandidateFilterService {
         slotDebug[slot.slotKey].push(entryDebug);
 
         // --- Raw signals ---
-        const reliability = this.reliability.compute({
-          averageRating: decimalToNumber(listing.lender.averageRating) ?? 0,
-          completedTransactionsCount: listing.lender.completedTransactionsCount,
-          cancellationRate: decimalToNumber(listing.lender.cancellationRate) ?? 0,
-          lateReturnRate: decimalToNumber(listing.lender.lateReturnRate) ?? 0,
-          complaintRate: decimalToNumber(listing.lender.complaintRate) ?? 0,
-          verificationLevel: listing.lender.verificationLevel as
-            | "BASIC"
-            | "VERIFIED"
-            | "TRUSTED",
-          responseTimeScore: decimalToNumber(listing.lender.responseTimeScore) ?? 5,
-        });
-
-        const conditionScore = this.normalization.normalizeConditionScore(listing.condition);
+        const reliabilityOverride =
+          decimalToNumber(listing.lender.reliabilityScoreCached) ?? 0;
+        const reliability =
+          reliabilityOverride > 0
+            ? Math.max(0, Math.min(10, reliabilityOverride))
+            : this.reliability.compute({
+                averageRating: decimalToNumber(listing.lender.averageRating) ?? 0,
+                completedTransactionsCount:
+                  listing.lender.completedTransactionsCount,
+                cancellationRate:
+                  decimalToNumber(listing.lender.cancellationRate) ?? 0,
+                lateReturnRate:
+                  decimalToNumber(listing.lender.lateReturnRate) ?? 0,
+                complaintRate:
+                  decimalToNumber(listing.lender.complaintRate) ?? 0,
+                verificationLevel: listing.lender.verificationLevel as
+                  | "BASIC"
+                  | "VERIFIED"
+                  | "TRUSTED",
+                responseTimeScore:
+                  decimalToNumber(listing.lender.responseTimeScore) ?? 5,
+              });
 
         const deviationDays = await this.computeDeviationDays(
           listing.id,
@@ -237,11 +231,9 @@ export class CandidateFilterService {
           titleHe: listing.titleHe,
           titleEn: listing.titleEn,
           categoryId: listing.categoryId,
-          condition: listing.condition as ConditionLevel,
           price: priceQuote.total,
           distanceKm,
           reliability,
-          conditionScore,
           availability: availabilityScore,
           pickupLat,
           pickupLng,
@@ -258,7 +250,6 @@ export class CandidateFilterService {
           m_price: 0,
           m_distance: 0,
           m_reliability: 0,
-          m_condition: 0,
           m_availability: 0,
           preliminaryScore: 0,
         });
@@ -266,15 +257,25 @@ export class CandidateFilterService {
 
       afterFiltering[slot.slotKey] = survivors.length;
 
-      // --- Per-candidate normalization (relative to the slot pool) ---
-      const minPrice = Math.min(...survivors.map((c) => c.price), Infinity);
-      const maxPrice = Math.max(...survivors.map((c) => c.price), 0);
+      // --- Per-candidate normalization ---
+      // Price uses a BUDGET-relative proxy (not pool-relative) so a candidate
+      // priced cheaply against a tight per-slot share scores high regardless
+      // of what other items happen to be in the same slot's pool. This
+      // avoids the failure mode where two near-identical candidates get 0
+      // and 10 just because the pool's price range is narrow, and where a
+      // candidate that consumes most of the global budget scores 10 just
+      // because it's the cheapest of its category.
+      const perSlotBudget = Math.max(
+        1,
+        req.budget / Math.max(1, expandedSlots.length),
+      );
 
       for (const c of survivors) {
-        c.m_price = this.normalization.normalizePriceScore(c.price, minPrice, maxPrice);
+        c.m_price = this.normalization.clamp(
+          10 * (1 - c.price / perSlotBudget),
+        );
         c.m_distance = this.normalization.normalizeDistanceScore(c.distanceKm);
         c.m_reliability = this.normalization.normalizeReliabilityScore(c.reliability);
-        c.m_condition = this.normalization.normalizeConditionScore(c.condition);
         c.m_availability = this.normalization.normalizeAvailabilityScore(c.availability);
 
         const w = req.preferences.weights;
@@ -282,7 +283,6 @@ export class CandidateFilterService {
           w.price * c.m_price +
           w.distance * c.m_distance +
           w.reliability * c.m_reliability +
-          w.condition * c.m_condition +
           w.availability * c.m_availability;
 
         // Soft preference for the user's chosen listing when alternatives are
@@ -404,16 +404,8 @@ export class CandidateFilterService {
     });
   }
 
-  /**
-   * Merges the legacy top-level minCondition into structured constraints so
-   * the rest of the filter only has to look at one shape.
-   */
   private normalizeConstraints(slot: SlotInput): SlotConstraints {
-    const c: SlotConstraints = { ...(slot.constraints ?? {}) };
-    if (c.minCondition === undefined && slot.minCondition !== undefined) {
-      c.minCondition = slot.minCondition;
-    }
-    return c;
+    return { ...(slot.constraints ?? {}) };
   }
 
   private async computeDeviationDays(
@@ -447,11 +439,6 @@ export class CandidateFilterService {
       }
     }
     return touched.size;
-  }
-
-  private meetsConditionFloor(actual: ConditionLevel, floor?: ConditionLevel): boolean {
-    if (!floor) return true;
-    return CONDITION_ORDER.indexOf(actual) >= CONDITION_ORDER.indexOf(floor);
   }
 
   private computeDurationDays(startDate: Date, endDate: Date) {

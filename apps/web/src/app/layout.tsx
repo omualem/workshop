@@ -3,8 +3,9 @@ import "./globals.css";
 import { Providers } from "../components/providers";
 
 export const metadata: Metadata = {
-  title: "RentMatch",
-  description: "Rental marketplace with smart bundle ranking and Hebrew-first RTL UX.",
+  title: "RentMatch — שוק השכרות חכם",
+  description:
+    "RentMatch הוא שוק ההשכרות החכם בישראל: בונים לכם חבילה אחת מכל הציוד שצריך, מהמשכירים המאומתים, במחיר משתלם וקרוב לבית.",
   icons: {
     icon: "/logos/2.png",
     shortcut: "/logos/2.png",

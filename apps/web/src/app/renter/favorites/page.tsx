@@ -7,13 +7,18 @@ const navItems = [
   { href: "/renter/favorites", label: "מועדפים" },
   { href: "/renter/saved-searches", label: "חיפושים שמורים" },
   { href: "/renter/settings", label: "הגדרות" },
-  { href: "/renter/bundle-results", label: "תוצאות bundle" },
 ];
 
 export default function FavoritesPage() {
   return (
-    <DashboardShell title="מועדפים" subtitle="שמירת listings והשוואה מול bundle results." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">כאן מוצגים פריטים שסומנו כמועדפים והמלצות bundle קשורות.</Card>
+    <DashboardShell
+      title="מועדפים"
+      subtitle="הפריטים שאהבתם, זמינים כאן בכל רגע — ומוכנים להצטרף לחבילה הבאה."
+      navItems={navItems}
+    >
+      <Card className="text-sm leading-7 text-slate-600">
+        עוד לא סימנתם פריטים כמועדפים. גלשו בקטלוג ולחצו על הלב כדי לשמור פריטים לעיון מאוחר יותר.
+      </Card>
     </DashboardShell>
   );
 }

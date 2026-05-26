@@ -16,7 +16,9 @@ async function bootstrap() {
         bufferLogs: true,
     });
     const configService = app.get(config_1.ConfigService);
-    app.use((0, helmet_1.default)());
+    app.use((0, helmet_1.default)({
+        crossOriginResourcePolicy: false,
+    }));
     app.use((0, cookie_parser_1.default)());
     app.enableCors({
         origin: true,

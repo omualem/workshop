@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.optimizerRequestSchema = exports.optimizerPreferencesSchema = exports.preferenceSlidersSchema = exports.basePreferenceProfileSchema = exports.preferenceProfileSchema = exports.optimizerWeightsSchema = exports.slotInputSchema = exports.slotConstraintsSchema = exports.conditionEnum = void 0;
+exports.optimizerRequestBodySchema = exports.optimizerPreferencesSchema = exports.preferenceSlidersSchema = exports.basePreferenceProfileSchema = exports.preferenceProfileSchema = exports.optimizerWeightsSchema = exports.slotInputSchema = exports.slotConstraintsSchema = void 0;
 const zod_1 = require("zod");
-exports.conditionEnum = zod_1.z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR", "HEAVY_USE"]);
 exports.slotConstraintsSchema = zod_1.z
     .object({
     minPrice: zod_1.z.number().nonnegative().optional(),
     maxPrice: zod_1.z.number().nonnegative().optional(),
-    minCondition: exports.conditionEnum.optional(),
     maxDistanceKm: zod_1.z.number().positive().optional(),
     allowAlternatives: zod_1.z.boolean().optional(),
 })
@@ -20,7 +18,6 @@ exports.slotInputSchema = zod_1.z
     categoryId: zod_1.z.string().min(1).optional(),
     specificListingId: zod_1.z.string().min(1).optional(),
     quantity: zod_1.z.number().int().positive().default(1),
-    minCondition: exports.conditionEnum.optional(),
     constraints: exports.slotConstraintsSchema,
 })
     .superRefine((slot, ctx) => {
@@ -43,7 +40,6 @@ exports.optimizerWeightsSchema = zod_1.z.object({
     price: zod_1.z.number().min(0),
     distance: zod_1.z.number().min(0),
     reliability: zod_1.z.number().min(0),
-    condition: zod_1.z.number().min(0),
     availability: zod_1.z.number().min(0),
 });
 exports.preferenceProfileSchema = zod_1.z.enum([
@@ -52,7 +48,6 @@ exports.preferenceProfileSchema = zod_1.z.enum([
     "closest",
     "minimalEffort",
     "professional",
-    "highQuality",
     "custom",
 ]);
 exports.basePreferenceProfileSchema = exports.preferenceProfileSchema.exclude([
@@ -62,17 +57,15 @@ exports.preferenceSlidersSchema = zod_1.z.object({
     price: zod_1.z.number().min(1).max(10),
     distance: zod_1.z.number().min(1).max(10),
     reliability: zod_1.z.number().min(1).max(10),
-    condition: zod_1.z.number().min(1).max(10),
     availability: zod_1.z.number().min(1).max(10),
     pickupSimplicity: zod_1.z.number().min(1).max(10),
 });
 exports.optimizerPreferencesSchema = zod_1.z.object({
     weights: exports.optimizerWeightsSchema.default({
         price: 0.2,
-        distance: 0.2,
-        reliability: 0.2,
-        condition: 0.2,
-        availability: 0.2,
+        distance: 0.25,
+        reliability: 0.25,
+        availability: 0.3,
     }),
     lambdaVariance: zod_1.z.number().min(0).default(0.35),
     alphaBottleneck: zod_1.z.number().min(0).default(0.25),
@@ -82,7 +75,7 @@ exports.optimizerPreferencesSchema = zod_1.z.object({
     topKPerSlot: zod_1.z.number().int().positive().max(200).default(30),
     beamWidth: zod_1.z.number().int().positive().max(500).default(50),
 });
-exports.optimizerRequestSchema = zod_1.z.object({
+exports.optimizerRequestBodySchema = zod_1.z.object({
     slots: zod_1.z.array(exports.slotInputSchema).min(1),
     dateRange: zod_1.z.object({
         startDate: zod_1.z.string(),
@@ -108,21 +101,5 @@ exports.optimizerRequestSchema = zod_1.z.object({
     preferenceProfile: exports.preferenceProfileSchema.optional(),
     basePreferenceProfile: exports.basePreferenceProfileSchema.optional(),
     preferenceSliders: exports.preferenceSlidersSchema.optional(),
-    preferences: exports.optimizerPreferencesSchema.default({
-        weights: {
-            price: 0.2,
-            distance: 0.2,
-            reliability: 0.2,
-            condition: 0.2,
-            availability: 0.2,
-        },
-        lambdaVariance: 0.35,
-        alphaBottleneck: 0.25,
-        betaPickup: 0.4,
-        gammaMaxDistance: 0.15,
-        alphaDistanceMix: 0.6,
-        topKPerSlot: 30,
-        beamWidth: 50,
-    }),
 });
 //# sourceMappingURL=bundle-optimizer.types.js.map

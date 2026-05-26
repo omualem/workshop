@@ -31,7 +31,6 @@ __decorate([
     __metadata("design:type", String)
 ], BookingItemInputDto.prototype, "pickupMethod", void 0);
 class CreateBookingDto {
-    bundleCandidateId;
     startDate;
     endDate;
     totalPrice;
@@ -39,11 +38,6 @@ class CreateBookingDto {
     items;
 }
 exports.CreateBookingDto = CreateBookingDto;
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateBookingDto.prototype, "bundleCandidateId", void 0);
 __decorate([
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)

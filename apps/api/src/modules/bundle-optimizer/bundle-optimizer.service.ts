@@ -6,7 +6,10 @@ import { BundleScoringService } from "./bundle-scoring.service";
 import { CandidateFilterService } from "./candidate-filter.service";
 import { ParetoFilterService } from "./pareto-filter.service";
 import { PreferenceMappingService } from "./preference-mapping.service";
-import type { OptimizerRequest } from "./bundle-optimizer.types";
+import type {
+  OptimizerRequest,
+  OptimizerRequestBody,
+} from "./bundle-optimizer.types";
 
 @Injectable()
 export class BundleOptimizerService {
@@ -20,20 +23,29 @@ export class BundleOptimizerService {
     private readonly preferenceMapping: PreferenceMappingService,
   ) {}
 
-  async optimize(request: OptimizerRequest) {
-    request = await this.resolveRenterLocation(request);
-    const resolvedPreferences =
-      this.preferenceMapping.resolvePreferences(request);
-    request = {
-      ...request,
-      preferenceProfile: resolvedPreferences.profile,
-      basePreferenceProfile: resolvedPreferences.baseProfile,
-      preferenceSliders: resolvedPreferences.sliders,
+  async optimize(input: OptimizerRequestBody | OptimizerRequest) {
+    // Resolve user-facing inputs into the full internal request. Any
+    // `preferences` field that slipped past Zod (e.g. from tests) is
+    // overwritten — algorithm parameters are server-owned.
+    const resolved = this.preferenceMapping.resolvePreferences(input);
+    let request: OptimizerRequest = {
+      ...input,
+      preferenceProfile: resolved.profile,
+      basePreferenceProfile: resolved.baseProfile,
+      preferenceSliders: resolved.sliders,
       preferences: {
-        ...request.preferences,
-        weights: resolvedPreferences.weights,
+        weights: resolved.weights,
+        lambdaVariance: resolved.lambdaVariance,
+        alphaBottleneck: resolved.alphaBottleneck,
+        betaPickup: resolved.betaPickup,
+        gammaMaxDistance: resolved.gammaMaxDistance,
+        alphaDistanceMix: resolved.alphaDistanceMix,
+        topKPerSlot: resolved.topKPerSlot,
+        beamWidth: resolved.beamWidth,
       },
     };
+    request = await this.resolveRenterLocation(request);
+    const resolvedPreferences = resolved;
 
     const { candidatesBySlot, counts, expandedSlots, slotDebug } =
       await this.candidateFilter.buildCandidatesPerSlot(request);

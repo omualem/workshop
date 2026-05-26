@@ -6,7 +6,7 @@
  * algorithm end-to-end:
  *   • 3 categories
  *   • 2 lenders
- *   • 6 listings (2 per category, mixed price/condition/distance)
+ *   • 6 listings (2 per category, mixed price/distance)
  *
  * Run with:
  *
@@ -16,7 +16,7 @@
  * separately so the production-like reset flow keeps `Listing` count at 0.
  */
 
-import { PrismaClient, ListingCondition, ListingStatus, UserRole } from "@prisma/client";
+import { PrismaClient, ListingStatus, UserRole } from "@prisma/client";
 import * as argon2 from "argon2";
 
 const prisma = new PrismaClient();
@@ -48,12 +48,12 @@ const FIXTURE = {
     },
   ],
   listings: [
-    { id: "demo-l-cam-1", categoryId: "demo-cat-camera",   lenderId: "demo-lender-1", titleHe: "Sony A7 IV",       price: 320, condition: ListingCondition.LIKE_NEW },
-    { id: "demo-l-cam-2", categoryId: "demo-cat-camera",   lenderId: "demo-lender-2", titleHe: "Canon R6",          price: 280, condition: ListingCondition.GOOD },
-    { id: "demo-l-tri-1", categoryId: "demo-cat-tripod",   lenderId: "demo-lender-1", titleHe: "Manfrotto 055",     price:  90, condition: ListingCondition.GOOD },
-    { id: "demo-l-tri-2", categoryId: "demo-cat-tripod",   lenderId: "demo-lender-2", titleHe: "Sirui T-2204",      price:  70, condition: ListingCondition.FAIR },
-    { id: "demo-l-lig-1", categoryId: "demo-cat-lighting", lenderId: "demo-lender-1", titleHe: "Aputure 300x",      price: 220, condition: ListingCondition.LIKE_NEW },
-    { id: "demo-l-lig-2", categoryId: "demo-cat-lighting", lenderId: "demo-lender-2", titleHe: "Godox SL150",       price: 150, condition: ListingCondition.GOOD },
+    { id: "demo-l-cam-1", categoryId: "demo-cat-camera",   lenderId: "demo-lender-1", titleHe: "Sony A7 IV",       price: 320 },
+    { id: "demo-l-cam-2", categoryId: "demo-cat-camera",   lenderId: "demo-lender-2", titleHe: "Canon R6",          price: 280 },
+    { id: "demo-l-tri-1", categoryId: "demo-cat-tripod",   lenderId: "demo-lender-1", titleHe: "Manfrotto 055",     price:  90 },
+    { id: "demo-l-tri-2", categoryId: "demo-cat-tripod",   lenderId: "demo-lender-2", titleHe: "Sirui T-2204",      price:  70 },
+    { id: "demo-l-lig-1", categoryId: "demo-cat-lighting", lenderId: "demo-lender-1", titleHe: "Aputure 300x",      price: 220 },
+    { id: "demo-l-lig-2", categoryId: "demo-cat-lighting", lenderId: "demo-lender-2", titleHe: "Godox SL150",       price: 150 },
   ],
 };
 
@@ -116,7 +116,6 @@ async function main() {
         titleEn: l.titleHe,
         descriptionHe: "פריט להשכרה לאלגוריתם הדגמה",
         descriptionEn: "Demo rental item",
-        condition: l.condition,
         status: ListingStatus.ACTIVE,
         basePriceDaily: l.price,
         depositAmount: l.price,

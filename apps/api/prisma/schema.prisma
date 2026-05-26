@@ -42,14 +42,6 @@ enum CategoryStatus {
   ARCHIVED
 }
 
-enum ListingCondition {
-  NEW
-  LIKE_NEW
-  GOOD
-  FAIR
-  HEAVY_USE
-}
-
 enum ListingStatus {
   DRAFT
   PENDING_REVIEW
@@ -98,12 +90,6 @@ enum PickupMethod {
   HYBRID
 }
 
-enum BundleSearchStatus {
-  PROCESSING
-  READY
-  FAILED
-}
-
 enum DisputeStatus {
   OPEN
   UNDER_REVIEW
@@ -146,7 +132,6 @@ model User {
   notifications    Notification[]
   openedDisputes   Dispute[]        @relation("OpenedDisputes")
   assignedDisputes Dispute[]        @relation("AssignedDisputes")
-  rankingConfigs   RankingConfig[]  @relation("RankingConfigUpdatedBy")
 }
 
 model RefreshSession {
@@ -171,7 +156,6 @@ model RenterProfile {
   preferences          Json?
   verificationStatus   VerificationStatus    @default(UNVERIFIED)
   user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bundleSearchRequests BundleSearchRequest[]
 }
 
 model LenderProfile {
@@ -194,7 +178,6 @@ model LenderProfile {
   listings                   Listing[]
   deliveryWindows            DeliveryWindow[]
   bookingItems               BookingItem[]
-  bundleCandidateItems       BundleCandidateItem[]
 
   @@index([averageRating])
   @@index([completedTransactionsCount])
@@ -255,11 +238,12 @@ model Listing {
   descriptionEn        String
   suitableFor          String?
   mainUses             String?
-  condition            ListingCondition
   status               ListingStatus              @default(DRAFT)
   basePriceDaily       Decimal
   depositAmount        Decimal
   qualityScoreCached   Decimal                    @default(0)
+  popularityScore      Decimal?
+  manualPriorityBoost  Decimal?
   pickupLat            Decimal
   pickupLng            Decimal
   pickupAddressText    String
@@ -287,12 +271,10 @@ model Listing {
   bookingItems         BookingItem[]
   reviews              Review[]
   favorites            Favorite[]
-  bundleCandidateItems BundleCandidateItem[]
 
   @@index([categoryId])
   @@index([status])
   @@index([basePriceDaily])
-  @@index([condition])
   @@index([lenderId])
   @@index([pickupLat, pickupLng])
   @@index([categoryId, status])
@@ -360,7 +342,6 @@ model PricingRule {
 model Booking {
   id                       String           @id @default(uuid())
   renterId                 String
-  bundleCandidateId        String?
   status                   BookingStatus    @default(PENDING)
   startDate                DateTime
   endDate                  DateTime
@@ -373,7 +354,6 @@ model Booking {
   createdAt                DateTime         @default(now())
   updatedAt                DateTime         @updatedAt
   renter                   User             @relation("RenterBookings", fields: [renterId], references: [id], onDelete: Cascade)
-  bundleCandidate          BundleCandidate? @relation(fields: [bundleCandidateId], references: [id])
   items                    BookingItem[]
   review                   Review?
   disputes                 Dispute[]
@@ -417,75 +397,6 @@ model Review {
 
   @@index([revieweeUserId])
   @@index([listingId])
-}
-
-model BundleSearchRequest {
-  id                  String             @id @default(uuid())
-  renterId            String?
-  searchSessionId     String
-  dateRangeStart      DateTime
-  dateRangeEnd        DateTime
-  requestedItems      Json
-  renterLocationLat   Decimal
-  renterLocationLng   Decimal
-  renterAddressText   String
-  weightPreferences   Json
-  resultsSnapshot     Json?
-  debugSnapshot       Json?
-  maxBudget           Decimal?
-  maxPickupPoints     Int?
-  sameLenderPreferred Boolean            @default(false)
-  deliveryPreferred   Boolean            @default(false)
-  exactDatesOnly      Boolean            @default(true)
-  status              BundleSearchStatus @default(PROCESSING)
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  renter              RenterProfile?     @relation(fields: [renterId], references: [userId], onDelete: SetNull)
-  candidates          BundleCandidate[]
-
-  @@index([renterId, createdAt])
-}
-
-model BundleCandidate {
-  id                   String                @id @default(uuid())
-  searchRequestId      String
-  scoreTotal           Decimal
-  priceScore           Decimal
-  reliabilityScore     Decimal
-  logisticsScore       Decimal
-  availabilityScore    Decimal
-  productQualityScore  Decimal
-  stabilityScore       Decimal
-  explanation          Json
-  debugData            Json?
-  totalPrice           Decimal
-  totalDistanceKm      Decimal
-  pickupPointsCount    Int
-  lendersCount         Int
-  exactAvailabilityFit Boolean               @default(true)
-  rankIndex            Int
-  label                String?
-  createdAt            DateTime              @default(now())
-  searchRequest        BundleSearchRequest   @relation(fields: [searchRequestId], references: [id], onDelete: Cascade)
-  items                BundleCandidateItem[]
-  bookings             Booking[]
-
-  @@index([searchRequestId, rankIndex])
-}
-
-model BundleCandidateItem {
-  id                 String          @id @default(uuid())
-  bundleCandidateId  String
-  requestedSlotKey   String
-  listingId          String
-  lenderId           String
-  quantity           Int             @default(1)
-  contributionScores Json
-  bundleCandidate    BundleCandidate @relation(fields: [bundleCandidateId], references: [id], onDelete: Cascade)
-  listing            Listing         @relation(fields: [listingId], references: [id])
-  lender             LenderProfile   @relation(fields: [lenderId], references: [userId])
-
-  @@index([bundleCandidateId])
 }
 
 model AuditLog {
@@ -562,20 +473,6 @@ model FeatureFlag {
   enabled     Boolean  @default(false)
   payload     Json?
   updatedAt   DateTime @updatedAt
-}
-
-model RankingConfig {
-  id                String   @id @default(uuid())
-  presetKey         String   @unique
-  displayNameHe     String
-  weights           Json
-  lowScoreThreshold Decimal  @default(5.2)
-  stdDevAlpha       Decimal  @default(0.35)
-  lowScoreBeta      Decimal  @default(0.60)
-  bottleneckGamma   Decimal  @default(0.28)
-  updatedByUserId   String?
-  updatedAt         DateTime @updatedAt
-  updatedBy         User?    @relation("RankingConfigUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
 }
 
 model DeliveryWindow {

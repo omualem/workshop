@@ -7,9 +7,10 @@ export const dynamic = "force-dynamic";
 export default function AdminCategoriesPage() {
   return (
     <DashboardShell
-      title="ניהול קטגוריות"
-      subtitle="יצירה, עריכה וארגון של עץ הקטגוריות ומאפייני הקטגוריה."
+      title="קטגוריות"
+      subtitle="ניהול עץ הקטגוריות — הוספה, עריכה, ארכוב והגדרת מאפיינים."
       navItems={adminNavItems}
+      activeHref="/admin/categories"
     >
       <CategoryManager />
     </DashboardShell>

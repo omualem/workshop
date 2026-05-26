@@ -13,7 +13,6 @@ exports.PREFERENCE_SLIDER_TEMPLATES = {
         price: 7,
         distance: 7,
         reliability: 7,
-        condition: 7,
         availability: 7,
         pickupSimplicity: 7,
     },
@@ -21,7 +20,6 @@ exports.PREFERENCE_SLIDER_TEMPLATES = {
         price: 10,
         distance: 6,
         reliability: 5,
-        condition: 4,
         availability: 7,
         pickupSimplicity: 5,
     },
@@ -29,7 +27,6 @@ exports.PREFERENCE_SLIDER_TEMPLATES = {
         price: 5,
         distance: 10,
         reliability: 6,
-        condition: 5,
         availability: 7,
         pickupSimplicity: 8,
     },
@@ -37,7 +34,6 @@ exports.PREFERENCE_SLIDER_TEMPLATES = {
         price: 5,
         distance: 8,
         reliability: 7,
-        condition: 6,
         availability: 8,
         pickupSimplicity: 10,
     },
@@ -45,18 +41,18 @@ exports.PREFERENCE_SLIDER_TEMPLATES = {
         price: 4,
         distance: 5,
         reliability: 10,
-        condition: 10,
         availability: 9,
         pickupSimplicity: 7,
     },
-    highQuality: {
-        price: 5,
-        distance: 5,
-        reliability: 8,
-        condition: 10,
-        availability: 8,
-        pickupSimplicity: 6,
-    },
+};
+const ALGORITHM_DEFAULTS = {
+    lambdaVariance: 0.35,
+    alphaBottleneck: 0.25,
+    betaPickup: 0.4,
+    gammaMaxDistance: 0.15,
+    alphaDistanceMix: 0.6,
+    topKPerSlot: 30,
+    beamWidth: 50,
 };
 let PreferenceMappingService = class PreferenceMappingService {
     resolvePreferences(input) {
@@ -70,9 +66,8 @@ let PreferenceMappingService = class PreferenceMappingService {
         const sumCore = sliders.price +
             sliders.distance +
             sliders.reliability +
-            sliders.condition +
             sliders.availability;
-        const qualityMean = (sliders.reliability + sliders.condition + sliders.availability) / 3;
+        const confidenceMean = (sliders.reliability + sliders.availability) / 2;
         return {
             profile,
             ...(profile === "custom" && baseProfile ? { baseProfile } : {}),
@@ -81,7 +76,6 @@ let PreferenceMappingService = class PreferenceMappingService {
                 price: sliders.price / sumCore,
                 distance: sliders.distance / sumCore,
                 reliability: sliders.reliability / sumCore,
-                condition: sliders.condition / sumCore,
                 availability: sliders.availability / sumCore,
             },
             penaltyWeights: {
@@ -90,15 +84,15 @@ let PreferenceMappingService = class PreferenceMappingService {
                     price: clamp(sliders.price / 7),
                     distance: clamp(sliders.distance / 7),
                     reliability: clamp(sliders.reliability / 7),
-                    condition: clamp(sliders.condition / 7),
                     availability: clamp(sliders.availability / 7),
                 },
                 maxDistance: clamp(sliders.distance / 7),
                 variance: clamp(1 +
-                    Math.max(0, Math.min(sliders.reliability, sliders.condition, sliders.availability) - 7) *
+                    Math.max(0, Math.min(sliders.reliability, sliders.availability) - 7) *
                         0.05),
-                bottleneck: clamp(1 + (qualityMean - 7) * 0.05),
+                bottleneck: clamp(1 + (confidenceMean - 7) * 0.05),
             },
+            ...ALGORITHM_DEFAULTS,
         };
     }
     resolveProfile(requestedProfile, sliders) {

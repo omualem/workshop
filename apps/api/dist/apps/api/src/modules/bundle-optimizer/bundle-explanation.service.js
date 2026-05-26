@@ -25,12 +25,9 @@ let BundleExplanationService = class BundleExplanationService {
         }
         else if (metrics.availability < 7) {
             const weakest = this.weakestBy(bundle.items, (i) => i.m_availability);
-            if (weakest) {
-                tradeoffs.push(`זמינות נמוכה לאחד הפריטים בתאריכים שבחרת: ${weakest.titleHe}`);
-            }
-            else {
-                tradeoffs.push("חלק מהפריטים זמינים בקושי בתאריכים שבחרת");
-            }
+            tradeoffs.push(weakest
+                ? `זמינות נמוכה לאחד הפריטים בתאריכים שבחרת: ${weakest.titleHe}`
+                : "חלק מהפריטים זמינים בקושי בתאריכים שבחרת");
         }
         if (bundle.uniquePickupCount === 1) {
             explanations.push("נקודת איסוף אחת בלבד");
@@ -39,33 +36,18 @@ let BundleExplanationService = class BundleExplanationService {
             tradeoffs.push(`האיסוף מתבצע מ-${bundle.uniquePickupCount} נקודות שונות`);
         }
         if (metrics.reliability >= 8) {
-            explanations.push("המשכירים בחבילה בעלי דירוג גבוה");
+            explanations.push("המשכירים בחבילה בעלי דירוג אמינות גבוה");
         }
         else if (metrics.reliability < 6.5) {
             const weakest = this.weakestBy(bundle.items, (i) => i.m_reliability);
-            if (weakest) {
-                tradeoffs.push(`אמינות אחד המשכירים נמוכה יחסית (פריט: ${weakest.titleHe})`);
-            }
-            else {
-                tradeoffs.push("דירוג האמינות של המשכירים נמוך מהממוצע");
-            }
+            tradeoffs.push(weakest
+                ? `אמינות אחד המשכירים נמוכה יחסית (פריט: ${weakest.titleHe})`
+                : "דירוג האמינות של המשכירים נמוך מהממוצע");
         }
         const newLender = bundle.items.find((i) => i.lenderCompletedTransactions !== undefined &&
             i.lenderCompletedTransactions < 5);
         if (newLender) {
             tradeoffs.push("בחבילה יש משכיר חדש יחסית עם מעט עסקאות קודמות");
-        }
-        if (metrics.condition >= 8) {
-            explanations.push("מצב המוצרים בחבילה גבוה");
-        }
-        else if (metrics.condition < 6.5) {
-            const weakest = this.weakestBy(bundle.items, (i) => i.m_condition);
-            if (weakest && weakest.m_condition < 6.5) {
-                tradeoffs.push(`אחד הפריטים בחבילה במצב נמוך יחסית: ${weakest.titleHe}`);
-            }
-            else {
-                tradeoffs.push("מצב אחד הפריטים מוריד את ציון החבילה");
-            }
         }
         if (metrics.distance >= 7) {
             explanations.push("מרחק האיסוף קצר יחסית");
@@ -73,7 +55,9 @@ let BundleExplanationService = class BundleExplanationService {
         else if (metrics.distance < 4) {
             tradeoffs.push("החבילה כוללת נקודת איסוף רחוקה יחסית");
         }
-        if (derived.maxDistance >= 15 && derived.avgDistance > 0 && derived.maxDistance > 1.6 * derived.avgDistance) {
+        if (derived.maxDistance >= 15 &&
+            derived.avgDistance > 0 &&
+            derived.maxDistance > 1.6 * derived.avgDistance) {
             tradeoffs.push(`נקודת איסוף אחת רחוקה במיוחד (${derived.maxDistance.toFixed(1)} ק״מ)`);
         }
         if (derived.deviationDaysSum > 0) {
@@ -89,9 +73,6 @@ let BundleExplanationService = class BundleExplanationService {
         if (sliders.reliability >= 8 && metrics.reliability < 6.5) {
             tradeoffs.push("למרות שהוגדרה חשיבות גבוהה לאמינות, אחד המשכירים בחבילה קיבל ציון אמינות נמוך יחסית.");
         }
-        if (sliders.condition >= 8 && metrics.condition < 6.5) {
-            tradeoffs.push("למרות שהוגדרה חשיבות גבוהה למצב המוצר, אחד הפריטים במצב נמוך יחסית.");
-        }
         if (sliders.pickupSimplicity >= 8 && bundle.uniquePickupCount > 1) {
             tradeoffs.push("למרות שהוגדרה חשיבות גבוהה לקלות איסוף, החבילה כוללת יותר מנקודת איסוף אחת.");
         }
@@ -105,7 +86,6 @@ let BundleExplanationService = class BundleExplanationService {
                 price: round(metrics.price),
                 distance: round(metrics.distance),
                 reliability: round(metrics.reliability),
-                condition: round(metrics.condition),
                 availability: round(metrics.availability),
             },
             scoreBreakdown: {
@@ -135,7 +115,6 @@ let BundleExplanationService = class BundleExplanationService {
                 price: round(breakdown.lowScorePenaltyBreakdown.price),
                 distance: round(breakdown.lowScorePenaltyBreakdown.distance),
                 reliability: round(breakdown.lowScorePenaltyBreakdown.reliability),
-                condition: round(breakdown.lowScorePenaltyBreakdown.condition),
                 availability: round(breakdown.lowScorePenaltyBreakdown.availability),
             },
             derived: {
@@ -158,7 +137,6 @@ let BundleExplanationService = class BundleExplanationService {
                 lenderId: item.lenderId,
                 titleHe: item.titleHe,
                 titleEn: item.titleEn,
-                condition: item.condition,
                 price: round(item.price),
                 distanceKm: round(item.distanceKm),
                 attributes: item.attributeValues,
@@ -198,7 +176,7 @@ let BundleExplanationService = class BundleExplanationService {
             case "minimalEffort":
                 return "המערכת נתנה עדיפות לאיסוף פשוט ולכן חבילות עם פחות נקודות איסוף קיבלו יתרון.";
             case "professional":
-                return "המערכת נתנה עדיפות לאמינות, מצב מוצר וזמינות בגלל פרופיל הפקה מקצועית.";
+                return "המערכת נתנה עדיפות לאמינות ולזמינות בגלל פרופיל הפקה מקצועית.";
             case "custom":
                 return "הדירוג חושב לפי המשקלים שהוגדרו ידנית.";
             default:

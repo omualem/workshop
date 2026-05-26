@@ -27,7 +27,7 @@ export function SearchPagination({
   if (totalPages <= 1) {
     return (
       <div className="mt-8 text-center text-sm text-slate-500">
-        {total} {total === 1 ? "פריט" : "פריטים"} סה״כ
+        סה״כ {total} {total === 1 ? "פריט" : "פריטים"}
       </div>
     );
   }
@@ -37,7 +37,7 @@ export function SearchPagination({
   return (
     <div className="mt-10 flex flex-col items-center gap-4">
       <p className="text-sm text-slate-500">
-        עמוד {page} מתוך {totalPages} · {total} פריטים סה״כ
+        עמוד {page} מתוך {totalPages} · סה״כ {total} פריטים
       </p>
       <div className="flex items-center gap-1">
         <button

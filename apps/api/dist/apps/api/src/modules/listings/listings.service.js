@@ -120,7 +120,6 @@ let ListingsService = class ListingsService {
                     ? { id: normalized.category.id, nameHe: normalized.category.nameHe }
                     : null,
                 basePriceDaily: normalized.basePriceDaily,
-                condition: normalized.condition,
                 city: null,
                 lenderName: normalized.lender?.displayName ?? normalized.lender?.user?.fullName ?? null,
                 thumbnail: normalized.media?.[0]?.url ?? null,
@@ -441,11 +440,189 @@ let ListingsService = class ListingsService {
         }
         return { id };
     }
+    async adminDuplicate(id, actorUserId) {
+        const existing = await this.prisma.listing.findUnique({
+            where: { id },
+            include: {
+                media: { orderBy: { sortOrder: "asc" } },
+                attributeValues: true,
+                availabilityBlocks: { orderBy: { startDate: "asc" } },
+                pricingRules: true,
+            },
+        });
+        if (!existing) {
+            throw new common_1.NotFoundException("Listing not found");
+        }
+        const duplicated = await this.prisma.listing.create({
+            data: {
+                lender: { connect: { userId: existing.lenderId } },
+                category: { connect: { id: existing.categoryId } },
+                cityRef: existing.cityId ? { connect: { id: existing.cityId } } : undefined,
+                streetRef: existing.streetId
+                    ? { connect: { id: existing.streetId } }
+                    : undefined,
+                addressNumber: existing.addressNumber,
+                titleHe: `${existing.titleHe} (עותק)`,
+                titleEn: `${existing.titleEn} (Copy)`,
+                descriptionHe: existing.descriptionHe,
+                descriptionEn: existing.descriptionEn,
+                suitableFor: existing.suitableFor,
+                mainUses: existing.mainUses,
+                status: existing.status,
+                basePriceDaily: existing.basePriceDaily,
+                depositAmount: existing.depositAmount,
+                qualityScoreCached: existing.qualityScoreCached,
+                popularityScore: existing.popularityScore,
+                manualPriorityBoost: existing.manualPriorityBoost,
+                pickupLat: existing.pickupLat,
+                pickupLng: existing.pickupLng,
+                pickupAddressText: existing.pickupAddressText,
+                city: existing.city,
+                pickupInstructions: existing.pickupInstructions,
+                deliverySupported: existing.deliverySupported,
+                includedItems: existing.includedItems,
+                cancellationPolicy: existing.cancellationPolicy,
+                returnTerms: existing.returnTerms,
+                requiresOperator: existing.requiresOperator,
+                setupRequired: existing.setupRequired,
+                inventoryCount: existing.inventoryCount,
+                minRentalDays: existing.minRentalDays,
+                maxRentalDays: existing.maxRentalDays,
+                media: existing.media.length
+                    ? {
+                        create: existing.media.map((media) => ({
+                            url: media.url,
+                            sortOrder: media.sortOrder,
+                            altText: media.altText,
+                        })),
+                    }
+                    : undefined,
+                attributeValues: existing.attributeValues.length
+                    ? {
+                        create: existing.attributeValues.map((attribute) => ({
+                            attributeKey: attribute.attributeKey,
+                            attributeValue: attribute.attributeValue,
+                        })),
+                    }
+                    : undefined,
+                availabilityBlocks: existing.availabilityBlocks.length
+                    ? {
+                        create: existing.availabilityBlocks.map((block) => ({
+                            startDate: block.startDate,
+                            endDate: block.endDate,
+                            status: block.status,
+                            quantity: block.quantity,
+                            reason: block.reason,
+                        })),
+                    }
+                    : undefined,
+                pricingRules: existing.pricingRules.length
+                    ? {
+                        create: existing.pricingRules.map((rule) => ({
+                            ruleType: rule.ruleType,
+                            minDays: rule.minDays,
+                            maxDays: rule.maxDays,
+                            percentDiscount: rule.percentDiscount,
+                            fixedOverride: rule.fixedOverride,
+                            weekendAdjustment: rule.weekendAdjustment,
+                            seasonalAdjustment: rule.seasonalAdjustment,
+                            startsAt: rule.startsAt,
+                            endsAt: rule.endsAt,
+                            metadata: rule.metadata,
+                        })),
+                    }
+                    : undefined,
+            },
+            include: {
+                category: true,
+                cityRef: true,
+                streetRef: true,
+                lender: {
+                    include: {
+                        user: true,
+                    },
+                },
+                media: {
+                    orderBy: { sortOrder: "asc" },
+                },
+                attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
+            },
+        });
+        await this.auditService.log({
+            actorUserId,
+            action: "admin.listing.duplicate",
+            entityType: "Listing",
+            entityId: duplicated.id,
+            before: existing,
+            after: duplicated,
+        });
+        return (0, prisma_utils_1.normalizeDecimalObject)(duplicated);
+    }
+    async adminChangeOwner(id, lenderId, actorUserId) {
+        const existing = await this.prisma.listing.findUnique({
+            where: { id },
+            include: {
+                category: true,
+                cityRef: true,
+                streetRef: true,
+                lender: {
+                    include: {
+                        user: true,
+                    },
+                },
+                media: {
+                    orderBy: { sortOrder: "asc" },
+                },
+                attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
+            },
+        });
+        if (!existing) {
+            throw new common_1.NotFoundException("Listing not found");
+        }
+        const updated = await this.prisma.listing.update({
+            where: { id },
+            data: {
+                lender: { connect: { userId: lenderId } },
+            },
+            include: {
+                category: true,
+                cityRef: true,
+                streetRef: true,
+                lender: {
+                    include: {
+                        user: true,
+                    },
+                },
+                media: {
+                    orderBy: { sortOrder: "asc" },
+                },
+                attributeValues: true,
+                availabilityBlocks: {
+                    orderBy: { startDate: "asc" },
+                },
+            },
+        });
+        await this.auditService.log({
+            actorUserId,
+            action: "admin.listing.change-owner",
+            entityType: "Listing",
+            entityId: id,
+            before: existing,
+            after: updated,
+        });
+        return (0, prisma_utils_1.normalizeDecimalObject)(updated);
+    }
     async buildListingWriteData(dto, lenderId, status) {
         this.assertRentalDayBounds(dto.minRentalDays, dto.maxRentalDays);
         const location = await this.resolvePickupLocation(dto);
         if (!location) {
-            throw new common_1.BadRequestException("Listing pickup location is required");
+            throw new common_1.BadRequestException("יש לבחור כתובת תקינה או לאמת כתובת");
         }
         return {
             lender: { connect: { userId: lenderId } },
@@ -459,11 +636,12 @@ let ListingsService = class ListingsService {
             descriptionEn: dto.descriptionEn,
             suitableFor: dto.suitableFor,
             mainUses: dto.mainUses,
-            condition: dto.condition,
             status,
             basePriceDaily: dto.basePriceDaily,
             depositAmount: dto.depositAmount,
             qualityScoreCached: 0,
+            popularityScore: dto.popularityScore,
+            manualPriorityBoost: dto.manualPriorityBoost,
             pickupLat: location.pickupLat,
             pickupLng: location.pickupLng,
             pickupAddressText: location.pickupAddressText,
@@ -531,10 +709,11 @@ let ListingsService = class ListingsService {
             descriptionEn: dto.descriptionEn,
             suitableFor: dto.suitableFor,
             mainUses: dto.mainUses,
-            condition: dto.condition,
             status: "status" in dto ? dto.status : undefined,
             basePriceDaily: dto.basePriceDaily,
             depositAmount: dto.depositAmount,
+            popularityScore: dto.popularityScore,
+            manualPriorityBoost: dto.manualPriorityBoost,
             pickupLat: location?.pickupLat,
             pickupLng: location?.pickupLng,
             pickupAddressText: location?.pickupAddressText,
@@ -600,8 +779,6 @@ let ListingsService = class ListingsService {
             cityId: dto.cityId,
             streetId: dto.streetId,
             addressNumber: dto.addressNumber,
-            pickupLat: dto.pickupLat,
-            pickupLng: dto.pickupLng,
         }, existing);
     }
     async requireLenderOwnedListing(lenderId, listingId) {
@@ -826,7 +1003,6 @@ let ListingsService = class ListingsService {
             depositAmount: 500,
             minRentalDays: 1,
             maxRentalDays: 7,
-            condition: "LIKE_NEW",
             deliverySupported: true,
             pickupAddressText: "צפון תל אביב",
             city: "תל אביב",

@@ -3,7 +3,7 @@ import { DashboardShell } from "../../../components/dashboard-shell";
 
 const navItems = [
   { href: "/lender/dashboard", label: "סקירה" },
-  { href: "/lender/listings", label: "Listings" },
+  { href: "/lender/listings", label: "פריטים שלי" },
   { href: "/lender/availability", label: "זמינות" },
   { href: "/lender/pricing", label: "תמחור" },
   { href: "/lender/bookings", label: "הזמנות" },
@@ -14,8 +14,10 @@ const navItems = [
 
 export default function LenderListingsPage() {
   return (
-    <DashboardShell title="ניהול Listings" subtitle="יצירה, עריכה, media, מאפיינים, moderation hints." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">כאן המלווה יוצר listings, מעלה תמונות, ממלא attributes ורואה hints לשיפור ציון איכות.</Card>
+    <DashboardShell title="ניהול פריטים" subtitle="הוספה ועריכה של פריטים, תמונות, מאפיינים והמלצות לשיפור איכות ההצגה." navItems={navItems}>
+      <Card className="text-sm leading-7 text-slate-600">
+        כאן תוסיפו פריטים חדשים, תעלו תמונות, תמלאו פרטים טכניים ותקבלו טיפים לשיפור הופעת הפריטים בחיפושים ובחבילות.
+      </Card>
     </DashboardShell>
   );
 }

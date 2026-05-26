@@ -14,7 +14,6 @@ const config: Config = {
   },
   moduleNameMapper: {
     "^@rental/config$": "<rootDir>/../../packages/config/src/index.ts",
-    "^@rental/scoring$": "<rootDir>/../../packages/scoring/src/index.ts",
     "^@rental/types$": "<rootDir>/../../packages/types/src/index.ts",
     "^@rental/utils$": "<rootDir>/../../packages/utils/src/index.ts",
   },

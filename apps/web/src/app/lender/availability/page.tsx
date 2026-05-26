@@ -3,7 +3,7 @@ import { DashboardShell } from "../../../components/dashboard-shell";
 
 const navItems = [
   { href: "/lender/dashboard", label: "סקירה" },
-  { href: "/lender/listings", label: "Listings" },
+  { href: "/lender/listings", label: "פריטים שלי" },
   { href: "/lender/availability", label: "זמינות" },
   { href: "/lender/pricing", label: "תמחור" },
   { href: "/lender/bookings", label: "הזמנות" },
@@ -14,8 +14,10 @@ const navItems = [
 
 export default function LenderAvailabilityPage() {
   return (
-    <DashboardShell title="לוח זמינות" subtitle="חסימות תאריכים, תחזוקה והגנת overlap." navItems={navItems}>
-      <Card className="text-sm leading-7 text-slate-600">המסך נבנה ל-RTL ויציג blocks, booking conflicts והמלצות לשיפור כיסוי זמינות.</Card>
+    <DashboardShell title="ניהול זמינות" subtitle="חסימת תאריכים, ניהול תחזוקה ומניעת התנגשויות בהזמנות." navItems={navItems}>
+      <Card className="text-sm leading-7 text-slate-600">
+        כאן תוכלו לחסום ימים שבהם הפריטים לא זמינים, לסמן תקופות תחזוקה ולוודא שלא יישלחו הזמנות סותרות.
+      </Card>
     </DashboardShell>
   );
 }

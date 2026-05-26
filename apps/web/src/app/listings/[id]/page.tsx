@@ -4,7 +4,6 @@ import {
   LenderSummaryCard,
   ProductAttributesTable,
   ProductAvailabilityChecker,
-  ProductConditionCard,
   ProductDescriptionSection,
   ProductHeader,
   ProductImageGallery,
@@ -35,7 +34,6 @@ export default async function ListingDetailsPage({
         <ProductPriceCard product={listing} />
         <ProductDescriptionSection product={listing} />
         <ProductAttributesTable attributes={listing.attributes} />
-        <ProductConditionCard condition={listing.condition} />
         <ProductAvailabilityChecker listingId={listing.id} />
         <ProductLocationCard product={listing} />
         <LenderSummaryCard product={listing} />

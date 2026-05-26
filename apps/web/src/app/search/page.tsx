@@ -23,10 +23,10 @@ export default async function SearchPage({
     <SiteShell activeHref="/search">
       <div className="surface-section py-14">
         <div className="mb-8">
-          <div className="surface-eyebrow">Marketplace</div>
-          <h1 className="mt-3 text-4xl font-semibold text-slate-950">חיפוש ציוד</h1>
+          <div className="surface-eyebrow">קטלוג</div>
+          <h1 className="mt-3 text-4xl font-semibold text-slate-950">חיפוש פריטים להשכרה</h1>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600">
-            קטלוג ציבורי עם פילטרים לפי קטגוריה, מחיר ותאריכים. סנן, גלה והמשך לבניית חבילה.
+            סננו לפי קטגוריה, מחיר ותאריכים. מצאתם מה שצריך? הוסיפו לחבילה ונבנה לכם את ההזמנה האופטימלית.
           </p>
         </div>
 
@@ -38,16 +38,16 @@ export default async function SearchPage({
             {result.items.length === 0 ? (
               <div className="rounded-3xl border border-slate-200 bg-white p-16 text-center">
                 <p className="text-lg font-medium text-slate-700">
-                  לא נמצאו פריטים תואמים למסננים שבחרת
+                  לא מצאנו פריטים שמתאימים לסינון
                 </p>
                 <p className="mt-2 text-sm text-slate-500">
-                  נסו להרחיב את טווח המחיר, לבחור קטגוריה אחרת או לשנות את התאריכים.
+                  נסו להרחיב את טווח המחיר, לבחור קטגוריה אחרת או לעדכן את התאריכים.
                 </p>
               </div>
             ) : (
               <>
                 <p className="mb-5 text-sm text-slate-500">
-                  {result.total} פריטים נמצאו · עמוד {result.page}
+                  נמצאו {result.total} פריטים · עמוד {result.page}
                 </p>
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {result.items.map((listing: any) => (

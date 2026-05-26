@@ -3,12 +3,12 @@ import { Injectable } from "@nestjs/common";
 /**
  * Metric normalization — every M_j(x) ∈ [0, 10].
  *
- * The optimizer evaluates candidates on FIVE dimensions:
- *   M_price, M_distance, M_reliability, M_condition, M_availability
+ * The optimizer evaluates candidates on four dimensions:
+ *   M_price, M_distance, M_reliability, M_availability
  *
  * Per-candidate normalization is relative to the slot's candidate pool
- * (so the cheapest/closest candidate scores 10), while raw reliability,
- * condition and availability already arrive on a 0..10 scale.
+ * (so the cheapest/closest candidate scores 10), while raw reliability and
+ * availability already arrive on a 0..10 scale.
  */
 @Injectable()
 export class MetricNormalizationService {
@@ -16,20 +16,6 @@ export class MetricNormalizationService {
   clamp(value: number, lo = 0, hi = 10): number {
     if (Number.isNaN(value)) return lo;
     return Math.max(lo, Math.min(hi, value));
-  }
-
-  /**
-   * Price → [0,10], lower is better.
-   *
-   * Linear interpolation between the cheapest (10) and the most
-   * expensive (0) candidate in the pool. If the pool is degenerate
-   * (single candidate) we return 10.
-   *
-   *   normalizePriceScore(p_i) = 10 · (p_max - p_i) / (p_max - p_min)
-   */
-  normalizePriceScore(price: number, minPrice: number, maxPrice: number): number {
-    if (maxPrice <= minPrice) return 10;
-    return this.clamp(10 * (maxPrice - price) / (maxPrice - minPrice));
   }
 
   /**
@@ -51,23 +37,6 @@ export class MetricNormalizationService {
    */
   normalizeReliabilityScore(reliability: number): number {
     return this.clamp(reliability);
-  }
-
-  /**
-   * Condition mapping NEW=10 ... HEAVY_USE=2.
-   *
-   * Higher condition ⇒ higher score. Used both as a hard filter
-   * (minCondition) and a soft scoring signal.
-   */
-  normalizeConditionScore(condition: string): number {
-    const table: Record<string, number> = {
-      NEW: 10,
-      LIKE_NEW: 9,
-      GOOD: 7.5,
-      FAIR: 5,
-      HEAVY_USE: 2,
-    };
-    return this.clamp(table[condition] ?? 5);
   }
 
   /**

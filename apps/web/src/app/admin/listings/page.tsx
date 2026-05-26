@@ -16,7 +16,7 @@ export default async function AdminListingsPage({
   return (
     <DashboardShell
       title="ניהול פריטים"
-      subtitle="ניהול מלא של פריטי ההשכרה לפי מלווה, קטגוריה וסטטוס, עם יצירה ועדכון מתוך עמוד הניהול."
+      subtitle="כל פריטי ההשכרה במערכת — סינון לפי משכיר, קטגוריה וסטטוס, עם יצירה ועריכה מהמסך."
       navItems={adminNavItems}
       activeHref="/admin/listings"
       headerActions={

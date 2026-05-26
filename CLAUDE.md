@@ -1,10 +1,10 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-Rental Marketplace Platform — a Hebrew-first RTL equipment rental marketplace with a Smart Bundle Ranking Engine. NPM workspaces monorepo with two apps and five packages.
+Rental Marketplace Platform ג€” a Hebrew-first RTL equipment rental marketplace with a Smart Bundle Recommendation Engine. NPM workspaces monorepo with two apps and four packages.
 
 ## Development Setup
 
@@ -38,55 +38,67 @@ No Docker or PostgreSQL needed locally. Prisma uses SQLite at `apps/api/prisma/d
 ```
 apps/api        NestJS 11, Prisma (SQLite locally), JWT auth, RBAC
 apps/web        Next.js 15 App Router, React 19, TailwindCSS, RTL/Hebrew
-packages/config locales, feature flags, ranking presets and constants
-packages/scoring weight normalization and stability-adjusted scoring math
+packages/config locales and feature flags
 packages/types  shared Zod contracts used by API and web
 packages/ui     reusable RTL-aware React components
 packages/utils  i18n helpers and geodesic distance calculation
 ```
 
-Package aliases (`@rental/config`, `@rental/scoring`, etc.) are resolved via `tsconfig.base.json` paths.
+Package aliases (`@rental/config`, `@rental/types`, `@rental/ui`, `@rental/utils`) are resolved via `tsconfig.base.json` paths.
 
 ### API (NestJS)
 
-- Entry: `apps/api/src/main.ts` — listens on `PORT` (default 4000)
+- Entry: `apps/api/src/main.ts` ג€” listens on `PORT` (default 4000)
 - All routes require JWT auth by default; use `@Public()` decorator to opt out
 - RBAC via `@Roles()` decorator + `RolesGuard`
 - Global: `ValidationPipe` (whitelist + forbidNonWhitelisted), `HttpExceptionFilter`, `LoggingInterceptor`, rate limiter (120 req/min)
 - `RequestContextMiddleware` attaches request context for audit logging
 - Redis is optional; falls back to in-memory cache when `REDIS_URL` is unset
 
-**Module list:** `auth`, `users`, `renters`, `lenders`, `categories`, `listings`, `availability`, `pricing`, `bookings`, `reviews`, `bundle-search`, `admin`, `audit`, `notifications`, `health`
+**Module list:** `auth`, `users`, `renters`, `lenders`, `categories`, `listings`, `availability`, `pricing`, `bookings`, `reviews`, `bundle-optimizer`, `addresses`, `admin`, `audit`, `notifications`, `health`.
 
-### Bundle Search Engine
+### Bundle Recommendation Engine (the only one)
 
-The core differentiator. Located in `apps/api/src/modules/bundle-search/`:
+The core differentiator. There is exactly **one** live engine. It lives in `apps/api/src/modules/bundle-optimizer/` and is reached via a single endpoint:
 
-- `bundle-generation.service.ts` — finds candidate listing combinations per requested item
-- `bundle-scoring.service.ts` — applies dimension scores and weights to each bundle
-- `bundle-explanation.service.ts` — generates human-readable Hebrew explanations for rankings
-- `ranking-config.service.ts` — resolves active preset or custom weights from `RankingConfig` table
-- `lender-reliability.service.ts` — computes reliability scores from review/booking history
+```
+POST /bundle-optimizer/search
+```
 
-Scoring formula lives in `packages/scoring/src/math.ts`:
-1. Normalize 5 dimensions to 0–10: `price`, `reliability`, `logistics`, `availability`, `quality`
-2. Compute weighted mean using active preset weights
-3. Apply stability penalties: std-dev imbalance penalty, low-score penalty (below threshold), bottleneck adjustment (bonus from minimum dimension)
-4. Clamp final score to 0–10
+The previous `bundle-search` module, the `packages/scoring` package, the `RankingConfig` admin UI, and the old `logistics` / `quality` scoring dimensions have all been removed. Do not reintroduce them.
 
-Constants (`RANKING_STD_DEV_ALPHA`, `RANKING_LOW_SCORE_BETA`, etc.) live in `packages/config/src/ranking.ts`. Default presets also live there; admin-editable presets are stored in the `RankingConfig` DB table.
+**Canonical dimensions (4-tuple).** Every metric, weight, and threshold in the engine speaks the same vector:
+
+```
+price, distance, reliability, availability
+```
+
+**Heuristic pipeline** (`BundleOptimizerService.optimize`):
+
+1. `PreferenceMappingService.resolvePreferences` ג€” turns the user's profile + sliders into normalized weights, low-score penalty multipliers, pickup amplifier, and **server-owned** algorithm parameters (`lambdaVariance`, `alphaBottleneck`, `betaPickup`, `gammaMaxDistance`, `alphaDistanceMix`, `topKPerSlot`, `beamWidth`). These tuning parameters are never accepted from the client.
+2. `AddressesService.geocodeRenterAddress` ג€” resolves the renter's `{cityId, streetId, addressNumber}` to `{lat, lng}` once per request.
+3. `CandidateFilterService.buildCandidatesPerSlot` - applies the **hard constraints** (listing status = ACTIVE, rental-day window, availability over the requested date range, per-slot min/max price, per-slot max distance, absolute budget), then per-candidate normalization and per-slot **top-K** pruning. Per-candidate `m_price` uses a budget-relative proxy (`10 * (1 - price / perSlotBudget)`), not pool-relative.
+4. `BeamSearchService.search` ג€” beam search with budget, pickup-cap, and **inventoryCount** pruning (a listing cannot fill more slots than its physical inventory).
+5. `BundleScoringService.calculateFinalScore` ג€” final objective: weighted utility גˆ’ variance penalty + bottleneck bonus גˆ’ pickup penalty גˆ’ max-distance penalty גˆ’ low-score penalty, clamped to `[0, 10]`. Bundle-level `M_price = clamp(10ֲ·(1 גˆ’ totalPrice/budget))`.
+6. `ParetoFilterService.filter` - drops bundles dominated across the 4 metrics.
+7. Sort by `finalScore` descending, take top 10.
+8. `BundleExplanationService.build` ג€” Hebrew explanations + tradeoffs per bundle.
+
+**Wire schema.** The client sends only user-facing inputs (slots, dateRange, userLocation, budget, optional `maxPickupPoints`, `preferenceProfile`, `preferenceSliders`, `basePreferenceProfile`). The wire schema is `optimizerRequestBodySchema` in `apps/api/src/modules/bundle-optimizer/bundle-optimizer.types.ts`; Zod strips any unknown keys so a client cannot inject algorithm parameters.
+
+**`LenderReliabilityService`** (`apps/api/src/modules/bundle-optimizer/lender-reliability.service.ts`) computes the per-lender reliability signal from rating + completion-rate + verification level + response time + new-lender penalty.
 
 ### Web (Next.js App Router)
 
 - Hebrew/RTL enforced at root: `apps/web/src/app/layout.tsx`
 - API calls go through `apps/web/src/lib/api.ts` (wraps `fetch` with credentials, falls back to demo data when API is unavailable)
-- Demo data fallbacks in `apps/web/src/lib/demo-data.ts` — lets the UI work without a running API
+- Demo data fallbacks in `apps/web/src/lib/demo-data.ts` ג€” lets the UI work without a running API
 
 **Route structure:**
-- `/bundle-request` — renter submits a bundle search request
-- `/renter/bundle-results`, `/renter/compare` — results and comparison views
-- `/lender/dashboard`, `/lender/listings`, `/lender/bookings`, etc. — lender flows
-- `/admin/ranking`, `/admin/audit`, `/admin/users`, etc. — admin dashboard
+- `/bundle-request` ג€” canonical renter entry: form that calls `POST /bundle-optimizer/search` via `api.optimizeBundle`.
+- `/bundle-optimizer` ג€” server-side redirects to `/bundle-request` (kept for backward-compatible links).
+- `/lender/dashboard`, `/lender/listings`, `/lender/bookings`, etc. ג€” lender flows.
+- `/admin/dashboard`, `/admin/users`, `/admin/audit`, etc. ג€” admin dashboard. There is no admin UI for ranking presets; algorithm tuning is server-side.
 
 ### Environment Variables
 
@@ -100,7 +112,11 @@ Tests use Jest + ts-jest. All test files match `*.spec.ts`. The `moduleNameMappe
 
 ### Key Design Notes
 
-- **Payment**: Modeled as `PaymentIntentPlaceholder` — intentionally not wired to a real PSP
-- **Maps**: Swappable provider pattern; current fallback adapter at `apps/web/src/lib/maps/provider.ts`
-- **SQLite → PostgreSQL**: Schema avoids connector-specific native types so it's portable; migration history would need to be reset if switching
-- **Seed scenarios**: Three intentional tradeoff scenarios (cheapest vs. balanced, reliable vs. expensive, same-lender logistics) for testing ranking behavior
+- **One engine, one endpoint.** The recommendation flow is `/bundle-request` ג†’ `POST /bundle-optimizer/search` ג†’ response from `apps/api/src/modules/bundle-optimizer/`. Do not introduce parallel scoring code paths.
+- **Server-owned algorithm parameters.** `־»`, `־±`, `־²`, `־³`, `־·`, `topKPerSlot`, `beamWidth` live in `PreferenceMappingService.ALGORITHM_DEFAULTS`. To tune the optimizer, edit that one constant ג€” never accept these from the client.
+- **Inventory is enforced.** Quantity > 1 slots are expanded by `CandidateFilterService` and bounded by `inventoryCount` inside `BeamSearchService`.
+- **Payment**: Modeled as `PaymentIntentPlaceholder` ג€” intentionally not wired to a real PSP.
+- **Maps**: Swappable provider pattern; current fallback adapter at `apps/web/src/lib/maps/provider.ts`.
+- **SQLite ג†’ PostgreSQL**: Schema avoids connector-specific native types so it's portable; migration history would need to be reset if switching. The Prisma tables `BundleSearchRequest` and `RankingConfig` are orphans from the deleted legacy engine ג€” no live code reads or writes them; a future migration should drop them.
+- **Seed scenarios**: Tradeoff scenarios (cheapest vs. balanced, reliable vs. expensive, same-lender pickup) for testing ranking behavior.
+- **Product condition removal**: Product condition is intentionally not a listing field, filter, profile, metric, or ranking signal because it is self-reported by lenders and unreliable for ranking.

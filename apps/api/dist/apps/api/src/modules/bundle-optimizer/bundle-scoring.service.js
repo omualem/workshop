@@ -17,14 +17,12 @@ const LOW_SCORE_THRESHOLDS = {
     price: 4.0,
     distance: 4.0,
     reliability: 6.5,
-    condition: 6.5,
     availability: 7.0,
 };
 const LOW_SCORE_WEIGHTS = {
     price: 0.25,
     distance: 0.35,
     reliability: 0.65,
-    condition: 0.7,
     availability: 0.8,
 };
 let BundleScoringService = class BundleScoringService {
@@ -40,15 +38,10 @@ let BundleScoringService = class BundleScoringService {
         const m_distance = this.normalization.bundleDistanceScore(avgDistance, maxDistance, alphaDistanceMix);
         const m_availability = Math.min(...items.map((i) => i.m_availability));
         const m_reliability = this.normalization.mean(items.map((i) => i.m_reliability));
-        const conditionScores = items.map((i) => i.m_condition);
-        const conditionAvg = this.normalization.mean(conditionScores);
-        const conditionMin = conditionScores.length ? Math.min(...conditionScores) : 0;
-        const m_condition = 0.6 * conditionAvg + 0.4 * conditionMin;
         const metrics = {
             price: this.normalization.bundlePriceScore(bundle.totalPrice, budget),
             distance: m_distance,
             reliability: m_reliability,
-            condition: m_condition,
             availability: m_availability,
         };
         const pickupCost = this.calculatePickupCost(items);
@@ -65,7 +58,6 @@ let BundleScoringService = class BundleScoringService {
         return (weights.price * metrics.price +
             weights.distance * metrics.distance +
             weights.reliability * metrics.reliability +
-            weights.condition * metrics.condition +
             weights.availability * metrics.availability);
     }
     variance(values) {
@@ -84,7 +76,10 @@ let BundleScoringService = class BundleScoringService {
         const uniquePickups = new Map();
         for (const item of items) {
             if (!uniquePickups.has(item.pickupKey)) {
-                uniquePickups.set(item.pickupKey, { lat: item.pickupLat, lng: item.pickupLng });
+                uniquePickups.set(item.pickupKey, {
+                    lat: item.pickupLat,
+                    lng: item.pickupLng,
+                });
             }
         }
         const points = [...uniquePickups.values()];
@@ -108,20 +103,25 @@ let BundleScoringService = class BundleScoringService {
         price: 1,
         distance: 1,
         reliability: 1,
-        condition: 1,
         availability: 1,
     }) {
         const breakdown = {
-            price: LOW_SCORE_WEIGHTS.price * multipliers.price * Math.max(0, LOW_SCORE_THRESHOLDS.price - metrics.price),
-            distance: LOW_SCORE_WEIGHTS.distance * multipliers.distance * Math.max(0, LOW_SCORE_THRESHOLDS.distance - metrics.distance),
-            reliability: LOW_SCORE_WEIGHTS.reliability * multipliers.reliability * Math.max(0, LOW_SCORE_THRESHOLDS.reliability - metrics.reliability),
-            condition: LOW_SCORE_WEIGHTS.condition * multipliers.condition * Math.max(0, LOW_SCORE_THRESHOLDS.condition - metrics.condition),
-            availability: LOW_SCORE_WEIGHTS.availability * multipliers.availability * Math.max(0, LOW_SCORE_THRESHOLDS.availability - metrics.availability),
+            price: LOW_SCORE_WEIGHTS.price *
+                multipliers.price *
+                Math.max(0, LOW_SCORE_THRESHOLDS.price - metrics.price),
+            distance: LOW_SCORE_WEIGHTS.distance *
+                multipliers.distance *
+                Math.max(0, LOW_SCORE_THRESHOLDS.distance - metrics.distance),
+            reliability: LOW_SCORE_WEIGHTS.reliability *
+                multipliers.reliability *
+                Math.max(0, LOW_SCORE_THRESHOLDS.reliability - metrics.reliability),
+            availability: LOW_SCORE_WEIGHTS.availability *
+                multipliers.availability *
+                Math.max(0, LOW_SCORE_THRESHOLDS.availability - metrics.availability),
         };
         const total = breakdown.price +
             breakdown.distance +
             breakdown.reliability +
-            breakdown.condition +
             breakdown.availability;
         return { total, breakdown };
     }
@@ -171,14 +171,13 @@ let BundleScoringService = class BundleScoringService {
             price: this.normalization.bundlePriceScore(totalPrice, budget),
             distance: this.normalization.bundleDistanceScore(avgDistance, maxDistance, prefs.alphaDistanceMix),
             reliability: this.normalization.mean(items.map((i) => i.m_reliability)),
-            condition: this.normalization.mean(items.map((i) => i.m_condition)),
             availability: Math.min(...items.map((i) => i.m_availability)),
         };
         return (this.calculateWeightedUtility(partialMetrics, prefs.weights) -
             this.calculateVariancePenalty(partialMetrics, prefs.lambdaVariance));
     }
     metricVector(m) {
-        return [m.price, m.distance, m.reliability, m.condition, m.availability];
+        return [m.price, m.distance, m.reliability, m.availability];
     }
 };
 exports.BundleScoringService = BundleScoringService;
@@ -193,7 +192,6 @@ function fallbackResolvedPreferences(prefs) {
             price: 7,
             distance: 7,
             reliability: 7,
-            condition: 7,
             availability: 7,
             pickupSimplicity: 7,
         },
@@ -204,13 +202,19 @@ function fallbackResolvedPreferences(prefs) {
                 price: 1,
                 distance: 1,
                 reliability: 1,
-                condition: 1,
                 availability: 1,
             },
             maxDistance: 1,
             variance: 1,
             bottleneck: 1,
         },
+        lambdaVariance: prefs.lambdaVariance,
+        alphaBottleneck: prefs.alphaBottleneck,
+        betaPickup: prefs.betaPickup,
+        gammaMaxDistance: prefs.gammaMaxDistance,
+        alphaDistanceMix: prefs.alphaDistanceMix,
+        topKPerSlot: prefs.topKPerSlot,
+        beamWidth: prefs.beamWidth,
     };
 }
 //# sourceMappingURL=bundle-scoring.service.js.map

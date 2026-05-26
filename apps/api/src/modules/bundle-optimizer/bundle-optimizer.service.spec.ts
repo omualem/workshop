@@ -1,26 +1,45 @@
 import { BundleOptimizerService } from "./bundle-optimizer.service";
 import { PreferenceMappingService } from "./preference-mapping.service";
-import type { OptimizerRequest, SlotInput } from "./bundle-optimizer.types";
+import type {
+  OptimizerRequest,
+  OptimizerRequestBody,
+  SlotInput,
+} from "./bundle-optimizer.types";
 
-const prefs = {
-  weights: { price: 0.2, distance: 0.2, reliability: 0.2, condition: 0.2, availability: 0.2 },
-  lambdaVariance: 0.35,
-  alphaBottleneck: 0.25,
-  betaPickup: 0.4,
-  gammaMaxDistance: 0.15,
-  alphaDistanceMix: 0.6,
-  topKPerSlot: 30,
-  beamWidth: 50,
-};
 const preferenceMapping = new PreferenceMappingService();
 
-function request(slots: SlotInput[], over: Partial<OptimizerRequest> = {}): OptimizerRequest {
+// What `BundleOptimizerService.optimize` is expected to synthesize as the
+// internal `preferences` block for a request that arrives with no profile
+// or sliders (everything falls back to the balanced defaults inside
+// PreferenceMappingService). Used to assert what reaches beam search.
+const expectedResolvedPrefs = (() => {
+  const resolved = preferenceMapping.resolvePreferences({});
+  return {
+    weights: resolved.weights,
+    lambdaVariance: resolved.lambdaVariance,
+    alphaBottleneck: resolved.alphaBottleneck,
+    betaPickup: resolved.betaPickup,
+    gammaMaxDistance: resolved.gammaMaxDistance,
+    alphaDistanceMix: resolved.alphaDistanceMix,
+    topKPerSlot: resolved.topKPerSlot,
+    beamWidth: resolved.beamWidth,
+  };
+})();
+
+// Tests pass a client-shaped body. BundleOptimizerService.optimize calls
+// PreferenceMappingService internally to resolve the server-owned algorithm
+// parameters (lambdaVariance, alphaBottleneck, betaPickup, gammaMaxDistance,
+// alphaDistanceMix, topKPerSlot, beamWidth) — they are intentionally not
+// part of the wire shape and must not appear in test fixtures.
+function request(
+  slots: SlotInput[],
+  over: Partial<OptimizerRequestBody> = {},
+): OptimizerRequestBody {
   return {
     slots,
     dateRange: { startDate: "2026-06-01", endDate: "2026-06-03" },
     userLocation: { lat: 32.0853, lng: 34.7818, address: "תל אביב" },
     budget: 1000,
-    preferences: prefs,
     ...over,
   };
 }
@@ -108,7 +127,7 @@ describe("BundleOptimizerService", () => {
       slots,
       { "slot-1": [{}] },
       1000,
-      prefs,
+      expectedResolvedPrefs,
       1,
     );
     expect(result.data.suggestions).toContain("נסה להגדיל את מספר נקודות האיסוף המותר");
