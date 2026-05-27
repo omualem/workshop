@@ -36,7 +36,7 @@ function AuthPanel({
         <AppLogo size={88} priority className="h-[88px] w-[88px]" />
       </div>
       <div>
-        <div className="surface-eyebrow">Access</div>
+        <div className="surface-eyebrow">כניסה לחשבון</div>
         <h1 className="mt-3 text-2xl font-semibold text-slate-950">{title}</h1>
         <p className="mt-2 text-sm leading-7 text-slate-600">{subtitle}</p>
       </div>
@@ -86,7 +86,7 @@ export function SignInForm() {
           <input className="form-input" type="password" {...form.register("password")} />
         </div>
         {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-        <Button type="submit" className="w-full py-3">
+        <Button type="submit" className="w-full py-3" disabled={mutation.isPending}>
           {mutation.isPending ? "מתחברים..." : "התחברות"}
         </Button>
       </form>
@@ -154,7 +154,7 @@ export function SignUpForm() {
         </div>
         {error ? <p className="text-sm text-rose-600 md:col-span-2">{error}</p> : null}
         <div className="md:col-span-2">
-          <Button type="submit" className="w-full py-3">
+          <Button type="submit" className="w-full py-3" disabled={mutation.isPending}>
             {mutation.isPending ? "פותחים חשבון..." : "פתיחת חשבון"}
           </Button>
         </div>

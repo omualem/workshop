@@ -49,6 +49,25 @@ let BundleExplanationService = class BundleExplanationService {
         if (newLender) {
             tradeoffs.push("בחבילה יש משכיר חדש יחסית עם מעט עסקאות קודמות");
         }
+        const insufficientRatingItems = bundle.items.filter((i) => i.reliabilityBreakdown.insufficientRatingInfo);
+        const lowConfidenceItems = bundle.items.filter((i) => !i.reliabilityBreakdown.insufficientRatingInfo &&
+            i.reliabilityBreakdown.itemRatingConfidence < 1);
+        const fullConfidenceItems = bundle.items.filter((i) => !i.reliabilityBreakdown.insufficientRatingInfo &&
+            i.reliabilityBreakdown.itemRatingConfidence >= 1);
+        if (insufficientRatingItems.length > 0) {
+            const sample = insufficientRatingItems[0];
+            tradeoffs.push(insufficientRatingItems.length === bundle.items.length
+                ? "אין עדיין מספיק מידע על דירוג הפריט"
+                : `אין עדיין מספיק מידע על דירוג הפריט: ${sample.titleHe}`);
+        }
+        if (lowConfidenceItems.length > 0) {
+            const sample = lowConfidenceItems[0];
+            const distinctCount = sample.reliabilityBreakdown.itemDistinctRatingCount;
+            tradeoffs.push(`דירוג הפריט "${sample.titleHe}" מבוסס על ${distinctCount} משתמשים בלבד, ולכן השפעתו על האמינות הופחתה`);
+        }
+        if (fullConfidenceItems.length > 0 && lowConfidenceItems.length === 0 && insufficientRatingItems.length === 0) {
+            explanations.push("דירוג הפריטים מבוסס על מספר מספק של משתמשים שונים וקיבל משקל מלא בחישוב האמינות");
+        }
         if (metrics.distance >= 7) {
             explanations.push("מרחק האיסוף קצר יחסית");
         }
@@ -140,6 +159,18 @@ let BundleExplanationService = class BundleExplanationService {
                 price: round(item.price),
                 distanceKm: round(item.distanceKm),
                 attributes: item.attributeValues,
+                reliabilityBreakdown: {
+                    lenderReliability: round(item.reliabilityBreakdown.lenderReliability),
+                    itemAverageRating: round(item.reliabilityBreakdown.itemAverageRating),
+                    itemDistinctRatingCount: item.reliabilityBreakdown.itemDistinctRatingCount,
+                    itemRatingConfidence: round(item.reliabilityBreakdown.itemRatingConfidence),
+                    adjustedItemRating: round(item.reliabilityBreakdown.adjustedItemRating),
+                    itemRatingScore: item.reliabilityBreakdown.itemRatingScore === null
+                        ? null
+                        : round(item.reliabilityBreakdown.itemRatingScore),
+                    insufficientRatingInfo: item.reliabilityBreakdown.insufficientRatingInfo,
+                    finalReliabilityScore: round(item.reliabilityBreakdown.finalReliabilityScore),
+                },
             })),
         };
     }

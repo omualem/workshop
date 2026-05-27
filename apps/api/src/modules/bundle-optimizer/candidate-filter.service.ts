@@ -4,10 +4,12 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { AvailabilityService } from "../availability/availability.service";
 import { PricingService } from "../pricing/pricing.service";
 import { LenderReliabilityService } from "./lender-reliability.service";
+import { ListingRatingService } from "./listing-rating.service";
 import { decimalToNumber } from "../../shared/utils/prisma.utils";
 import { MetricNormalizationService } from "./metric-normalization.service";
 import type {
   CandidateItem,
+  ItemReliabilityBreakdown,
   OptimizerRequest,
   SlotFilterDebug,
   SlotConstraints,
@@ -15,6 +17,17 @@ import type {
 } from "./bundle-optimizer.types";
 
 const ROUGH_PREFILTER_POOL_SIZE = 100;
+
+/**
+ * Mixing weight between lender reliability and item-level rating score.
+ *
+ *   r_i = THETA · lenderReliability + (1 − THETA) · itemRatingScore
+ *
+ * Lender history dominates (0.7) since it covers transaction execution
+ * across many bookings; item rating (0.3) refines for product-specific
+ * quality once enough distinct raters exist. Server-owned; never client.
+ */
+const RELIABILITY_THETA = 0.7;
 
 // Soft bonus added to the preliminary score of the user's preferred listing
 // in specificListing+allowAlternatives mode, so beam search prefers it over
@@ -52,6 +65,7 @@ export class CandidateFilterService {
     private readonly pricing: PricingService,
     private readonly reliability: LenderReliabilityService,
     private readonly normalization: MetricNormalizationService,
+    private readonly listingRating: ListingRatingService,
   ) {}
 
   async buildCandidatesPerSlot(req: OptimizerRequest): Promise<{
@@ -97,11 +111,23 @@ export class CandidateFilterService {
       }
     }
 
+    // Listing rating aggregates are cached across slots; the same listing
+    // can appear in multiple slots (e.g. different quantities) so one
+    // query per request is enough.
+    const ratingAggregateCache = new Map<
+      string,
+      { averageRating: number; distinctRaterCount: number }
+    >();
+
     for (const slot of expandedSlots) {
       const constraints = this.normalizeConstraints(slot);
 
       // Step 1 — load the raw listing pool for this slot.
       const rawListings = await this.loadSlotListings(slot, constraints);
+      await this.primeRatingAggregates(
+        rawListings.map((l) => l.id),
+        ratingAggregateCache,
+      );
       beforeFiltering[slot.slotKey] = rawListings.length;
       filteredByAvailability[slot.slotKey] = 0;
       filteredByRentalDays[slot.slotKey] = 0;
@@ -195,7 +221,7 @@ export class CandidateFilterService {
         // --- Raw signals ---
         const reliabilityOverride =
           decimalToNumber(listing.lender.reliabilityScoreCached) ?? 0;
-        const reliability =
+        const lenderReliability =
           reliabilityOverride > 0
             ? Math.max(0, Math.min(10, reliabilityOverride))
             : this.reliability.compute({
@@ -216,6 +242,38 @@ export class CandidateFilterService {
                   decimalToNumber(listing.lender.responseTimeScore) ?? 5,
               });
 
+        const aggregate = ratingAggregateCache.get(listing.id) ?? {
+          averageRating: 0,
+          distinctRaterCount: 0,
+        };
+        const itemRating = this.listingRating.compute(aggregate);
+
+        // r_i = θ · lenderReliability + (1 − θ) · itemRatingScore
+        // When v_i = 0 the item rating is not folded in; the listing is
+        // not penalized for missing ratings.
+        const reliability =
+          itemRating.itemRatingScore !== null
+            ? Math.max(
+                0,
+                Math.min(
+                  10,
+                  RELIABILITY_THETA * lenderReliability +
+                    (1 - RELIABILITY_THETA) * itemRating.itemRatingScore,
+                ),
+              )
+            : lenderReliability;
+
+        const reliabilityBreakdown: ItemReliabilityBreakdown = {
+          lenderReliability,
+          itemAverageRating: itemRating.averageRating,
+          itemDistinctRatingCount: itemRating.distinctRaterCount,
+          itemRatingConfidence: itemRating.confidence,
+          adjustedItemRating: itemRating.adjustedRating,
+          itemRatingScore: itemRating.itemRatingScore,
+          insufficientRatingInfo: itemRating.insufficient,
+          finalReliabilityScore: reliability,
+        };
+
         const deviationDays = await this.computeDeviationDays(
           listing.id,
           startDate,
@@ -234,6 +292,7 @@ export class CandidateFilterService {
           price: priceQuote.total,
           distanceKm,
           reliability,
+          reliabilityBreakdown,
           availability: availabilityScore,
           pickupLat,
           pickupLng,
@@ -402,6 +461,56 @@ export class CandidateFilterService {
       orderBy: [{ basePriceDaily: "asc" }, { updatedAt: "desc" }],
       take: roughPoolSize,
     });
+  }
+
+  /**
+   * Per-listing rating aggregates: average rating and the COUNT of DISTINCT
+   * reviewers. Two reviews from the same user count once.
+   *
+   * `Review.bookingId` is unique, so duplicate booking-level reviews are
+   * already impossible — but a single reviewer can still leave reviews on
+   * the same listing across different bookings, and only distinct users
+   * should grow the confidence factor c_i.
+   */
+  private async primeRatingAggregates(
+    listingIds: string[],
+    cache: Map<string, { averageRating: number; distinctRaterCount: number }>,
+  ): Promise<void> {
+    const missing = listingIds.filter((id) => !cache.has(id));
+    if (missing.length === 0) return;
+
+    const reviews = await this.prisma.review.findMany({
+      where: { listingId: { in: missing } },
+      select: { listingId: true, reviewerId: true, rating: true },
+    });
+
+    const grouped = new Map<
+      string,
+      { sum: number; count: number; reviewers: Set<string> }
+    >();
+    for (const r of reviews) {
+      if (!r.listingId) continue;
+      let entry = grouped.get(r.listingId);
+      if (!entry) {
+        entry = { sum: 0, count: 0, reviewers: new Set<string>() };
+        grouped.set(r.listingId, entry);
+      }
+      entry.sum += r.rating;
+      entry.count += 1;
+      entry.reviewers.add(r.reviewerId);
+    }
+
+    for (const id of missing) {
+      const entry = grouped.get(id);
+      if (!entry || entry.count === 0) {
+        cache.set(id, { averageRating: 0, distinctRaterCount: 0 });
+      } else {
+        cache.set(id, {
+          averageRating: entry.sum / entry.count,
+          distinctRaterCount: entry.reviewers.size,
+        });
+      }
+    }
   }
 
   private normalizeConstraints(slot: SlotInput): SlotConstraints {

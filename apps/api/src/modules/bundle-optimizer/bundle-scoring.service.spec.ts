@@ -41,6 +41,16 @@ function makeItem(over: Partial<CandidateItem> = {}): CandidateItem {
     m_reliability: 8,
     m_availability: 10,
     preliminaryScore: 0,
+    reliabilityBreakdown: {
+      lenderReliability: 8,
+      itemAverageRating: 0,
+      itemDistinctRatingCount: 0,
+      itemRatingConfidence: 0,
+      adjustedItemRating: 3.7,
+      itemRatingScore: null,
+      insufficientRatingInfo: true,
+      finalReliabilityScore: 8,
+    },
     ...over,
   };
 }
@@ -48,6 +58,48 @@ function makeItem(over: Partial<CandidateItem> = {}): CandidateItem {
 describe("BundleScoringService", () => {
   const svc = new BundleScoringService(new MetricNormalizationService());
   const preferenceMapping = new PreferenceMappingService();
+
+  it("bundle with stronger item-rating-confidence reliability outranks an otherwise identical bundle", () => {
+    // Same prices, distances, availability, lenders — only the per-item
+    // reliability differs (as it would after mixing in itemRatingScore).
+    // Reliability weight is meaningful (0.4), so the higher r_i bundle
+    // must outrank the lower r_i bundle.
+    const weightedPrefs: OptimizerPreferences = {
+      ...PREFS,
+      weights: { price: 0.2, distance: 0.2, reliability: 0.4, availability: 0.2 },
+    };
+    const lowReliabilityItem = makeItem({
+      reliability: 7.74,
+      m_reliability: 7.74,
+    });
+    const highReliabilityItem = makeItem({
+      reliability: 9.55,
+      m_reliability: 9.55,
+      listingId: "L-high",
+    });
+    const lowBundle: SelectedBundle = {
+      items: [lowReliabilityItem],
+      totalPrice: 200,
+      uniqueLenderCount: 1,
+      uniquePickupCount: 1,
+    };
+    const highBundle: SelectedBundle = {
+      items: [highReliabilityItem],
+      totalPrice: 200,
+      uniqueLenderCount: 1,
+      uniquePickupCount: 1,
+    };
+    const lowScored = svc.calculateFinalScore(lowBundle, weightedPrefs, 1000);
+    const highScored = svc.calculateFinalScore(highBundle, weightedPrefs, 1000);
+    expect(highScored.metrics.reliability).toBeGreaterThan(
+      lowScored.metrics.reliability,
+    );
+    // Both bundles may clamp at finalScore=10 when other metrics are
+    // already high, so verify ordering via the unclamped raw score.
+    expect(highScored.breakdown.rawFinalScore).toBeGreaterThan(
+      lowScored.breakdown.rawFinalScore,
+    );
+  });
 
   it("calculateBottleneckTerm equals alpha times the weakest 4D metric", () => {
     const metrics = { price: 6, distance: 8, reliability: 9, availability: 10 };

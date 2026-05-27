@@ -14,7 +14,7 @@ const navItems = [
 
 export default function LenderProfilePage() {
   return (
-    <DashboardShell title="פרופיל ואמינות" subtitle="ציון האמינות שלכם, רמת האימות והפעולות שישפרו אותו." navItems={navItems}>
+    <DashboardShell title="פרופיל ואמינות" subtitle="ציון האמינות שלכם, רמת האימות והפעולות שישפרו אותו." navItems={navItems} activeHref="/lender/profile">
       <Card className="text-sm leading-7 text-slate-600">
         כאן תראו מהם המרכיבים של ציון האמינות שלכם — דירוגים, אחוז הזמנות שהושלמו בהצלחה, זמן מענה ורמת אימות — ומה אפשר לשפר.
       </Card>

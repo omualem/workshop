@@ -14,7 +14,7 @@ const navItems = [
 
 export default function LenderPricingPage() {
   return (
-    <DashboardShell title="תמחור והנחות" subtitle="הגדרת הנחות לפי משך השכרה, מחירי סופי שבוע ומחירי עונה." navItems={navItems}>
+    <DashboardShell title="תמחור והנחות" subtitle="הגדרת הנחות לפי משך השכרה, מחירי סופי שבוע ומחירי עונה." navItems={navItems} activeHref="/lender/pricing">
       <Card className="text-sm leading-7 text-slate-600">
         כאן תוכלו להגדיר הנחות להשכרות ארוכות, תוספות לסופי שבוע, ולראות איך התמחור משפיע על הופעת הפריטים בחבילות.
       </Card>

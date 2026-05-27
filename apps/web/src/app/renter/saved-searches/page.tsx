@@ -15,6 +15,7 @@ export default function SavedSearchesPage() {
       title="חיפושים שמורים"
       subtitle="כל בקשת חבילה שתשמרו תיגש בלחיצה אחת — עם כל הסינונים, ההעדפות והתקציב."
       navItems={navItems}
+      activeHref="/renter/saved-searches"
     >
       <Card className="text-sm leading-7 text-slate-600">
         בנו בקשת חבילה ושמרו אותה כדי לחזור אליה בקלות בפעם הבאה שתצטרכו ציוד דומה.

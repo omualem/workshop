@@ -83,6 +83,16 @@ export declare class BundleExplanationService {
                 attributeKey: string;
                 attributeValue: unknown;
             }[];
+            reliabilityBreakdown: {
+                lenderReliability: number;
+                itemAverageRating: number;
+                itemDistinctRatingCount: number;
+                itemRatingConfidence: number;
+                adjustedItemRating: number;
+                itemRatingScore: number | null;
+                insufficientRatingInfo: boolean;
+                finalReliabilityScore: number;
+            };
         }[];
     };
     private weakestBy;

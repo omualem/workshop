@@ -14,7 +14,7 @@ const navItems = [
 
 export default function LenderReviewsPage() {
   return (
-    <DashboardShell title="ביקורות" subtitle="ביקורות שכותבים שוכרים ותובנות לשיפור האמינות והשירות." navItems={navItems}>
+    <DashboardShell title="ביקורות" subtitle="ביקורות שכותבים שוכרים ותובנות לשיפור האמינות והשירות." navItems={navItems} activeHref="/lender/reviews">
       <Card className="text-sm leading-7 text-slate-600">
         כאן תוכלו לקרוא את הביקורות שקיבלתם, להבין מה השוכרים מעריכים אצלכם ומה אפשר לשפר בפעם הבאה.
       </Card>

@@ -245,7 +245,7 @@ export function BundleOptimizerForm() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]" dir="rtl">
+    <div className="mx-auto w-full max-w-5xl space-y-8" dir="rtl">
       <Card className="space-y-6 p-6 md:p-7">
         <div>
           <h2 className="text-2xl font-semibold text-slate-950">מצאו את חבילת הפריטים הכי טובה בשבילכם!</h2>
@@ -835,15 +835,6 @@ export function buildOptimizerRequest(args: {
     preferenceProfile,
     ...(preferenceProfile === "custom" ? { basePreferenceProfile: args.selectedTemplate } : {}),
     preferenceSliders: args.preferenceSliders,
-    preferences: {
-      lambdaVariance: 0.35,
-      alphaBottleneck: 0.25,
-      betaPickup: 0.4,
-      gammaMaxDistance: 0.15,
-      alphaDistanceMix: 0.6,
-      topKPerSlot: 30,
-      beamWidth: 50,
-    },
     ...(args.maxPickupPoints !== undefined ? { maxPickupPoints: args.maxPickupPoints } : {}),
   };
 }
@@ -873,15 +864,7 @@ function ResultsPanel({
   }
 
   if (!result) {
-    return (
-      <Card className="space-y-2 p-6 text-sm leading-7 text-slate-600">
-        <h3 className="text-lg font-semibold text-slate-900">איך זה עובד</h3>
-        <p>
-          לכל פריט בבקשה המערכת בונה מאגר מועמדים, מסננת לפי אילוצים קשיחים, ומחזירה חבילות
-          מדורגות עם פירוט ציונים והסברים.
-        </p>
-      </Card>
-    );
+    return null;
   }
 
   const data = result.data;

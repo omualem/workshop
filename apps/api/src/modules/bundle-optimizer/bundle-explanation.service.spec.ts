@@ -29,6 +29,16 @@ function makeItem(over: Partial<CandidateItem> = {}): CandidateItem {
     m_availability: 10,
     preliminaryScore: 0,
     attributeValues: [],
+    reliabilityBreakdown: {
+      lenderReliability: 8,
+      itemAverageRating: 0,
+      itemDistinctRatingCount: 0,
+      itemRatingConfidence: 0,
+      adjustedItemRating: 3.7,
+      itemRatingScore: null,
+      insufficientRatingInfo: true,
+      finalReliabilityScore: 8,
+    },
     ...over,
   };
 }
@@ -159,6 +169,96 @@ describe("BundleExplanationService", () => {
     expect(result.includedItems[0]).not.toHaveProperty("condition");
     expect([...result.explanations, ...result.tradeoffs].join(" ")).not.toMatch(
       /מצב|condition/i,
+    );
+  });
+
+  it("emits 'אין עדיין מספיק מידע על דירוג הפריט' when no item ratings exist", () => {
+    const result = svc.build(
+      buildScored(
+        [makeItem({ titleHe: "פריט ללא דירוגים" })],
+        { price: 8, distance: 8, reliability: 8, availability: 10 },
+      ),
+      1000,
+    );
+    expect(
+      result.tradeoffs.some((t) =>
+        t.includes("אין עדיין מספיק מידע על דירוג הפריט"),
+      ),
+    ).toBe(true);
+  });
+
+  it("warns about low item-rating confidence when few distinct raters exist", () => {
+    const item = makeItem({
+      titleHe: "פריט עם דירוג חלש",
+      reliabilityBreakdown: {
+        lenderReliability: 8,
+        itemAverageRating: 5,
+        itemDistinctRatingCount: 2,
+        itemRatingConfidence: 2 / 30,
+        adjustedItemRating: 3.79,
+        itemRatingScore: 7.58,
+        insufficientRatingInfo: false,
+        finalReliabilityScore: 7.87,
+      },
+    });
+    const result = svc.build(
+      buildScored([item], { price: 8, distance: 8, reliability: 8, availability: 10 }),
+      1000,
+    );
+    expect(
+      result.tradeoffs.some(
+        (t) => t.includes("2") && t.includes("הופחתה"),
+      ),
+    ).toBe(true);
+  });
+
+  it("acknowledges full rating confidence when every item has K+ distinct raters", () => {
+    const item = makeItem({
+      reliabilityBreakdown: {
+        lenderReliability: 8,
+        itemAverageRating: 4.6,
+        itemDistinctRatingCount: 50,
+        itemRatingConfidence: 1,
+        adjustedItemRating: 4.6,
+        itemRatingScore: 9.2,
+        insufficientRatingInfo: false,
+        finalReliabilityScore: 8.36,
+      },
+    });
+    const result = svc.build(
+      buildScored([item], { price: 8, distance: 8, reliability: 8, availability: 10 }),
+      1000,
+    );
+    expect(
+      result.explanations.some((e) => e.includes("משקל מלא")),
+    ).toBe(true);
+  });
+
+  it("exposes per-item reliability breakdown in includedItems", () => {
+    const item = makeItem({
+      reliabilityBreakdown: {
+        lenderReliability: 8,
+        itemAverageRating: 4.6,
+        itemDistinctRatingCount: 50,
+        itemRatingConfidence: 1,
+        adjustedItemRating: 4.6,
+        itemRatingScore: 9.2,
+        insufficientRatingInfo: false,
+        finalReliabilityScore: 8.36,
+      },
+    });
+    const result = svc.build(
+      buildScored([item], { price: 8, distance: 8, reliability: 8, availability: 9 }),
+      1000,
+    );
+    expect(result.includedItems[0].reliabilityBreakdown).toEqual(
+      expect.objectContaining({
+        lenderReliability: 8,
+        itemDistinctRatingCount: 50,
+        itemRatingScore: 9.2,
+        insufficientRatingInfo: false,
+        finalReliabilityScore: 8.36,
+      }),
     );
   });
 

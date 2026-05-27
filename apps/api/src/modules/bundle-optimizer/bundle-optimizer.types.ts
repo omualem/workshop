@@ -164,6 +164,26 @@ export type OptimizerRequest = OptimizerRequestBody & {
 export type SlotInput = z.infer<typeof slotInputSchema>;
 export type SlotConstraints = NonNullable<z.infer<typeof slotConstraintsSchema>>;
 
+/**
+ * Per-item rating-confidence breakdown.
+ *
+ *   r_i = θ · lenderReliability + (1 − θ) · itemRatingScore     if v_i > 0
+ *   r_i = lenderReliability                                      if v_i = 0
+ *
+ * When v_i = 0 the listing has insufficient rating information and
+ * itemRatingScore must NOT be folded into the final reliability.
+ */
+export interface ItemReliabilityBreakdown {
+  lenderReliability: number;
+  itemAverageRating: number;
+  itemDistinctRatingCount: number;
+  itemRatingConfidence: number;
+  adjustedItemRating: number;
+  itemRatingScore: number | null;
+  insufficientRatingInfo: boolean;
+  finalReliabilityScore: number;
+}
+
 /** A listing x_i in I_s evaluated as a candidate item. */
 export interface CandidateItem {
   slotKey: string;
@@ -181,6 +201,7 @@ export interface CandidateItem {
   pickupLng: number;
   inventoryCount: number;
   lenderCompletedTransactions?: number;
+  reliabilityBreakdown: ItemReliabilityBreakdown;
   attributeValues: Array<{
     attributeKey: string;
     attributeValue: unknown;

@@ -15,6 +15,7 @@ export default function RenterOrdersPage() {
       title="הזמנות"
       subtitle="מעקב אחר ההזמנות שלכם — סטטוס, תשלום, איסוף והחזרה."
       navItems={navItems}
+      activeHref="/renter/orders"
     >
       <Card className="text-sm leading-7 text-slate-600">
         כאן יוצגו ההזמנות שלכם, פריטי ההזמנה, סטטוס התשלום והאיסוף וסיכום החזרה.

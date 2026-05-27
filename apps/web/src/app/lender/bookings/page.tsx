@@ -14,7 +14,7 @@ const navItems = [
 
 export default function LenderBookingsPage() {
   return (
-    <DashboardShell title="הזמנות נכנסות" subtitle="אישור, דחייה ועדכון סטטוס של הזמנות לפריטים שלכם." navItems={navItems}>
+    <DashboardShell title="הזמנות נכנסות" subtitle="אישור, דחייה ועדכון סטטוס של הזמנות לפריטים שלכם." navItems={navItems} activeHref="/lender/bookings">
       <Card className="text-sm leading-7 text-slate-600">
         כאן תקבלו את כל בקשות ההזמנה לפריטים שבבעלותכם, עם אפשרות לאשר, לדחות או לבקש פרטים נוספים מהשוכר.
       </Card>

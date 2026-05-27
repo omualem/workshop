@@ -129,6 +129,16 @@ export type OptimizerRequest = OptimizerRequestBody & {
 };
 export type SlotInput = z.infer<typeof slotInputSchema>;
 export type SlotConstraints = NonNullable<z.infer<typeof slotConstraintsSchema>>;
+export interface ItemReliabilityBreakdown {
+    lenderReliability: number;
+    itemAverageRating: number;
+    itemDistinctRatingCount: number;
+    itemRatingConfidence: number;
+    adjustedItemRating: number;
+    itemRatingScore: number | null;
+    insufficientRatingInfo: boolean;
+    finalReliabilityScore: number;
+}
 export interface CandidateItem {
     slotKey: string;
     listingId: string;
@@ -145,6 +155,7 @@ export interface CandidateItem {
     pickupLng: number;
     inventoryCount: number;
     lenderCompletedTransactions?: number;
+    reliabilityBreakdown: ItemReliabilityBreakdown;
     attributeValues: Array<{
         attributeKey: string;
         attributeValue: unknown;

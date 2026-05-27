@@ -15,6 +15,7 @@ export default function FavoritesPage() {
       title="מועדפים"
       subtitle="הפריטים שאהבתם, זמינים כאן בכל רגע — ומוכנים להצטרף לחבילה הבאה."
       navItems={navItems}
+      activeHref="/renter/favorites"
     >
       <Card className="text-sm leading-7 text-slate-600">
         עוד לא סימנתם פריטים כמועדפים. גלשו בקטלוג ולחצו על הלב כדי לשמור פריטים לעיון מאוחר יותר.

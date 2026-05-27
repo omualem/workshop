@@ -1,0 +1,16 @@
+cd ~/workshop
+
+git status
+git pull
+
+npm install
+
+cd apps/api
+npx prisma migrate deploy
+npx prisma generate
+
+cd ~/workshop
+npm run build -w apps/api
+npm run build -w apps/web
+
+pm2 restart workshop-api workshop-web --update-env

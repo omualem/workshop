@@ -43,6 +43,16 @@ function cand(
     m_reliability: 8,
     m_availability: 10,
     preliminaryScore: prelim,
+    reliabilityBreakdown: {
+      lenderReliability: 8,
+      itemAverageRating: 0,
+      itemDistinctRatingCount: 0,
+      itemRatingConfidence: 0,
+      adjustedItemRating: 3.7,
+      itemRatingScore: null,
+      insufficientRatingInfo: true,
+      finalReliabilityScore: 8,
+    },
     ...over,
   };
 }

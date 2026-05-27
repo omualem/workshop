@@ -3,6 +3,7 @@ import { AddressesModule } from "../addresses/addresses.module";
 import { AvailabilityModule } from "../availability/availability.module";
 import { PricingModule } from "../pricing/pricing.module";
 import { LenderReliabilityService } from "./lender-reliability.service";
+import { ListingRatingService } from "./listing-rating.service";
 import { BeamSearchService } from "./beam-search.service";
 import { BundleExplanationService } from "./bundle-explanation.service";
 import { BundleOptimizerController } from "./bundle-optimizer.controller";
@@ -26,6 +27,7 @@ import { PreferenceMappingService } from "./preference-mapping.service";
     BundleExplanationService,
     PreferenceMappingService,
     LenderReliabilityService,
+    ListingRatingService,
   ],
   exports: [BundleOptimizerService],
 })

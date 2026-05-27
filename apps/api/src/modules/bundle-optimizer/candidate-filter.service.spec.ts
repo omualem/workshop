@@ -1,4 +1,5 @@
 import { CandidateFilterService } from "./candidate-filter.service";
+import { ListingRatingService } from "./listing-rating.service";
 import { MetricNormalizationService } from "./metric-normalization.service";
 import type { OptimizerRequest, SlotInput } from "./bundle-optimizer.types";
 
@@ -46,6 +47,7 @@ function listing(partial: Partial<ListingRow>): ListingRow {
 function makeService(
   listings: ListingRow[],
   isAvailable: (listingId: string, quantity: number, inventoryCount: number) => boolean = () => true,
+  reviews: Array<{ listingId: string; reviewerId: string; rating: number }> = [],
 ) {
   const byId = new Map(listings.map((l) => [l.id, l]));
   const prisma: any = {
@@ -62,6 +64,12 @@ function makeService(
     },
     listingAvailabilityBlock: {
       findMany: jest.fn(async () => []),
+    },
+    review: {
+      findMany: jest.fn(async ({ where }: any) => {
+        const ids: string[] = where?.listingId?.in ?? [];
+        return reviews.filter((r) => ids.includes(r.listingId));
+      }),
     },
   };
   const availability: any = {
@@ -82,7 +90,14 @@ function makeService(
   };
   const normalization = new MetricNormalizationService();
 
-  return new CandidateFilterService(prisma, availability, pricing, reliability, normalization);
+  return new CandidateFilterService(
+    prisma,
+    availability,
+    pricing,
+    reliability,
+    normalization,
+    new ListingRatingService(),
+  );
 }
 
 const baseRequest = (slots: SlotInput[]): OptimizerRequest => ({
@@ -338,6 +353,131 @@ describe("CandidateFilterService", () => {
       expect(expandedSlots.map((s) => s.slotKey)).toEqual(["camera::1", "camera::2"]);
       expect(candidatesBySlot["camera::1"][0].inventoryCount).toBe(2);
       expect(candidatesBySlot["camera::2"][0].inventoryCount).toBe(2);
+    });
+  });
+
+  describe("item-level rating signal", () => {
+    it("falls back to lender reliability when the listing has zero reviews", async () => {
+      const svc = makeService(
+        [listing({ id: "L1", categoryId: "cat-1" })],
+        () => true,
+        [],
+      );
+      const { candidatesBySlot } = await svc.buildCandidatesPerSlot(
+        baseRequest([{ slotKey: "s1", mode: "category", categoryId: "cat-1", quantity: 1 }]),
+      );
+      const c = candidatesBySlot["s1"][0];
+      expect(c.reliabilityBreakdown.insufficientRatingInfo).toBe(true);
+      expect(c.reliabilityBreakdown.itemRatingScore).toBeNull();
+      expect(c.reliabilityBreakdown.itemDistinctRatingCount).toBe(0);
+      // Final reliability equals the (mocked) lender reliability of 8 — no
+      // item rating folded in.
+      expect(c.reliability).toBe(8);
+      expect(c.reliabilityBreakdown.finalReliabilityScore).toBe(8);
+    });
+
+    it("counts DISTINCT reviewers, not raw review rows", async () => {
+      const svc = makeService(
+        [listing({ id: "L1", categoryId: "cat-1" })],
+        () => true,
+        [
+          { listingId: "L1", reviewerId: "userA", rating: 5 },
+          { listingId: "L1", reviewerId: "userA", rating: 4 },
+          { listingId: "L1", reviewerId: "userA", rating: 5 },
+        ],
+      );
+      const { candidatesBySlot } = await svc.buildCandidatesPerSlot(
+        baseRequest([{ slotKey: "s1", mode: "category", categoryId: "cat-1", quantity: 1 }]),
+      );
+      const c = candidatesBySlot["s1"][0];
+      expect(c.reliabilityBreakdown.itemDistinctRatingCount).toBe(1);
+    });
+
+    it("a rating of 5 with one rater receives lower reliability than rating 4.5 with many raters (similar lender reliability)", async () => {
+      const svc = makeService(
+        [
+          listing({ id: "Lfew", categoryId: "cat-1" }),
+          listing({ id: "Lmany", categoryId: "cat-1" }),
+        ],
+        () => true,
+        [
+          { listingId: "Lfew", reviewerId: "u1", rating: 5 },
+          ...Array.from({ length: 30 }, (_, i) => ({
+            listingId: "Lmany",
+            reviewerId: `u${i + 100}`,
+            rating: 4.5,
+          })),
+        ],
+      );
+      const { candidatesBySlot } = await svc.buildCandidatesPerSlot(
+        baseRequest([{ slotKey: "s1", mode: "category", categoryId: "cat-1", quantity: 1 }]),
+      );
+      const few = candidatesBySlot["s1"].find((c) => c.listingId === "Lfew")!;
+      const many = candidatesBySlot["s1"].find((c) => c.listingId === "Lmany")!;
+      expect(many.reliability).toBeGreaterThan(few.reliability);
+    });
+
+    it("listing 4.5 with 500 distinct raters beats listing 5.0 with 1 rater (same lender reliability)", async () => {
+      const manyReviews = Array.from({ length: 500 }, (_, i) => ({
+        listingId: "Lmany",
+        reviewerId: `u${i}`,
+        rating: 4.5,
+      }));
+      const svc = makeService(
+        [
+          listing({ id: "Lfew", categoryId: "cat-1" }),
+          listing({ id: "Lmany", categoryId: "cat-1" }),
+        ],
+        () => true,
+        [
+          { listingId: "Lfew", reviewerId: "solo", rating: 5 },
+          ...manyReviews,
+        ],
+      );
+      const { candidatesBySlot } = await svc.buildCandidatesPerSlot(
+        baseRequest([{ slotKey: "s1", mode: "category", categoryId: "cat-1", quantity: 1 }]),
+      );
+      const few = candidatesBySlot["s1"].find((c) => c.listingId === "Lfew")!;
+      const many = candidatesBySlot["s1"].find((c) => c.listingId === "Lmany")!;
+      // Lender reliability is identical (mocked to 8 in this spec), so any
+      // difference comes solely from the item-rating-confidence signal.
+      expect(few.reliabilityBreakdown.lenderReliability).toBe(
+        many.reliabilityBreakdown.lenderReliability,
+      );
+      expect(many.reliability).toBeGreaterThan(few.reliability);
+      // The mixed score must also propagate into the normalized metric used
+      // for ranking and pruning, not just the breakdown.
+      expect(many.m_reliability).toBeGreaterThan(few.m_reliability);
+      expect(many.preliminaryScore).toBeGreaterThan(few.preliminaryScore);
+    });
+
+    it("surfaces all rating breakdown fields on the candidate", async () => {
+      const svc = makeService(
+        [listing({ id: "L1", categoryId: "cat-1" })],
+        () => true,
+        [
+          { listingId: "L1", reviewerId: "u1", rating: 5 },
+          { listingId: "L1", reviewerId: "u2", rating: 4 },
+        ],
+      );
+      const { candidatesBySlot } = await svc.buildCandidatesPerSlot(
+        baseRequest([{ slotKey: "s1", mode: "category", categoryId: "cat-1", quantity: 1 }]),
+      );
+      const c = candidatesBySlot["s1"][0];
+      const b = c.reliabilityBreakdown;
+      expect(b).toEqual(
+        expect.objectContaining({
+          lenderReliability: expect.any(Number),
+          itemAverageRating: expect.any(Number),
+          itemDistinctRatingCount: 2,
+          itemRatingConfidence: expect.any(Number),
+          adjustedItemRating: expect.any(Number),
+          itemRatingScore: expect.any(Number),
+          insufficientRatingInfo: false,
+          finalReliabilityScore: expect.any(Number),
+        }),
+      );
+      expect(b.itemRatingConfidence).toBeCloseTo(2 / 30);
     });
   });
 });

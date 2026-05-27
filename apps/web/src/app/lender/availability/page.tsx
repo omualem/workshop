@@ -14,7 +14,7 @@ const navItems = [
 
 export default function LenderAvailabilityPage() {
   return (
-    <DashboardShell title="ניהול זמינות" subtitle="חסימת תאריכים, ניהול תחזוקה ומניעת התנגשויות בהזמנות." navItems={navItems}>
+    <DashboardShell title="ניהול זמינות" subtitle="חסימת תאריכים, ניהול תחזוקה ומניעת התנגשויות בהזמנות." navItems={navItems} activeHref="/lender/availability">
       <Card className="text-sm leading-7 text-slate-600">
         כאן תוכלו לחסום ימים שבהם הפריטים לא זמינים, לסמן תקופות תחזוקה ולוודא שלא יישלחו הזמנות סותרות.
       </Card>

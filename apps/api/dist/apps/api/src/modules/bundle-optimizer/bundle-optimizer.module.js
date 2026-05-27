@@ -12,6 +12,7 @@ const addresses_module_1 = require("../addresses/addresses.module");
 const availability_module_1 = require("../availability/availability.module");
 const pricing_module_1 = require("../pricing/pricing.module");
 const lender_reliability_service_1 = require("./lender-reliability.service");
+const listing_rating_service_1 = require("./listing-rating.service");
 const beam_search_service_1 = require("./beam-search.service");
 const bundle_explanation_service_1 = require("./bundle-explanation.service");
 const bundle_optimizer_controller_1 = require("./bundle-optimizer.controller");
@@ -38,6 +39,7 @@ exports.BundleOptimizerModule = BundleOptimizerModule = __decorate([
             bundle_explanation_service_1.BundleExplanationService,
             preference_mapping_service_1.PreferenceMappingService,
             lender_reliability_service_1.LenderReliabilityService,
+            listing_rating_service_1.ListingRatingService,
         ],
         exports: [bundle_optimizer_service_1.BundleOptimizerService],
     })

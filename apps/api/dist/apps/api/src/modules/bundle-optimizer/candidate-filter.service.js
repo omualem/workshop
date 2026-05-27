@@ -16,9 +16,11 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const availability_service_1 = require("../availability/availability.service");
 const pricing_service_1 = require("../pricing/pricing.service");
 const lender_reliability_service_1 = require("./lender-reliability.service");
+const listing_rating_service_1 = require("./listing-rating.service");
 const prisma_utils_1 = require("../../shared/utils/prisma.utils");
 const metric_normalization_service_1 = require("./metric-normalization.service");
 const ROUGH_PREFILTER_POOL_SIZE = 100;
+const RELIABILITY_THETA = 0.7;
 const PREFERRED_LISTING_BONUS = 0.5;
 let CandidateFilterService = class CandidateFilterService {
     prisma;
@@ -26,12 +28,14 @@ let CandidateFilterService = class CandidateFilterService {
     pricing;
     reliability;
     normalization;
-    constructor(prisma, availability, pricing, reliability, normalization) {
+    listingRating;
+    constructor(prisma, availability, pricing, reliability, normalization, listingRating) {
         this.prisma = prisma;
         this.availability = availability;
         this.pricing = pricing;
         this.reliability = reliability;
         this.normalization = normalization;
+        this.listingRating = listingRating;
     }
     async buildCandidatesPerSlot(req) {
         const candidatesBySlot = {};
@@ -61,9 +65,11 @@ let CandidateFilterService = class CandidateFilterService {
                 }
             }
         }
+        const ratingAggregateCache = new Map();
         for (const slot of expandedSlots) {
             const constraints = this.normalizeConstraints(slot);
             const rawListings = await this.loadSlotListings(slot, constraints);
+            await this.primeRatingAggregates(rawListings.map((l) => l.id), ratingAggregateCache);
             beforeFiltering[slot.slotKey] = rawListings.length;
             filteredByAvailability[slot.slotKey] = 0;
             filteredByRentalDays[slot.slotKey] = 0;
@@ -121,7 +127,7 @@ let CandidateFilterService = class CandidateFilterService {
                 }
                 slotDebug[slot.slotKey].push(entryDebug);
                 const reliabilityOverride = (0, prisma_utils_1.decimalToNumber)(listing.lender.reliabilityScoreCached) ?? 0;
-                const reliability = reliabilityOverride > 0
+                const lenderReliability = reliabilityOverride > 0
                     ? Math.max(0, Math.min(10, reliabilityOverride))
                     : this.reliability.compute({
                         averageRating: (0, prisma_utils_1.decimalToNumber)(listing.lender.averageRating) ?? 0,
@@ -132,6 +138,25 @@ let CandidateFilterService = class CandidateFilterService {
                         verificationLevel: listing.lender.verificationLevel,
                         responseTimeScore: (0, prisma_utils_1.decimalToNumber)(listing.lender.responseTimeScore) ?? 5,
                     });
+                const aggregate = ratingAggregateCache.get(listing.id) ?? {
+                    averageRating: 0,
+                    distinctRaterCount: 0,
+                };
+                const itemRating = this.listingRating.compute(aggregate);
+                const reliability = itemRating.itemRatingScore !== null
+                    ? Math.max(0, Math.min(10, RELIABILITY_THETA * lenderReliability +
+                        (1 - RELIABILITY_THETA) * itemRating.itemRatingScore))
+                    : lenderReliability;
+                const reliabilityBreakdown = {
+                    lenderReliability,
+                    itemAverageRating: itemRating.averageRating,
+                    itemDistinctRatingCount: itemRating.distinctRaterCount,
+                    itemRatingConfidence: itemRating.confidence,
+                    adjustedItemRating: itemRating.adjustedRating,
+                    itemRatingScore: itemRating.itemRatingScore,
+                    insufficientRatingInfo: itemRating.insufficient,
+                    finalReliabilityScore: reliability,
+                };
                 const deviationDays = await this.computeDeviationDays(listing.id, startDate, endDate);
                 const availabilityScore = this.normalization.availabilityFromDeviation(deviationDays);
                 survivors.push({
@@ -145,6 +170,7 @@ let CandidateFilterService = class CandidateFilterService {
                     price: priceQuote.total,
                     distanceKm,
                     reliability,
+                    reliabilityBreakdown,
                     availability: availabilityScore,
                     pickupLat,
                     pickupLng,
@@ -268,6 +294,40 @@ let CandidateFilterService = class CandidateFilterService {
             take: roughPoolSize,
         });
     }
+    async primeRatingAggregates(listingIds, cache) {
+        const missing = listingIds.filter((id) => !cache.has(id));
+        if (missing.length === 0)
+            return;
+        const reviews = await this.prisma.review.findMany({
+            where: { listingId: { in: missing } },
+            select: { listingId: true, reviewerId: true, rating: true },
+        });
+        const grouped = new Map();
+        for (const r of reviews) {
+            if (!r.listingId)
+                continue;
+            let entry = grouped.get(r.listingId);
+            if (!entry) {
+                entry = { sum: 0, count: 0, reviewers: new Set() };
+                grouped.set(r.listingId, entry);
+            }
+            entry.sum += r.rating;
+            entry.count += 1;
+            entry.reviewers.add(r.reviewerId);
+        }
+        for (const id of missing) {
+            const entry = grouped.get(id);
+            if (!entry || entry.count === 0) {
+                cache.set(id, { averageRating: 0, distinctRaterCount: 0 });
+            }
+            else {
+                cache.set(id, {
+                    averageRating: entry.sum / entry.count,
+                    distinctRaterCount: entry.reviewers.size,
+                });
+            }
+        }
+    }
     normalizeConstraints(slot) {
         return { ...(slot.constraints ?? {}) };
     }
@@ -316,6 +376,7 @@ exports.CandidateFilterService = CandidateFilterService = __decorate([
         availability_service_1.AvailabilityService,
         pricing_service_1.PricingService,
         lender_reliability_service_1.LenderReliabilityService,
-        metric_normalization_service_1.MetricNormalizationService])
+        metric_normalization_service_1.MetricNormalizationService,
+        listing_rating_service_1.ListingRatingService])
 ], CandidateFilterService);
 //# sourceMappingURL=candidate-filter.service.js.map
