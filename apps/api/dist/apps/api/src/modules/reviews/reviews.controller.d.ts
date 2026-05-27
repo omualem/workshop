@@ -8,8 +8,8 @@ export declare class ReviewsController {
     }, dto: CreateReviewDto): Promise<{
         id: string;
         createdAt: Date;
-        listingId: string | null;
         bookingId: string;
+        listingId: string | null;
         reviewerId: string;
         revieweeUserId: string;
         rating: number;
@@ -26,8 +26,8 @@ export declare class ReviewsController {
     } & {
         id: string;
         createdAt: Date;
-        listingId: string | null;
         bookingId: string;
+        listingId: string | null;
         reviewerId: string;
         revieweeUserId: string;
         rating: number;

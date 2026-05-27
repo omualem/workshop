@@ -16,19 +16,18 @@ export declare class ListingsController {
         items: ({
             category: {
                 id: string;
-                status: import(".prisma/client").$Enums.CategoryStatus;
                 createdAt: Date;
                 updatedAt: Date;
+                nameHe: string;
+                status: import(".prisma/client").$Enums.CategoryStatus;
                 parentId: string | null;
                 slug: string;
-                nameHe: string;
                 nameEn: string;
                 attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
             };
             lender: {
                 user: {
                     id: string;
-                    status: import(".prisma/client").$Enums.UserStatus;
                     createdAt: Date;
                     updatedAt: Date;
                     role: import(".prisma/client").$Enums.UserRole;
@@ -36,12 +35,12 @@ export declare class ListingsController {
                     email: string;
                     phone: string;
                     passwordHash: string;
+                    status: import(".prisma/client").$Enums.UserStatus;
                     locale: string;
                 };
             } & {
                 createdAt: Date;
                 updatedAt: Date;
-                userId: string;
                 displayName: string;
                 bio: string | null;
                 averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -54,13 +53,14 @@ export declare class ListingsController {
                 isFeatured: boolean;
                 pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
                 reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+                userId: string;
             };
             cityRef: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                nameHe: string;
                 settlementCode: number;
+                nameHe: string;
             } | null;
             streetRef: {
                 cityId: string;
@@ -73,8 +73,8 @@ export declare class ListingsController {
             media: {
                 id: string;
                 listingId: string;
-                sortOrder: number;
                 url: string;
+                sortOrder: number;
                 altText: string;
             }[];
             attributeValues: {
@@ -84,37 +84,39 @@ export declare class ListingsController {
                 attributeValue: import("@prisma/client/runtime/library").JsonValue;
             }[];
             availabilityBlocks: {
-                quantity: number;
-                startDate: Date;
-                endDate: Date;
                 id: string;
                 status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
                 listingId: string;
+                quantity: number;
+                startDate: Date;
+                endDate: Date;
                 reason: string | null;
             }[];
         } & {
-            categoryId: string;
+            city: string | null;
             cityId: string | null;
             streetId: string | null;
             addressNumber: number | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import(".prisma/client").$Enums.ListingStatus;
             lenderId: string;
+            depositAmount: import("@prisma/client/runtime/library").Decimal;
+            categoryId: string;
             titleHe: string;
             titleEn: string;
             descriptionHe: string;
             descriptionEn: string;
             suitableFor: string | null;
             mainUses: string | null;
-            status: import(".prisma/client").$Enums.ListingStatus;
             basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-            depositAmount: import("@prisma/client/runtime/library").Decimal;
             qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
             popularityScore: import("@prisma/client/runtime/library").Decimal | null;
             manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
             pickupLat: import("@prisma/client/runtime/library").Decimal;
             pickupLng: import("@prisma/client/runtime/library").Decimal;
             pickupAddressText: string;
-            city: string | null;
             pickupInstructions: string | null;
             deliverySupported: boolean;
             includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -125,8 +127,6 @@ export declare class ListingsController {
             inventoryCount: number;
             minRentalDays: number;
             maxRentalDays: number;
-            createdAt: Date;
-            updatedAt: Date;
         })[];
         total: number;
         page: number;
@@ -419,12 +419,12 @@ export declare class ListingsController {
     }): Promise<({
         category: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         };
@@ -432,8 +432,8 @@ export declare class ListingsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            nameHe: string;
             settlementCode: number;
+            nameHe: string;
         } | null;
         streetRef: {
             cityId: string;
@@ -446,33 +446,35 @@ export declare class ListingsController {
         media: {
             id: string;
             listingId: string;
-            sortOrder: number;
             url: string;
+            sortOrder: number;
             altText: string;
         }[];
     } & {
-        categoryId: string;
+        city: string | null;
         cityId: string | null;
         streetId: string | null;
         addressNumber: number | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        categoryId: string;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
         descriptionEn: string;
         suitableFor: string | null;
         mainUses: string | null;
-        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
         qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
         popularityScore: import("@prisma/client/runtime/library").Decimal | null;
         manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
         pickupLat: import("@prisma/client/runtime/library").Decimal;
         pickupLng: import("@prisma/client/runtime/library").Decimal;
         pickupAddressText: string;
-        city: string | null;
         pickupInstructions: string | null;
         deliverySupported: boolean;
         includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -483,8 +485,6 @@ export declare class ListingsController {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     create(user: {
         sub: string;
@@ -493,8 +493,8 @@ export declare class ListingsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            nameHe: string;
             settlementCode: number;
+            nameHe: string;
         } | null;
         streetRef: {
             cityId: string;
@@ -507,8 +507,8 @@ export declare class ListingsController {
         media: {
             id: string;
             listingId: string;
-            sortOrder: number;
             url: string;
+            sortOrder: number;
             altText: string;
         }[];
         attributeValues: {
@@ -518,37 +518,39 @@ export declare class ListingsController {
             attributeValue: import("@prisma/client/runtime/library").JsonValue;
         }[];
         availabilityBlocks: {
-            quantity: number;
-            startDate: Date;
-            endDate: Date;
             id: string;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             listingId: string;
+            quantity: number;
+            startDate: Date;
+            endDate: Date;
             reason: string | null;
         }[];
     } & {
-        categoryId: string;
+        city: string | null;
         cityId: string | null;
         streetId: string | null;
         addressNumber: number | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        categoryId: string;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
         descriptionEn: string;
         suitableFor: string | null;
         mainUses: string | null;
-        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
         qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
         popularityScore: import("@prisma/client/runtime/library").Decimal | null;
         manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
         pickupLat: import("@prisma/client/runtime/library").Decimal;
         pickupLng: import("@prisma/client/runtime/library").Decimal;
         pickupAddressText: string;
-        city: string | null;
         pickupInstructions: string | null;
         deliverySupported: boolean;
         includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -559,8 +561,6 @@ export declare class ListingsController {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(user: {
         sub: string;
@@ -569,8 +569,8 @@ export declare class ListingsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            nameHe: string;
             settlementCode: number;
+            nameHe: string;
         } | null;
         streetRef: {
             cityId: string;
@@ -583,8 +583,8 @@ export declare class ListingsController {
         media: {
             id: string;
             listingId: string;
-            sortOrder: number;
             url: string;
+            sortOrder: number;
             altText: string;
         }[];
         attributeValues: {
@@ -594,37 +594,39 @@ export declare class ListingsController {
             attributeValue: import("@prisma/client/runtime/library").JsonValue;
         }[];
         availabilityBlocks: {
-            quantity: number;
-            startDate: Date;
-            endDate: Date;
             id: string;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             listingId: string;
+            quantity: number;
+            startDate: Date;
+            endDate: Date;
             reason: string | null;
         }[];
     } & {
-        categoryId: string;
+        city: string | null;
         cityId: string | null;
         streetId: string | null;
         addressNumber: number | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        categoryId: string;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
         descriptionEn: string;
         suitableFor: string | null;
         mainUses: string | null;
-        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
         qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
         popularityScore: import("@prisma/client/runtime/library").Decimal | null;
         manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
         pickupLat: import("@prisma/client/runtime/library").Decimal;
         pickupLng: import("@prisma/client/runtime/library").Decimal;
         pickupAddressText: string;
-        city: string | null;
         pickupInstructions: string | null;
         deliverySupported: boolean;
         includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -635,33 +637,32 @@ export declare class ListingsController {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     addMedia(user: {
         sub: string;
     }, id: string, dto: AddMediaDto): Promise<{
         id: string;
         listingId: string;
-        sortOrder: number;
         url: string;
+        sortOrder: number;
         altText: string;
     }>;
     addAvailabilityBlock(user: {
         sub: string;
     }, id: string, dto: CreateAvailabilityBlockDto): Promise<{
-        quantity: number;
-        startDate: Date;
-        endDate: Date;
         id: string;
         status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
         listingId: string;
+        quantity: number;
+        startDate: Date;
+        endDate: Date;
         reason: string | null;
     }>;
     addPricingRule(user: {
         sub: string;
     }, id: string, dto: CreatePricingRuleDto): Promise<{
         id: string;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         listingId: string;
         ruleType: import(".prisma/client").$Enums.PricingRuleType;
         minDays: number | null;
@@ -672,24 +673,22 @@ export declare class ListingsController {
         seasonalAdjustment: import("@prisma/client/runtime/library").Decimal | null;
         startsAt: Date | null;
         endsAt: Date | null;
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     adminFindAll(query: AdminListingQueryDto): Promise<({
         category: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         };
         lender: {
             user: {
                 id: string;
-                status: import(".prisma/client").$Enums.UserStatus;
                 createdAt: Date;
                 updatedAt: Date;
                 role: import(".prisma/client").$Enums.UserRole;
@@ -697,12 +696,12 @@ export declare class ListingsController {
                 email: string;
                 phone: string;
                 passwordHash: string;
+                status: import(".prisma/client").$Enums.UserStatus;
                 locale: string;
             };
         } & {
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -715,13 +714,14 @@ export declare class ListingsController {
             isFeatured: boolean;
             pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            userId: string;
         };
         cityRef: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            nameHe: string;
             settlementCode: number;
+            nameHe: string;
         } | null;
         streetRef: {
             cityId: string;
@@ -734,8 +734,8 @@ export declare class ListingsController {
         media: {
             id: string;
             listingId: string;
-            sortOrder: number;
             url: string;
+            sortOrder: number;
             altText: string;
         }[];
         attributeValues: {
@@ -745,37 +745,39 @@ export declare class ListingsController {
             attributeValue: import("@prisma/client/runtime/library").JsonValue;
         }[];
         availabilityBlocks: {
-            quantity: number;
-            startDate: Date;
-            endDate: Date;
             id: string;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             listingId: string;
+            quantity: number;
+            startDate: Date;
+            endDate: Date;
             reason: string | null;
         }[];
     } & {
-        categoryId: string;
+        city: string | null;
         cityId: string | null;
         streetId: string | null;
         addressNumber: number | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        categoryId: string;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
         descriptionEn: string;
         suitableFor: string | null;
         mainUses: string | null;
-        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
         qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
         popularityScore: import("@prisma/client/runtime/library").Decimal | null;
         manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
         pickupLat: import("@prisma/client/runtime/library").Decimal;
         pickupLng: import("@prisma/client/runtime/library").Decimal;
         pickupAddressText: string;
-        city: string | null;
         pickupInstructions: string | null;
         deliverySupported: boolean;
         includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -786,27 +788,24 @@ export declare class ListingsController {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     adminCreate(dto: AdminCreateListingDto, user: {
         sub: string;
     }): Promise<{
         category: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         };
         lender: {
             user: {
                 id: string;
-                status: import(".prisma/client").$Enums.UserStatus;
                 createdAt: Date;
                 updatedAt: Date;
                 role: import(".prisma/client").$Enums.UserRole;
@@ -814,12 +813,12 @@ export declare class ListingsController {
                 email: string;
                 phone: string;
                 passwordHash: string;
+                status: import(".prisma/client").$Enums.UserStatus;
                 locale: string;
             };
         } & {
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -832,13 +831,14 @@ export declare class ListingsController {
             isFeatured: boolean;
             pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            userId: string;
         };
         cityRef: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            nameHe: string;
             settlementCode: number;
+            nameHe: string;
         } | null;
         streetRef: {
             cityId: string;
@@ -851,8 +851,8 @@ export declare class ListingsController {
         media: {
             id: string;
             listingId: string;
-            sortOrder: number;
             url: string;
+            sortOrder: number;
             altText: string;
         }[];
         attributeValues: {
@@ -862,37 +862,39 @@ export declare class ListingsController {
             attributeValue: import("@prisma/client/runtime/library").JsonValue;
         }[];
         availabilityBlocks: {
-            quantity: number;
-            startDate: Date;
-            endDate: Date;
             id: string;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             listingId: string;
+            quantity: number;
+            startDate: Date;
+            endDate: Date;
             reason: string | null;
         }[];
     } & {
-        categoryId: string;
+        city: string | null;
         cityId: string | null;
         streetId: string | null;
         addressNumber: number | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        categoryId: string;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
         descriptionEn: string;
         suitableFor: string | null;
         mainUses: string | null;
-        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
         qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
         popularityScore: import("@prisma/client/runtime/library").Decimal | null;
         manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
         pickupLat: import("@prisma/client/runtime/library").Decimal;
         pickupLng: import("@prisma/client/runtime/library").Decimal;
         pickupAddressText: string;
-        city: string | null;
         pickupInstructions: string | null;
         deliverySupported: boolean;
         includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -903,27 +905,24 @@ export declare class ListingsController {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     adminUpdate(id: string, dto: AdminUpdateListingDto, user: {
         sub: string;
     }): Promise<{
         category: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         };
         lender: {
             user: {
                 id: string;
-                status: import(".prisma/client").$Enums.UserStatus;
                 createdAt: Date;
                 updatedAt: Date;
                 role: import(".prisma/client").$Enums.UserRole;
@@ -931,12 +930,12 @@ export declare class ListingsController {
                 email: string;
                 phone: string;
                 passwordHash: string;
+                status: import(".prisma/client").$Enums.UserStatus;
                 locale: string;
             };
         } & {
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -949,13 +948,14 @@ export declare class ListingsController {
             isFeatured: boolean;
             pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            userId: string;
         };
         cityRef: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            nameHe: string;
             settlementCode: number;
+            nameHe: string;
         } | null;
         streetRef: {
             cityId: string;
@@ -968,8 +968,8 @@ export declare class ListingsController {
         media: {
             id: string;
             listingId: string;
-            sortOrder: number;
             url: string;
+            sortOrder: number;
             altText: string;
         }[];
         attributeValues: {
@@ -979,37 +979,39 @@ export declare class ListingsController {
             attributeValue: import("@prisma/client/runtime/library").JsonValue;
         }[];
         availabilityBlocks: {
-            quantity: number;
-            startDate: Date;
-            endDate: Date;
             id: string;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             listingId: string;
+            quantity: number;
+            startDate: Date;
+            endDate: Date;
             reason: string | null;
         }[];
     } & {
-        categoryId: string;
+        city: string | null;
         cityId: string | null;
         streetId: string | null;
         addressNumber: number | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        categoryId: string;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
         descriptionEn: string;
         suitableFor: string | null;
         mainUses: string | null;
-        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
         qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
         popularityScore: import("@prisma/client/runtime/library").Decimal | null;
         manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
         pickupLat: import("@prisma/client/runtime/library").Decimal;
         pickupLng: import("@prisma/client/runtime/library").Decimal;
         pickupAddressText: string;
-        city: string | null;
         pickupInstructions: string | null;
         deliverySupported: boolean;
         includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -1020,8 +1022,6 @@ export declare class ListingsController {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     adminDelete(id: string, user: {
         sub: string;
@@ -1036,19 +1036,18 @@ export declare class ListingsController {
     }): Promise<{
         category: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         };
         lender: {
             user: {
                 id: string;
-                status: import(".prisma/client").$Enums.UserStatus;
                 createdAt: Date;
                 updatedAt: Date;
                 role: import(".prisma/client").$Enums.UserRole;
@@ -1056,12 +1055,12 @@ export declare class ListingsController {
                 email: string;
                 phone: string;
                 passwordHash: string;
+                status: import(".prisma/client").$Enums.UserStatus;
                 locale: string;
             };
         } & {
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -1074,13 +1073,14 @@ export declare class ListingsController {
             isFeatured: boolean;
             pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            userId: string;
         };
         cityRef: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            nameHe: string;
             settlementCode: number;
+            nameHe: string;
         } | null;
         streetRef: {
             cityId: string;
@@ -1093,8 +1093,8 @@ export declare class ListingsController {
         media: {
             id: string;
             listingId: string;
-            sortOrder: number;
             url: string;
+            sortOrder: number;
             altText: string;
         }[];
         attributeValues: {
@@ -1104,37 +1104,39 @@ export declare class ListingsController {
             attributeValue: import("@prisma/client/runtime/library").JsonValue;
         }[];
         availabilityBlocks: {
-            quantity: number;
-            startDate: Date;
-            endDate: Date;
             id: string;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             listingId: string;
+            quantity: number;
+            startDate: Date;
+            endDate: Date;
             reason: string | null;
         }[];
     } & {
-        categoryId: string;
+        city: string | null;
         cityId: string | null;
         streetId: string | null;
         addressNumber: number | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        categoryId: string;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
         descriptionEn: string;
         suitableFor: string | null;
         mainUses: string | null;
-        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
         qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
         popularityScore: import("@prisma/client/runtime/library").Decimal | null;
         manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
         pickupLat: import("@prisma/client/runtime/library").Decimal;
         pickupLng: import("@prisma/client/runtime/library").Decimal;
         pickupAddressText: string;
-        city: string | null;
         pickupInstructions: string | null;
         deliverySupported: boolean;
         includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -1145,27 +1147,24 @@ export declare class ListingsController {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     adminChangeOwner(id: string, dto: AdminChangeListingOwnerDto, user: {
         sub: string;
     }): Promise<{
         category: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         };
         lender: {
             user: {
                 id: string;
-                status: import(".prisma/client").$Enums.UserStatus;
                 createdAt: Date;
                 updatedAt: Date;
                 role: import(".prisma/client").$Enums.UserRole;
@@ -1173,12 +1172,12 @@ export declare class ListingsController {
                 email: string;
                 phone: string;
                 passwordHash: string;
+                status: import(".prisma/client").$Enums.UserStatus;
                 locale: string;
             };
         } & {
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -1191,13 +1190,14 @@ export declare class ListingsController {
             isFeatured: boolean;
             pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            userId: string;
         };
         cityRef: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            nameHe: string;
             settlementCode: number;
+            nameHe: string;
         } | null;
         streetRef: {
             cityId: string;
@@ -1210,8 +1210,8 @@ export declare class ListingsController {
         media: {
             id: string;
             listingId: string;
-            sortOrder: number;
             url: string;
+            sortOrder: number;
             altText: string;
         }[];
         attributeValues: {
@@ -1221,37 +1221,39 @@ export declare class ListingsController {
             attributeValue: import("@prisma/client/runtime/library").JsonValue;
         }[];
         availabilityBlocks: {
-            quantity: number;
-            startDate: Date;
-            endDate: Date;
             id: string;
             status: import(".prisma/client").$Enums.AvailabilityBlockStatus;
             listingId: string;
+            quantity: number;
+            startDate: Date;
+            endDate: Date;
             reason: string | null;
         }[];
     } & {
-        categoryId: string;
+        city: string | null;
         cityId: string | null;
         streetId: string | null;
         addressNumber: number | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lenderId: string;
+        depositAmount: import("@prisma/client/runtime/library").Decimal;
+        categoryId: string;
         titleHe: string;
         titleEn: string;
         descriptionHe: string;
         descriptionEn: string;
         suitableFor: string | null;
         mainUses: string | null;
-        status: import(".prisma/client").$Enums.ListingStatus;
         basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-        depositAmount: import("@prisma/client/runtime/library").Decimal;
         qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
         popularityScore: import("@prisma/client/runtime/library").Decimal | null;
         manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
         pickupLat: import("@prisma/client/runtime/library").Decimal;
         pickupLng: import("@prisma/client/runtime/library").Decimal;
         pickupAddressText: string;
-        city: string | null;
         pickupInstructions: string | null;
         deliverySupported: boolean;
         includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -1262,7 +1264,5 @@ export declare class ListingsController {
         inventoryCount: number;
         minRentalDays: number;
         maxRentalDays: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

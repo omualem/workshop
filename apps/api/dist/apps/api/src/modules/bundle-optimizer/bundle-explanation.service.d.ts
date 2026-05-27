@@ -22,7 +22,7 @@ export declare class BundleExplanationService {
             rawFinalScore: number;
             finalScore: number;
             preferences: {
-                profile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional";
+                profile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "custom";
                 baseProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
                 sliders: {
                     price: number;

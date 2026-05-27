@@ -5,18 +5,18 @@ export declare class RentersService {
     me(userId: string): Promise<{
         user: {
             id: string;
-            status: import(".prisma/client").$Enums.UserStatus;
             fullName: string;
             email: string;
             phone: string;
+            status: import(".prisma/client").$Enums.UserStatus;
         };
     } & {
-        userId: string;
-        preferences: import("@prisma/client/runtime/library").JsonValue | null;
         defaultLocationLat: import("@prisma/client/runtime/library").Decimal | null;
         defaultLocationLng: import("@prisma/client/runtime/library").Decimal | null;
         defaultAddressText: string | null;
+        preferences: import("@prisma/client/runtime/library").JsonValue | null;
         verificationStatus: import(".prisma/client").$Enums.VerificationStatus;
+        userId: string;
     }>;
     savedSearches(userId: string): import(".prisma/client").Prisma.PrismaPromise<{
         id: string;
@@ -29,19 +29,18 @@ export declare class RentersService {
         listing: {
             category: {
                 id: string;
-                status: import(".prisma/client").$Enums.CategoryStatus;
                 createdAt: Date;
                 updatedAt: Date;
+                nameHe: string;
+                status: import(".prisma/client").$Enums.CategoryStatus;
                 parentId: string | null;
                 slug: string;
-                nameHe: string;
                 nameEn: string;
                 attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
             };
             lender: {
                 createdAt: Date;
                 updatedAt: Date;
-                userId: string;
                 displayName: string;
                 bio: string | null;
                 averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -54,37 +53,40 @@ export declare class RentersService {
                 isFeatured: boolean;
                 pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
                 reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+                userId: string;
             };
             media: {
                 id: string;
                 listingId: string;
-                sortOrder: number;
                 url: string;
+                sortOrder: number;
                 altText: string;
             }[];
         } & {
-            categoryId: string;
+            city: string | null;
             cityId: string | null;
             streetId: string | null;
             addressNumber: number | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import(".prisma/client").$Enums.ListingStatus;
             lenderId: string;
+            depositAmount: import("@prisma/client/runtime/library").Decimal;
+            categoryId: string;
             titleHe: string;
             titleEn: string;
             descriptionHe: string;
             descriptionEn: string;
             suitableFor: string | null;
             mainUses: string | null;
-            status: import(".prisma/client").$Enums.ListingStatus;
             basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-            depositAmount: import("@prisma/client/runtime/library").Decimal;
             qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
             popularityScore: import("@prisma/client/runtime/library").Decimal | null;
             manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
             pickupLat: import("@prisma/client/runtime/library").Decimal;
             pickupLng: import("@prisma/client/runtime/library").Decimal;
             pickupAddressText: string;
-            city: string | null;
             pickupInstructions: string | null;
             deliverySupported: boolean;
             includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -95,8 +97,6 @@ export declare class RentersService {
             inventoryCount: number;
             minRentalDays: number;
             maxRentalDays: number;
-            createdAt: Date;
-            updatedAt: Date;
         };
     } & {
         id: string;

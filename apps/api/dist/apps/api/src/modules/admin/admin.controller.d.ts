@@ -15,12 +15,12 @@ export declare class AdminController {
     } & {
         id: string;
         createdAt: Date;
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         action: string;
         entityType: string;
         entityId: string;
         before: import("@prisma/client/runtime/library").JsonValue | null;
         after: import("@prisma/client/runtime/library").JsonValue | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         actorUserId: string | null;
     })[]>;
     overview(): Promise<{
@@ -33,10 +33,10 @@ export declare class AdminController {
     catalogOptions(): Promise<{
         categories: {
             id: string;
+            nameHe: string;
             status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
         }[];
         lenders: ({
             user: {
@@ -47,7 +47,6 @@ export declare class AdminController {
         } & {
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: import("@prisma/client/runtime/library").Decimal;
@@ -60,6 +59,7 @@ export declare class AdminController {
             isFeatured: boolean;
             pickupAreaGeo: import("@prisma/client/runtime/library").JsonValue | null;
             reliabilityScoreCached: import("@prisma/client/runtime/library").Decimal;
+            userId: string;
         })[];
     }>;
     categories(includeArchived?: string): import(".prisma/client").Prisma.PrismaPromise<({
@@ -68,34 +68,34 @@ export declare class AdminController {
         };
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
     })[]>;
@@ -104,34 +104,34 @@ export declare class AdminController {
     }): Promise<{
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
@@ -140,34 +140,34 @@ export declare class AdminController {
     }): Promise<{
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
@@ -289,17 +289,17 @@ export declare class AdminController {
     moderationQueue(): Promise<{
         category: {
             id: string;
-            slug: string;
             nameHe: string;
+            slug: string;
         };
         id: string;
-        titleHe: string;
-        status: import(".prisma/client").$Enums.ListingStatus;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lender: {
-            userId: string;
             displayName: string;
+            userId: string;
         };
+        titleHe: string;
     }[]>;
     bookings(): Promise<({
         renter: {
@@ -308,33 +308,33 @@ export declare class AdminController {
             email: string;
         };
         items: ({
-            lender: {
-                userId: string;
-                displayName: string;
-            };
             listing: {
                 id: string;
                 titleHe: string;
             };
+            lender: {
+                displayName: string;
+                userId: string;
+            };
         } & {
-            quantity: number;
             id: string;
-            lenderId: string;
-            depositAmount: import("@prisma/client/runtime/library").Decimal;
-            listingId: string;
             bookingId: string;
+            listingId: string;
+            lenderId: string;
+            quantity: number;
             itemPrice: import("@prisma/client/runtime/library").Decimal;
+            depositAmount: import("@prisma/client/runtime/library").Decimal;
             pickupMethod: import(".prisma/client").$Enums.PickupMethod;
             pickupWindow: import("@prisma/client/runtime/library").JsonValue | null;
         })[];
     } & {
-        startDate: Date;
-        endDate: Date;
         id: string;
-        status: import(".prisma/client").$Enums.BookingStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.BookingStatus;
         renterId: string;
+        startDate: Date;
+        endDate: Date;
         totalPrice: import("@prisma/client/runtime/library").Decimal;
         totalDeposit: import("@prisma/client/runtime/library").Decimal;
         logisticsScoreSnapshot: import("@prisma/client/runtime/library").Decimal;
@@ -359,9 +359,9 @@ export declare class AdminController {
         } | null;
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.DisputeStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.DisputeStatus;
         bookingId: string;
         reason: string;
         openedByUserId: string;
@@ -386,8 +386,8 @@ export declare class AdminController {
     } & {
         id: string;
         createdAt: Date;
-        listingId: string | null;
         bookingId: string;
+        listingId: string | null;
         reviewerId: string;
         revieweeUserId: string;
         rating: number;

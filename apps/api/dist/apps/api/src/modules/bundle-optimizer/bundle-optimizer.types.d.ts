@@ -28,12 +28,12 @@ export declare const optimizerWeightsSchema: z.ZodObject<{
     availability: z.ZodNumber;
 }, z.core.$strip>;
 export declare const preferenceProfileSchema: z.ZodEnum<{
-    custom: "custom";
     balanced: "balanced";
     cheapest: "cheapest";
     closest: "closest";
     minimalEffort: "minimalEffort";
     professional: "professional";
+    custom: "custom";
 }>;
 export declare const basePreferenceProfileSchema: z.ZodEnum<{
     balanced: "balanced";
@@ -96,12 +96,12 @@ export declare const optimizerRequestBodySchema: z.ZodObject<{
     budget: z.ZodNumber;
     maxPickupPoints: z.ZodOptional<z.ZodNumber>;
     preferenceProfile: z.ZodOptional<z.ZodEnum<{
-        custom: "custom";
         balanced: "balanced";
         cheapest: "cheapest";
         closest: "closest";
         minimalEffort: "minimalEffort";
         professional: "professional";
+        custom: "custom";
     }>>;
     basePreferenceProfile: z.ZodOptional<z.ZodEnum<{
         balanced: "balanced";

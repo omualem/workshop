@@ -18,12 +18,12 @@ export declare class AdminService {
     } & {
         id: string;
         createdAt: Date;
-        metadata: Prisma.JsonValue | null;
         action: string;
         entityType: string;
         entityId: string;
         before: Prisma.JsonValue | null;
         after: Prisma.JsonValue | null;
+        metadata: Prisma.JsonValue | null;
         actorUserId: string | null;
     })[]>;
     overview(): Promise<{
@@ -36,10 +36,10 @@ export declare class AdminService {
     catalogOptions(): Promise<{
         categories: {
             id: string;
+            nameHe: string;
             status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
         }[];
         lenders: ({
             user: {
@@ -50,7 +50,6 @@ export declare class AdminService {
         } & {
             createdAt: Date;
             updatedAt: Date;
-            userId: string;
             displayName: string;
             bio: string | null;
             averageRating: Prisma.Decimal;
@@ -63,6 +62,7 @@ export declare class AdminService {
             isFeatured: boolean;
             pickupAreaGeo: Prisma.JsonValue | null;
             reliabilityScoreCached: Prisma.Decimal;
+            userId: string;
         })[];
     }>;
     users(includeDeleted?: boolean): Promise<{
@@ -165,17 +165,17 @@ export declare class AdminService {
     moderationQueue(): Promise<{
         category: {
             id: string;
-            slug: string;
             nameHe: string;
+            slug: string;
         };
         id: string;
-        titleHe: string;
-        status: import(".prisma/client").$Enums.ListingStatus;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.ListingStatus;
         lender: {
-            userId: string;
             displayName: string;
+            userId: string;
         };
+        titleHe: string;
     }[]>;
     bookings(): Promise<({
         renter: {
@@ -184,33 +184,33 @@ export declare class AdminService {
             email: string;
         };
         items: ({
-            lender: {
-                userId: string;
-                displayName: string;
-            };
             listing: {
                 id: string;
                 titleHe: string;
             };
+            lender: {
+                displayName: string;
+                userId: string;
+            };
         } & {
-            quantity: number;
             id: string;
-            lenderId: string;
-            depositAmount: Prisma.Decimal;
-            listingId: string;
             bookingId: string;
+            listingId: string;
+            lenderId: string;
+            quantity: number;
             itemPrice: Prisma.Decimal;
+            depositAmount: Prisma.Decimal;
             pickupMethod: import(".prisma/client").$Enums.PickupMethod;
             pickupWindow: Prisma.JsonValue | null;
         })[];
     } & {
-        startDate: Date;
-        endDate: Date;
         id: string;
-        status: import(".prisma/client").$Enums.BookingStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.BookingStatus;
         renterId: string;
+        startDate: Date;
+        endDate: Date;
         totalPrice: Prisma.Decimal;
         totalDeposit: Prisma.Decimal;
         logisticsScoreSnapshot: Prisma.Decimal;
@@ -235,9 +235,9 @@ export declare class AdminService {
         } | null;
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.DisputeStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.DisputeStatus;
         bookingId: string;
         reason: string;
         openedByUserId: string;
@@ -262,8 +262,8 @@ export declare class AdminService {
     } & {
         id: string;
         createdAt: Date;
-        listingId: string | null;
         bookingId: string;
+        listingId: string | null;
         reviewerId: string;
         revieweeUserId: string;
         rating: number;
@@ -276,102 +276,102 @@ export declare class AdminService {
         };
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: Prisma.JsonValue | null;
     })[]>;
     adminCreateCategory(dto: Parameters<CategoriesService["create"]>[0], actorUserId?: string): Promise<{
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: Prisma.JsonValue | null;
     }>;
     adminUpdateCategory(id: string, dto: Parameters<CategoriesService["update"]>[1], actorUserId?: string): Promise<{
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: Prisma.JsonValue | null;
     }>;

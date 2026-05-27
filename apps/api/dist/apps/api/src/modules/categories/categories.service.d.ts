@@ -10,57 +10,57 @@ export declare class CategoriesService {
     findAll(): Prisma.PrismaPromise<({
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: Prisma.JsonValue | null;
     })[]>;
     findOne(id: string): Promise<{
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: Prisma.JsonValue | null;
     }>;
@@ -70,102 +70,102 @@ export declare class CategoriesService {
         };
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: Prisma.JsonValue | null;
     })[]>;
     create(dto: CreateCategoryDto, actorUserId?: string): Promise<{
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: Prisma.JsonValue | null;
     }>;
     update(id: string, dto: UpdateCategoryDto, actorUserId?: string): Promise<{
         parent: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         } | null;
         children: {
             id: string;
-            status: import(".prisma/client").$Enums.CategoryStatus;
             createdAt: Date;
             updatedAt: Date;
+            nameHe: string;
+            status: import(".prisma/client").$Enums.CategoryStatus;
             parentId: string | null;
             slug: string;
-            nameHe: string;
             nameEn: string;
             attributesSchema: Prisma.JsonValue | null;
         }[];
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.CategoryStatus;
         createdAt: Date;
         updatedAt: Date;
+        nameHe: string;
+        status: import(".prisma/client").$Enums.CategoryStatus;
         parentId: string | null;
         slug: string;
-        nameHe: string;
         nameEn: string;
         attributesSchema: Prisma.JsonValue | null;
     }>;

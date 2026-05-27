@@ -4,7 +4,7 @@ export declare class AvailabilityService {
     constructor(prisma: PrismaService);
     getBookedQuantity(listingId: string, startDate: Date, endDate: Date): Promise<number>;
     getBlockedQuantity(listingId: string, startDate: Date, endDate: Date): Promise<number>;
-    getAvailabilityReason(listingId: string, startDate: Date, endDate: Date): Promise<"blocked" | "booked" | "maintenance">;
+    getAvailabilityReason(listingId: string, startDate: Date, endDate: Date): Promise<"booked" | "maintenance" | "blocked">;
     isListingAvailable(listingId: string, quantity: number, startDate: Date, endDate: Date, inventoryCount?: number): Promise<boolean>;
     availabilityFragilityScore(listingId: string, startDate: Date, endDate: Date): Promise<number>;
 }

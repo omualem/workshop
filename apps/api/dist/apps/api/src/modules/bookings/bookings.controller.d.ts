@@ -12,28 +12,30 @@ export declare class BookingsController {
     }): Promise<({
         items: ({
             listing: {
-                categoryId: string;
+                city: string | null;
                 cityId: string | null;
                 streetId: string | null;
                 addressNumber: number | null;
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                status: import(".prisma/client").$Enums.ListingStatus;
                 lenderId: string;
+                depositAmount: import("@prisma/client/runtime/library").Decimal;
+                categoryId: string;
                 titleHe: string;
                 titleEn: string;
                 descriptionHe: string;
                 descriptionEn: string;
                 suitableFor: string | null;
                 mainUses: string | null;
-                status: import(".prisma/client").$Enums.ListingStatus;
                 basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-                depositAmount: import("@prisma/client/runtime/library").Decimal;
                 qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
                 popularityScore: import("@prisma/client/runtime/library").Decimal | null;
                 manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
                 pickupLat: import("@prisma/client/runtime/library").Decimal;
                 pickupLng: import("@prisma/client/runtime/library").Decimal;
                 pickupAddressText: string;
-                city: string | null;
                 pickupInstructions: string | null;
                 deliverySupported: boolean;
                 includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -44,28 +46,26 @@ export declare class BookingsController {
                 inventoryCount: number;
                 minRentalDays: number;
                 maxRentalDays: number;
-                createdAt: Date;
-                updatedAt: Date;
             };
         } & {
-            quantity: number;
             id: string;
-            lenderId: string;
-            depositAmount: import("@prisma/client/runtime/library").Decimal;
-            listingId: string;
             bookingId: string;
+            listingId: string;
+            lenderId: string;
+            quantity: number;
             itemPrice: import("@prisma/client/runtime/library").Decimal;
+            depositAmount: import("@prisma/client/runtime/library").Decimal;
             pickupMethod: import(".prisma/client").$Enums.PickupMethod;
             pickupWindow: import("@prisma/client/runtime/library").JsonValue | null;
         })[];
     } & {
-        startDate: Date;
-        endDate: Date;
         id: string;
-        status: import(".prisma/client").$Enums.BookingStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.BookingStatus;
         renterId: string;
+        startDate: Date;
+        endDate: Date;
         totalPrice: import("@prisma/client/runtime/library").Decimal;
         totalDeposit: import("@prisma/client/runtime/library").Decimal;
         logisticsScoreSnapshot: import("@prisma/client/runtime/library").Decimal;
@@ -83,28 +83,30 @@ export declare class BookingsController {
         };
         items: ({
             listing: {
-                categoryId: string;
+                city: string | null;
                 cityId: string | null;
                 streetId: string | null;
                 addressNumber: number | null;
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                status: import(".prisma/client").$Enums.ListingStatus;
                 lenderId: string;
+                depositAmount: import("@prisma/client/runtime/library").Decimal;
+                categoryId: string;
                 titleHe: string;
                 titleEn: string;
                 descriptionHe: string;
                 descriptionEn: string;
                 suitableFor: string | null;
                 mainUses: string | null;
-                status: import(".prisma/client").$Enums.ListingStatus;
                 basePriceDaily: import("@prisma/client/runtime/library").Decimal;
-                depositAmount: import("@prisma/client/runtime/library").Decimal;
                 qualityScoreCached: import("@prisma/client/runtime/library").Decimal;
                 popularityScore: import("@prisma/client/runtime/library").Decimal | null;
                 manualPriorityBoost: import("@prisma/client/runtime/library").Decimal | null;
                 pickupLat: import("@prisma/client/runtime/library").Decimal;
                 pickupLng: import("@prisma/client/runtime/library").Decimal;
                 pickupAddressText: string;
-                city: string | null;
                 pickupInstructions: string | null;
                 deliverySupported: boolean;
                 includedItems: import("@prisma/client/runtime/library").JsonValue | null;
@@ -115,28 +117,26 @@ export declare class BookingsController {
                 inventoryCount: number;
                 minRentalDays: number;
                 maxRentalDays: number;
-                createdAt: Date;
-                updatedAt: Date;
             };
         } & {
-            quantity: number;
             id: string;
-            lenderId: string;
-            depositAmount: import("@prisma/client/runtime/library").Decimal;
-            listingId: string;
             bookingId: string;
+            listingId: string;
+            lenderId: string;
+            quantity: number;
             itemPrice: import("@prisma/client/runtime/library").Decimal;
+            depositAmount: import("@prisma/client/runtime/library").Decimal;
             pickupMethod: import(".prisma/client").$Enums.PickupMethod;
             pickupWindow: import("@prisma/client/runtime/library").JsonValue | null;
         })[];
     } & {
-        startDate: Date;
-        endDate: Date;
         id: string;
-        status: import(".prisma/client").$Enums.BookingStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.BookingStatus;
         renterId: string;
+        startDate: Date;
+        endDate: Date;
         totalPrice: import("@prisma/client/runtime/library").Decimal;
         totalDeposit: import("@prisma/client/runtime/library").Decimal;
         logisticsScoreSnapshot: import("@prisma/client/runtime/library").Decimal;
@@ -147,13 +147,13 @@ export declare class BookingsController {
     updateStatus(user: {
         sub: string;
     }, id: string, dto: UpdateBookingStatusDto): Promise<{
-        startDate: Date;
-        endDate: Date;
         id: string;
-        status: import(".prisma/client").$Enums.BookingStatus;
         createdAt: Date;
         updatedAt: Date;
+        status: import(".prisma/client").$Enums.BookingStatus;
         renterId: string;
+        startDate: Date;
+        endDate: Date;
         totalPrice: import("@prisma/client/runtime/library").Decimal;
         totalDeposit: import("@prisma/client/runtime/library").Decimal;
         logisticsScoreSnapshot: import("@prisma/client/runtime/library").Decimal;

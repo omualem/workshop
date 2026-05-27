@@ -10,8 +10,8 @@ export declare class AddressesService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        nameHe: string;
         settlementCode: number;
+        nameHe: string;
     }[]>;
     searchStreets(params: {
         cityId?: string;

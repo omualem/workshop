@@ -13,12 +13,12 @@ export declare class AuditService {
     }): Promise<{
         id: string;
         createdAt: Date;
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         action: string;
         entityType: string;
         entityId: string;
         before: import("@prisma/client/runtime/library").JsonValue | null;
         after: import("@prisma/client/runtime/library").JsonValue | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         actorUserId: string | null;
     }>;
     findMany(): import(".prisma/client").Prisma.PrismaPromise<({
@@ -31,12 +31,12 @@ export declare class AuditService {
     } & {
         id: string;
         createdAt: Date;
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         action: string;
         entityType: string;
         entityId: string;
         before: import("@prisma/client/runtime/library").JsonValue | null;
         after: import("@prisma/client/runtime/library").JsonValue | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
         actorUserId: string | null;
     })[]>;
 }

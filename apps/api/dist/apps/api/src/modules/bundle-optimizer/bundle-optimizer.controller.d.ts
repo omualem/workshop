@@ -55,7 +55,7 @@ export declare class BundleOptimizerController {
                     streetId?: string | undefined;
                     addressNumber?: number | undefined;
                 };
-                preferenceProfile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
+                preferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "custom" | undefined;
                 basePreferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
                 preferenceSliders: {
                     price: number;
@@ -146,7 +146,7 @@ export declare class BundleOptimizerController {
                     streetId?: string | undefined;
                     addressNumber?: number | undefined;
                 };
-                preferenceProfile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
+                preferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "custom" | undefined;
                 basePreferenceProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
                 preferenceSliders: {
                     price: number;
@@ -199,7 +199,7 @@ export declare class BundleOptimizerController {
                     rawFinalScore: number;
                     finalScore: number;
                     preferences: {
-                        profile: "custom" | "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional";
+                        profile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | "custom";
                         baseProfile: "balanced" | "cheapest" | "closest" | "minimalEffort" | "professional" | undefined;
                         sliders: {
                             price: number;
